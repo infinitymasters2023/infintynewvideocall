@@ -53,7 +53,7 @@ export function MeetingDetailsScreen({
       console.log('Fetched data:', result);
     } catch (error) {
       console.log('Error fetching data', error);
-      
+
     }
   };
 
@@ -133,6 +133,7 @@ export function MeetingDetailsScreen({
       videoTrack.stop();
       setVideoTrack(null);
     }
+    
     
     onClickStartMeeting();
     localStorage.setItem('ticketNo', ticketNo);
