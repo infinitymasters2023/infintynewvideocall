@@ -53,6 +53,7 @@ export function MeetingDetailsScreen({
       console.log('Fetched data:', result);
     } catch (error) {
       console.log('Error fetching data', error);
+      
     }
   };
 
