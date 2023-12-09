@@ -8,6 +8,12 @@ import { v4 as uuidv4 } from 'uuid';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from "react-router-dom";
 import { Button as BootstrapButton, Form, Modal, Col, Container, Row } from 'react-bootstrap';
+import MeetingScheduler from "./MeetingScheduler";
+import MeetingForm from "./MeetingScheduler";
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import { FiCopy } from 'react-icons/fi';
+
 
 export function MeetingDetailsScreen({
   onClickJoin,
@@ -48,7 +54,7 @@ export function MeetingDetailsScreen({
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://meetings.infyshield.com/api/data');
+      const response = await fetch('https://localhost:3000/api/data');
       const result = await response.json();
       console.log('Fetched data:', result);
     } catch (error) {
@@ -128,21 +134,62 @@ export function MeetingDetailsScreen({
     }
   };
   const handleCreateMeeting = async () => {
-    await createVideoMeetingAPI();
-    if (videoTrack) {
-      videoTrack.stop();
-      setVideoTrack(null);
-    }
-    
-    
-    onClickStartMeeting();
-    localStorage.setItem('ticketNo', ticketNo);
-    
+    // Display a confirmation dialog
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div style={{ textAlign: 'center' }}>
+            <h1>Have you copied the link?</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <button
+                style={{ marginLeft: '10px', display: 'flex', alignItems: 'center' }}
+                onClick={() => {
+                  onClose();
+                  // User clicked "No" - invoke handleCopyLink logic
+                  handleCopyLink();
+                  createVideoMeetingAPI();
+                  if (videoTrack) {
+                    videoTrack.stop();
+                    setVideoTrack(null);
+                  }
+                  onClickStartMeeting();
+                  localStorage.setItem('ticketNo', ticketNo);
+                
+                }}
+              >
+                <span style={{ marginRight: '5px' }}>Copy Link</span>
+                <FiCopy size={16} color="#000" />
+              </button>
+              <button
+                style={{ marginRight: '10px' }}
+                onClick={() => {
+                  onClose();
+                  // Proceed with link copying logic on user-initiated event (e.g., button click)
+                  // Continue with the rest of your logic
+                  createVideoMeetingAPI();
+                  if (videoTrack) {
+                    videoTrack.stop();
+                    setVideoTrack(null);
+                  }
+                  onClickStartMeeting();
+                  localStorage.setItem('ticketNo', ticketNo);
+                }}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        );
+      },
+    });
   };
+  
+  
+  
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
-      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+      const link = `https://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
       console.log(link);
 
       await startVideoRecordingAPI(link);
@@ -222,7 +269,7 @@ export function MeetingDetailsScreen({
 
   const handleSendLinkToSelected = async () => {
     for (const contact of selectedContacts) {
-      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+      const link = `https://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
 
       try {
 
@@ -246,7 +293,7 @@ export function MeetingDetailsScreen({
   
 
   const handleSendLinkToEmail = async () => {
-    const link = `https://meetings.infyshield.com/
+    const link = `https://localhost:3000/
 ?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
 
     try {
@@ -287,7 +334,7 @@ export function MeetingDetailsScreen({
   };
 
   const handleSendLinkToMobile = async () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+    const link = `https://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
 
     try {
       const response = await axios.post(
@@ -358,7 +405,7 @@ export function MeetingDetailsScreen({
   }, [location.search]);
 
   const handleCopyLink = () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+    const link = `https://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
 
     navigator.clipboard.writeText(link);
     setIsCopiedLink(true);
@@ -377,7 +424,21 @@ export function MeetingDetailsScreen({
     setIsModalOpen(false);
   };
  ;
-  
+ const handleInputChange = (e) => {
+  const inputValue = e.target.value;
+
+  // Remove spaces and check if the input contains only letters and no consecutive spaces
+  const sanitizedInput = inputValue.replace(/\s\s+/g, ' ').replace(/[^a-zA-Z\s]/g, '');
+
+  // You can modify this regex based on your specific requirements
+  const isValidInput = /^[a-zA-Z\s]*$/.test(sanitizedInput);
+
+  if (isValidInput) {
+    setParticipantName(sanitizedInput);
+  }
+  // You can add an else block here to display an error message or handle invalid input
+};
+
   
   return (
     <div className={`flex flex-1 flex-col justify-center w-full md:p-[6px] sm:p-1 p-1.5`}>
@@ -391,11 +452,13 @@ export function MeetingDetailsScreen({
             readOnly
           />
           <input
-            value={participantName}
-            onChange={(e) => setParticipantName(e.target.value)}
-            placeholder="Enter your name"
-            className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
-          />
+      value={participantName}
+      onChange={handleInputChange}
+      placeholder="Enter your name"
+      className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
+      maxLength={20}
+    />
+      
           {(adminId === '') ? (
             <button
               className={`w-full ${participantName.length < 3 ? "bg-gray-650" : "bg-purple-350"
@@ -405,6 +468,7 @@ export function MeetingDetailsScreen({
             >
               Start a meeting
             </button>
+            
           ) : (
             <button
               className={`w-full ${participantName.length > 2 ? "bg-purple-350" : "bg-yellow-650"
@@ -794,6 +858,7 @@ export function MeetingDetailsScreen({
           <>
             <div className="w-full md:mt-0 mt-4 flex flex-col">
               <div className="flex items-center justify-center flex-col w-full ">
+              
                 {adminId === '' && userId !== '' && (
                   <button
                     className="w-full bg-purple-350 text-white px-2 py-3 rounded-xl"

@@ -1,0 +1,23 @@
+.modal-dialog-right {
+    position: fixed;
+    margin: auto;
+    width: 320px;
+    height: 100%;
+    right: 0;
+    transform: translate3d(0, 0, 0);
+    transition: right 0.3s ease-out;
+  }
+  
+  .modal-content-right {
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .modal.right.fade .modal-dialog-right {
+    right: -320px;
+  }
+  
+  .modal.right.fade.in .modal-dialog-right {
+    right: 0;
+  }
+  

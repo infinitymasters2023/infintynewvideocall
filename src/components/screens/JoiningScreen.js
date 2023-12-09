@@ -417,24 +417,7 @@ export function JoiningScreen({
                       </div>
                     </div>
 
-                    {!isMobile && (
-                      <div
-                        className="m-4 absolute md:left-12 lg:left-24 xl:left-44 md:right-12 lg:right-24 xl:right-44 rounded cursor-pointer bg-gray-700"
-                        onClick={(e) => {
-                          handleClickOpen();
-                        }}
-                      >
-                        
-                      <div className="flex flex-row items-center justify-center m-1">
-                      <button className="text-white">
-                        <CheckCircleIcon className="h-5 w-5"  mt-0/>
-                      </button>
-                      <p className="text-base text-white ml-1 mt-3">
-                        Check your audio and video
-                      </p>
-                    </div>
-                      </div>
-                    )}
+                   
                   </div>
                 </div>
               </div>

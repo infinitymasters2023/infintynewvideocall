@@ -28,6 +28,7 @@ import { OutlinedButton } from "../../components/buttons/OutlinedButton";
 import useIsTab from "../../hooks/useIsTab";
 import useIsMobile from "../../hooks/useIsMobile";
 import { MobileIconButton } from "../../components/buttons/MobileIconButton";
+import { FaInfoCircle } from "react-icons/fa";
 import {
   meetingModes,
   participantModes,
@@ -44,6 +45,9 @@ import SpeakerOffIcon from "../../icons/Bottombar/SpeakerOffIcon";
 import useCustomTrack from "../../utils/useCustomTrack";
 import { v4 as uuidv4 } from 'uuid';
 import { useLocation } from "react-router-dom";
+import { Modal, Button } from 'react-bootstrap';
+import './Bottombar.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
 const MicBTN = () => {
   const { selectedMicDevice, setSelectedMicDevice } = useMeetingAppContext();
   const { getCustomAudioTrack } = useCustomTrack();
@@ -716,41 +720,41 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
-  const ScreenShareModeBTN = ({ isMobile }) => {
-    const { publish } = usePubSub(`CHANGE_MODE`, {});
+  // const ScreenShareModeBTN = ({ isMobile }) => {
+  //   const { publish } = usePubSub(`CHANGE_MODE`, {});
 
-    const { meetingMode } = useMeetingAppContext();
+  //   const { meetingMode } = useMeetingAppContext();
 
-    return (
-      <OutlineIconTextButton
-        onClick={() => {
-          publish(
-            {
-              mode:
-                meetingMode === meetingModes.SCREEN_SHARE
-                  ? meetingModes.CONFERENCE
-                  : meetingModes.SCREEN_SHARE,
-            },
-            {
-              persist: true,
-            }
-          );
-        }}
-        isFocused={meetingMode === meetingModes.SCREEN_SHARE}
-        buttonText={
-          meetingMode === meetingModes.SCREEN_SHARE
-            ? "Stop screen share mode"
-            : "Screen share mode"
-        }
-        tooltip={
-          meetingMode === meetingModes.SCREEN_SHARE
-            ? "Stop screen share mode"
-            : "Screen share mode"
-        }
-        disabled={isMobile ? true : false}
-      />
-    );
-  };
+  //   return (
+  //     <OutlineIconTextButton
+  //       onClick={() => {
+  //         publish(
+  //           {
+  //             mode:
+  //               meetingMode === meetingModes.SCREEN_SHARE
+  //                 ? meetingModes.CONFERENCE
+  //                 : meetingModes.SCREEN_SHARE,
+  //           },
+  //           {
+  //             persist: true,
+  //           }
+  //         );
+  //       }}
+  //       isFocused={meetingMode === meetingModes.SCREEN_SHARE}
+  //       buttonText={
+  //         meetingMode === meetingModes.SCREEN_SHARE
+  //           ? "Stop screen share mode"
+  //           : "Screen share mode"
+  //       }
+  //       tooltip={
+  //         meetingMode === meetingModes.SCREEN_SHARE
+  //           ? "Stop screen share mode"
+  //           : "Screen share mode"
+  //       }
+  //       disabled={isMobile ? true : false}
+  //     />
+  //   );
+  // };
 
   const EndBTN = () => {
     const { end, localParticipant } = useMeeting();
@@ -843,6 +847,21 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
+  
+  const CustomModal = ({ side, title, show, handleClose, children }) => {
+    return (
+      <Modal show={show} onHide={handleClose} className={`modal-${side} fade`}>
+        <Modal.Header closeButton>
+          <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={`modal-body-${side}`}>{children}</Modal.Body>
+      </Modal>
+    );
+  };
+  
+
+  
+  
   const LeaveBTN = () => {
     const { leave, localParticipant } = useMeeting();
 
@@ -873,7 +892,40 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
-
+  const SidebarModalDemo = () => {
+    const [rightModalShow, setRightModalShow] = useState(false);
+  
+    const handleRightModalClose = () => setRightModalShow(false);
+    const handleRightModalShow = () => setRightModalShow(true);
+  
+    return (
+      <div className="">
+        <div className="text-center">
+          <button type="button" className="btn btn-demo text-base font-medium  text-white" onClick={handleRightModalShow}>
+          <FaInfoCircle  />
+          
+          </button>
+          
+        </div>
+  
+        <CustomModal
+          side="right"
+          title="Right Sidebar"
+          show={rightModalShow}
+          handleClose={handleRightModalClose}
+        >
+          <p>
+            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon
+            officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
+            moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
+            keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur
+            butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably
+            haven't heard of them accusamus labore sustainable VHS.
+          </p>
+        </CustomModal>
+      </div>
+    );
+  };
   const ChatBTN = ({ isMobile, isTab }) => {
     return isMobile || isTab ? (
       <MobileIconButton
@@ -1133,11 +1185,7 @@ export function BottomBar({ bottomBarHeight }) {
                                 isMobile={isMobile}
                                 isTab={isTab}
                               />
-                            ) : icon ===
-                                BottomBarButtonTypes.SCREEN_SHARE_MODE_BUTTON &&
-                              participantMode === participantModes.AGENT ? (
-                              <ScreenShareModeBTN isMobile={isMobile} />
-                            ) : icon === BottomBarButtonTypes.END_MEETING &&
+                            )  : icon === BottomBarButtonTypes.END_MEETING &&
                               participantMode === participantModes.AGENT ? (
                               <EndBTN />
                             ) : null}
@@ -1168,18 +1216,19 @@ export function BottomBar({ bottomBarHeight }) {
         {(browserName === "Google Chrome or Chromium" ||
           browserName === "Microsoft Edge (Legacy)" ||
           browserName === "Opera") && <OutputMicBTN />}
-        <ScreenShareBTN isMobile={isMobile} isTab={isTab} />
+       
         {participantMode === participantModes.AGENT && (
           <>
-            <ScreenShareModeBTN />
+         
             <EndBTN />
           </>
         )}
-
+       
         <LeaveBTN />
       </div>
 
       <div className="flex items-center justify-center">
+      <SidebarModalDemo/>
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>
