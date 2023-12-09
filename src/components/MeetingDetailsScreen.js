@@ -48,7 +48,7 @@ export function MeetingDetailsScreen({
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/data');
+      const response = await fetch('https://meetings.infyshield.com/api/data');
       const result = await response.json();
       console.log('Fetched data:', result);
     } catch (error) {
@@ -140,7 +140,7 @@ export function MeetingDetailsScreen({
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
-      const link = `http://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
       console.log(link);
 
       await startVideoRecordingAPI(link);
@@ -220,7 +220,7 @@ export function MeetingDetailsScreen({
 
   const handleSendLinkToSelected = async () => {
     for (const contact of selectedContacts) {
-      const link = `http://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
 
       try {
 
@@ -285,7 +285,7 @@ export function MeetingDetailsScreen({
   };
 
   const handleSendLinkToMobile = async () => {
-    const link = `http://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
 
     try {
       const response = await axios.post(
@@ -356,7 +356,7 @@ export function MeetingDetailsScreen({
   }, [location.search]);
 
   const handleCopyLink = () => {
-    const link = `http://localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
 
     navigator.clipboard.writeText(link);
     setIsCopiedLink(true);
