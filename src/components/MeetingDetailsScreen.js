@@ -80,6 +80,7 @@ export function MeetingDetailsScreen({
   
         // Store the access token in session storage
         const { accessToken } = data.data
+        
         sessionStorage.setItem('accessToken', accessToken);
   
         return response.data.meetingId; 
