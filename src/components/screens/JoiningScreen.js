@@ -12,7 +12,7 @@ import MicOffIcon from "../../icons/MicOffIcon";
 import MicOnIcon from "../../icons/Bottombar/MicOnIcon";
 import { toast } from "react-toastify";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { tokenGeneration, createRoomMeeting } from '../../services/meeting_api'
 export function JoiningScreen({
   participantName,
   setParticipantName,
@@ -430,7 +430,9 @@ export function JoiningScreen({
                     setVideoTrack={setVideoTrack}
                     onClickStartMeeting={onClickStartMeeting}
                     onClickJoin={async (id) => {
-                      const token = await getToken();
+                      // const token = await getToken();
+                      const token = await tokenGeneration({ roles : 'rtc' });
+                      sessionStorage.setItem('accessToken', token);
                       const valid = await validateMeeting({
                         roomId: id,
                         token,
@@ -447,8 +449,14 @@ export function JoiningScreen({
                       } else alert("Invalid Meeting Id");
                     }}
                     _handleOnCreateMeeting={async () => {
-                      const token = await getToken();
-                      const _meetingId = await createMeeting({ token });
+                      // const token = await getToken();
+                      const token = await tokenGeneration({ roles : 'crawler' });
+                      sessionStorage.setItem('accessToken', token);
+                      const _meetingId = await createRoomMeeting({
+                        customRoomId: "",
+                        ticketNo: "",
+                      })
+                      // const _meetingId = await createMeeting({ token });
                       setToken(token);
                       setMeetingId(_meetingId);
                       return _meetingId;

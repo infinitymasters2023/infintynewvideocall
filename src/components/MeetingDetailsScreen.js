@@ -1,5 +1,5 @@
 import { CheckIcon, ClipboardIcon } from "@heroicons/react/24/outline";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FaMobile, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,7 +13,7 @@ import MeetingForm from "./MeetingScheduler";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
-
+import { tokenGeneration } from '../services/meeting_api'
 
 export function MeetingDetailsScreen({
   onClickJoin,
@@ -45,12 +45,12 @@ export function MeetingDetailsScreen({
   useEffect(() => {
     setUserId(uuidv4());
     const storedTicketNo = localStorage.getItem('ticketNo');
-  if (storedTicketNo) {
-    setTicketNo(storedTicketNo);
-  }
+    if (storedTicketNo) {
+      setTicketNo(storedTicketNo);
+    }
   }, []);
 
- 
+
 
   const fetchData = async () => {
     try {
@@ -80,14 +80,14 @@ export function MeetingDetailsScreen({
           },
         }
       );
-  
+
       const { data: dataToken } = responseToken;
-  
+
       if (dataToken.statusCode === 200) {
         // Store the access token in session storage
         const { accessToken } = dataToken.data;
         sessionStorage.setItem('accessToken', accessToken);
-  
+
         // Generate formatted date (yy-mm-dd hh:mm:ss)
         const now = new Date();
         const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
@@ -99,7 +99,7 @@ export function MeetingDetailsScreen({
           .getSeconds()
           .toString()
           .padStart(2, '0')}`;
-  
+
         // Second API call to create a meeting using the obtained access token
         const responseMeeting = await axios.post(
           'https://meetingsapi.infyshield.com/v1/room/create',
@@ -116,12 +116,12 @@ export function MeetingDetailsScreen({
             },
           }
         );
-  
+
         const { data: dataMeeting } = responseMeeting;
-  
+
         if (dataMeeting.statusCode === 200) {
           console.log('Meeting created successfully:', dataMeeting.data);
-  
+
           // You can store any relevant information in session storage or state if needed
           return dataMeeting.data.meetingId;
         } else {
@@ -137,23 +137,39 @@ export function MeetingDetailsScreen({
       return null;
     }
   };
-  
-  
+
+  // const createMeeting = async () => {
+  //   try {
+  //     await tokenGeneration({
+  //       roomId: meetingId,
+  //       participantId: '',
+  //       roles: 'crawler',
+  //     }).then((response) => {
+  //       console.log('res', response);
+  //     }).catch((error) => {
+  //       console.log('error', error);
+  //     })
+  //   } catch (error) {
+  //     console.error('Error creating meeting:', error);
+  //     return null;
+  //   }
+  // };
+
   const createVideoMeetingAPI = async () => {
     const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/meeting/start_meeting';
-  
+
     const accessToken = sessionStorage.getItem('accessToken');
     console.log('tokenvalue', accessToken);
-  
+
     const requestData = {
       accessToken: accessToken,
       roomId: meetingId,
       ticketNo: ticketNo,
       mobile: mobileNumber,
       email: email,
-      fullName:participantName,
+      fullName: participantName,
     };
-  
+
     try {
       const response = await axios.post(apiEndpoint, requestData, {
         headers: {
@@ -161,9 +177,9 @@ export function MeetingDetailsScreen({
           'Content-Type': 'application/json',
         },
       });
-  
+
       console.log('Create Video Meeting API Response:', response);
-  
+
       if (response.status === 200) {
         console.log('Video meeting created successfully');
       } else {
@@ -194,7 +210,7 @@ export function MeetingDetailsScreen({
                   }
                   onClickStartMeeting();
                   localStorage.setItem('ticketNo', ticketNo);
-                
+
                 }}
               >
                 <span style={{ marginRight: '5px' }}>Copy Link</span>
@@ -223,9 +239,9 @@ export function MeetingDetailsScreen({
       },
     });
   };
-  
-  
-  
+
+
+
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
@@ -298,7 +314,7 @@ export function MeetingDetailsScreen({
       console.log('Error starting video recording', error);
     }
   };
-  
+
   const handleCheckboxChange = (contact) => {
     const updatedContacts = selectedContacts.includes(contact)
       ? selectedContacts.filter((c) => c !== contact)
@@ -330,7 +346,7 @@ export function MeetingDetailsScreen({
     }
   };
 
-  
+
 
   const handleSendLinkToEmail = async () => {
     const link = `https//localhost:3000/
@@ -463,26 +479,26 @@ export function MeetingDetailsScreen({
   const closeModal = () => {
     setIsModalOpen(false);
   };
- ;
- const handleInputChange = (e) => {
-  const inputValue = e.target.value;
+  ;
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
 
-  // Remove spaces and check if the input contains only letters and no consecutive spaces
-  const sanitizedInput = inputValue.replace(/\s\s+/g, ' ').replace(/[^a-zA-Z\s]/g, '');
+    // Remove spaces and check if the input contains only letters and no consecutive spaces
+    const sanitizedInput = inputValue.replace(/\s\s+/g, ' ').replace(/[^a-zA-Z\s]/g, '');
 
-  // You can modify this regex based on your specific requirements
-  const isValidInput = /^[a-zA-Z\s]*$/.test(sanitizedInput);
+    // You can modify this regex based on your specific requirements
+    const isValidInput = /^[a-zA-Z\s]*$/.test(sanitizedInput);
 
-  if (isValidInput) {
-    setParticipantName(sanitizedInput);
+    if (isValidInput) {
+      setParticipantName(sanitizedInput);
 
-    // Update session storage with the new participant name
-    localStorage.setItem('participantName', sanitizedInput);
-  }
-  // You can add an else block here to display an error message or handle invalid input
-};
+      // Update session storage with the new participant name
+      localStorage.setItem('participantName', sanitizedInput);
+    }
+    // You can add an else block here to display an error message or handle invalid input
+  };
 
-  
+
   return (
     <div className={`flex flex-1 flex-col justify-center w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked || (isJoinMeetingClicked && hasJoinedThroughLink) ? (
@@ -495,13 +511,13 @@ export function MeetingDetailsScreen({
             readOnly
           />
           <input
-      value={participantName}
-      onChange={handleInputChange}
-      placeholder="Enter your name"
-      className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
-      maxLength={20}
-    />
-      
+            value={participantName}
+            onChange={handleInputChange}
+            placeholder="Enter your name"
+            className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
+            maxLength={20}
+          />
+
           {(adminId === '') ? (
             <button
               className={`w-full ${participantName.length < 3 ? "bg-gray-650" : "bg-purple-350"
@@ -511,7 +527,7 @@ export function MeetingDetailsScreen({
             >
               Start a meeting
             </button>
-            
+
           ) : (
             <button
               className={`w-full ${participantName.length > 2 ? "bg-purple-350" : "bg-yellow-650"
@@ -543,16 +559,16 @@ export function MeetingDetailsScreen({
                 </button>
                 <Modal show={isModalOpen} onHide={closeModal} centered size="xl">
                   <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter"  style={{ fontSize: '15px', fontWeight: '500' }} >
+                    <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: '15px', fontWeight: '500' }} >
                       Send Link
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
                     <Form>
                       <div className="grid grid-cols-2 gap-1 md-1">
-                       
+
                         {/* Left Side: Email */}
-                       <div>
+                        <div>
                           <Form.Group
                             className="mb-3"
                             controlId="exampleForm.ControlTextarea1"
@@ -760,7 +776,7 @@ export function MeetingDetailsScreen({
                         </div>
 
                         {/* Right Side: Phone Numbers */}
-                         <div>
+                        <div>
                           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Label>Email address:</Form.Label>
                             <div className="row">
@@ -901,7 +917,7 @@ export function MeetingDetailsScreen({
           <>
             <div className="w-full md:mt-0 mt-4 flex flex-col">
               <div className="flex items-center justify-center flex-col w-full ">
-              
+
                 {adminId === '' && userId !== '' && (
                   <button
                     className="w-full bg-purple-350 text-white px-2 py-3 rounded-xl"
