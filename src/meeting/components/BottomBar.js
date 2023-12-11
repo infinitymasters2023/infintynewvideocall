@@ -892,20 +892,32 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
-  const SidebarModalDemo = () => {
+  const SidebarModalDemo = ({ participantName }) => {
     const [rightModalShow, setRightModalShow] = useState(false);
+    const [meetingLink, setMeetingLink] = useState('');
+    const { meetingId } = useMeeting();
+  
+    useEffect(() => {
+      // Retrieve the link from local storage
+      const storedLink = localStorage.getItem('meetingLink');
+      if (storedLink) {
+        setMeetingLink(storedLink);
+      }
+    }, []);
   
     const handleRightModalClose = () => setRightModalShow(false);
     const handleRightModalShow = () => setRightModalShow(true);
   
     return (
-      <div className="">
+      <div className="sidebar-modal-demo">
         <div className="text-center">
-          <button type="button" className="btn btn-demo text-base font-medium  text-white" onClick={handleRightModalShow}>
-          <FaInfoCircle  />
-          
+          <button
+            type="button"
+            className="btn btn-demo text-base font-medium text-white"
+            onClick={handleRightModalShow}
+          >
+            <FaInfoCircle />
           </button>
-          
         </div>
   
         <CustomModal
@@ -914,11 +926,54 @@ export function BottomBar({ bottomBarHeight }) {
           show={rightModalShow}
           handleClose={handleRightModalClose}
         >
-       
+          <div className="card-panel">
+            <div className="card">
+              <div className="body">
+                <div className="title m-0">Infinity Assurance Meeting</div>
+              </div>
+              <ul className="list pl-0">
+                <li className="list-item py-1 border-0">
+                  <div className="d-flex">
+                    <div className="name col-5 px-0">Host</div>
+                    <div className="value col-7 px-0">{participantName}</div>
+                  </div>
+                  <hr className="break-line break-line-list" />
+                </li>
+                <li className="list-item py-1 border-0"></li>
+                <li className="list-item py-1 border-0">
+                  <div className="d-flex">
+                    <div className="name px-0 col-5">Meeting ID:</div>
+                    <div className="value px-0 col-7">{meetingId}</div>
+                  </div>
+                </li>
+                <li className="list-item py-1 border-0"></li>
+                <li className="list-item py-1 border-0 grid-column-assign">
+                  <div className="d-flex">
+                    <div className="name col-3 px-0">Invitation Link:</div>
+                    <div className="value col-6 px-3 link url-value">
+                      {meetingLink}
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div className="card-body text-right copy-btns center-content">
+                <button className="btn card-link">
+                  <img alt="" src="assets/images/copy-url.svg" />
+                  <span className="pl-2">Copy Link</span>
+                </button>
+                <button className="btn card-link">
+                  <img alt="" src="assets/images/copy-invi.svg" />
+                  <span className="pl-2">Copy Invitation</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </CustomModal>
       </div>
     );
   };
+  
+  
   const ChatBTN = ({ isMobile, isTab }) => {
     return isMobile || isTab ? (
       <MobileIconButton

@@ -161,8 +161,8 @@ export function PresenterView({ height }) {
               {...{
                 isLocal,
                 displayName,
-                micOn,
-                webcamOn,
+                micOn:true,
+                webcamOn:true,
                 pin,
                 unpin,
                 pinState,
