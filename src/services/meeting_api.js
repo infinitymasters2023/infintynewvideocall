@@ -15,12 +15,12 @@ export const tokenGeneration = async (iData) => {
 };
 export const createRoomMeeting = async (iData) => {
     return await post('room/create', iData).then((response) => {
-        console.log('res', response);
         if (response && response.isSuccess && response.statusCode == 200 && response.data) {
-            return response.data
+            const { roomId } = response.data
+            return roomId
         }
         else {
-            return {}
+            return ''
         }
     })
 };
