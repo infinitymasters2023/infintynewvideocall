@@ -1163,9 +1163,7 @@ export function BottomBar({ bottomBarHeight }) {
                                 : "col-span-4 sm:col-span-3 md:col-span-2"
                             }`}
                           >
-                            {icon === BottomBarButtonTypes.RAISE_HAND ? (
-                              <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
-                            ) : icon === BottomBarButtonTypes.SCREEN_SHARE ? (
+                            { icon === BottomBarButtonTypes.SCREEN_SHARE ? (
                               <ScreenShareBTN
                                 isMobile={isMobile}
                                 isTab={isTab}
@@ -1209,7 +1207,7 @@ export function BottomBar({ bottomBarHeight }) {
         {participantMode === participantModes.AGENT && (
           <RecordingBTN isTab={isTab} isMobile={isMobile} />
         )}
-        <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
+      
         <MicBTN />
 
         <WebCamBTN />

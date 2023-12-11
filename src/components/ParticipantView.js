@@ -18,6 +18,8 @@ import {
 import { Popover, Transition } from "@headlessui/react";
 import NetworkIcon from "../icons/NetworkIcon";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import ZoomIn from "./Zoom";
+import ZoomControls from "./Zoom";
 
 export const CornerDisplayName = ({
   participantId,
@@ -585,7 +587,7 @@ function ParticipantView({
       {webcamOn ? (
         <video
           autoPlay
-          playsInline
+          playsInline 
           muted
           ref={webcamRef}
           className="w-full h-full"
@@ -705,8 +707,10 @@ function ParticipantView({
           }}
         >
           <CameraIcon className="w-6 h-6 text-white" />
+        
         </div>
       )}
+    
       {showImagePreview && !isLocal && !isMobile && (
         <ImageCapturePreviewDialog
           open={showImagePreview}
