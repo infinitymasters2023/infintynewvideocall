@@ -582,7 +582,7 @@ function ParticipantView({
         maintainLandscapeVideoAspectRatio ? "video-contain" : "video-cover"
       }`}
     >
-      <audio id="audio" ref={micRef} autoPlay muted={isLocal || !muteSpeaker} />
+       <audio id="audio" ref={micRef} autoPlay muted={isLocal || !muteSpeaker} />
 
       {webcamOn ? (
         <video

@@ -910,7 +910,7 @@ export function BottomBar({ bottomBarHeight }) {
   
         <CustomModal
           side="right"
-          title="Right Sidebar"
+          title="Info"
           show={rightModalShow}
           handleClose={handleRightModalClose}
         >

@@ -3,6 +3,8 @@
   import { Cropper } from "react-cropper";
   import "cropperjs/dist/cropper.css";
   import { usePubSub } from "@videosdk.live/react-sdk";
+  import Tesseract from 'tesseract.js';
+  import React, {  useEffect } from 'react';
 
   const ImageCapturePreviewDialog = ({ open, setOpen }) => {
     const [imageSrc, setImageSrc] = useState(null);
@@ -44,13 +46,60 @@
     const [cropper, setCropper] = useState();
     const [cropButtonClicked, setCropButtonClicked] = useState(false);
     const [imageCropped, setImageCropped] = useState(false);
-
+    const [recognizedText, setRecognizedText] = useState('');
     const getCropData = () => {
       if (typeof cropper !== "undefined") {
         setCropData(cropper.getCroppedCanvas().toDataURL());
       }
     };
-
+    const handleCropButtonClick = () => {
+      if (!imageCropped) {
+        console.log("Before setCropButtonClicked(true):", cropButtonClicked);
+        setCropButtonClicked(true);
+        getCropData();
+        console.log("After setCropButtonClicked(true):", cropButtonClicked);
+      } else {
+        console.log("Submit clicked");
+        console.log("Before setCropButtonClicked(false):", cropButtonClicked);
+        setCropButtonClicked(false);
+        setImageCropped(true); 
+        setOpen(false);
+        console.log("After setCropButtonClicked(false):", cropButtonClicked);
+      }
+    };
+    const handleZoomIn = () => {
+      cropper.zoom(0.1); // You can adjust the zoom factor as needed
+    };
+  
+    const handleZoomOut = () => {
+      cropper.zoom(-0.1); // You can adjust the zoom factor as needed
+    };
+    const handleRotateLeft = () => {
+      cropper.rotate(-90); // Rotate 90 degrees to the left
+    };
+  
+    const handleRotateRight = () => {
+      cropper.rotate(90); // Rotate 90 degrees to the right
+    };
+    const handleReadText = () => {
+      const croppedCanvas = cropper?.getCroppedCanvas();
+      if (croppedCanvas) {
+        const imageData = croppedCanvas.toDataURL('image/png');
+        recognizeText(imageData);
+      }
+    };
+  
+    const recognizeText = async (imageData) => {
+      Tesseract.recognize(
+        imageData,
+        'eng', // English language
+        { logger: (info) => console.log(info) }
+      ).then(({ data: { text } }) => {
+        setRecognizedText(text);
+      });
+    };
+  
+   
     return (
       <>
         <Transition appear show={open} as={Fragment}>
@@ -99,6 +148,9 @@
                       )}
                       {/* Conditionally render the Cropper based on button click */}
                       {cropButtonClicked && (
+                        <>
+                     
+                      
                         <Cropper
                           className="ml-4"
                           style={{
@@ -123,31 +175,43 @@
                           guides={true}
                           crossOrigin="anonymous"
                         />
+                        <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleZoomIn}
+                      >
+                        Zoom In
+                      </button>
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleZoomOut}
+                      >
+                        Zoom Out
+                      </button>
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleRotateLeft}
+                      >
+                        Rotate Left
+                      </button>
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleRotateRight}
+                      >
+                        Rotate Right
+                      </button>
+                      </>
                       )}
                     </div>
   
                     {/* Your "Crop Image" button */}
                     <div className="flex items-start justify-end w-full mt-6 fixed top-0">
                     <button
-                    className="bg-white text-black px-3 py-2 rounded"
-                    onClick={() => {
-                      if (!imageCropped) {
-                        setCropButtonClicked(true);
-                        getCropData();
-                      } else {
-                        // Handle submit logic here
-                        console.log("Submit clicked");
-                        // You can perform additional actions or submit the cropped image
-                        // Reset the state or close the dialog as needed
-                        setCropButtonClicked(false);
-                        setImageCropped(false);
-                        setOpen(false);
-                      }
-                    }}
-                  >
-                    {imageCropped ? "Submit" : "Crop Image"}
-                  </button>
-                    </div>
+                      className="bg-white text-black px-3 py-2 rounded"
+                      onClick={handleCropButtonClick}
+                    >
+                      {imageCropped ? "Submit" : "Crop Image"}
+                    </button>
+                  </div>
                     {cropData && cropButtonClicked && (
                       <div className="flex flex-col w-full">
                         <span className="text-white font-semibold">

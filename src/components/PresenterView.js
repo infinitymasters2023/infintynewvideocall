@@ -126,13 +126,7 @@ export function PresenterView({ height }) {
             transitionTimingFunction: "linear",
           }}
         >
-          {!micOn ? (
-            <MicOffSmallIcon fillcolor="white" />
-          ) : micOn && isActiveSpeaker ? (
-            <SpeakerIcon />
-          ) : (
-            <></>
-          )}
+          
 
           <p className="text-sm text-white">
             {isLocal
