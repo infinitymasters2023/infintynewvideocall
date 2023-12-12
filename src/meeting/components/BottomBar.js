@@ -48,7 +48,7 @@ import { useLocation } from "react-router-dom";
 import { Modal, Button } from 'react-bootstrap';
 import './Bottombar.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { stopMeetingRecording } from "../../services/meeting_api";
+import { stopRecordingAPI, endMeetingAPI, leaveMeetingAPI } from "../../services/meeting_api";
 
 const MicBTN = () => {
   const { selectedMicDevice, setSelectedMicDevice } = useMeetingAppContext();
@@ -667,7 +667,9 @@ export function BottomBar({ bottomBarHeight }) {
 
       if (isRecording) {
         await stopRecording();
-        await stopMeetingRecording({ roomId : meetingId})
+        setTimeout(function(){
+          stopRecordingAPI({ roomId : meetingId})
+        }, 3000)
       } else {
         startRecording();
       }
@@ -760,7 +762,7 @@ export function BottomBar({ bottomBarHeight }) {
   // };
 
   const EndBTN = () => {
-    const { end, localParticipant } = useMeeting();
+    const { end, localParticipant, meetingId } = useMeeting();
 
     return (
       <OutlineIconTextButton
@@ -781,6 +783,7 @@ export function BottomBar({ bottomBarHeight }) {
             }
           );
           end();
+          endMeetingAPI({ roomId : meetingId})
         }}
         buttonText={"End Meeting"}
         tooltip={"End Meeting"}
@@ -866,13 +869,15 @@ export function BottomBar({ bottomBarHeight }) {
   
   
   const LeaveBTN = () => {
-    const { leave, localParticipant } = useMeeting();
+    const { leave, localParticipant, meetingId } = useMeeting();
 
     return (
       <OutlinedButton
         Icon={EndIcon}
         bgColor="bg-red-150"
         onClick={() => {
+
+
           toast(
             `${trimSnackBarText(
               nameTructed(localParticipant.displayName, 15)
@@ -890,6 +895,12 @@ export function BottomBar({ bottomBarHeight }) {
           );
 
           leave();
+          if(isAdminUser){
+            endMeetingAPI({ roomId : meetingId})
+          }
+          else{
+            leaveMeetingAPI({ roomId : meetingId})
+          }
         }}
         tooltip="Leave Meeting"
       />
