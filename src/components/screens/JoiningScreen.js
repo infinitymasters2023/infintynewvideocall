@@ -430,8 +430,8 @@ export function JoiningScreen({
                     setVideoTrack={setVideoTrack}
                     onClickStartMeeting={onClickStartMeeting}
                     onClickJoin={async (id) => {
-                      // const token = await getToken();
-                      const token = await tokenGeneration({ roles : 'rtc' });
+                      const token = await getToken();
+                      // const token = await tokenGeneration({ roles : 'rtc' });
                       sessionStorage.setItem('accessToken', token);
                       const valid = await validateMeeting({
                         roomId: id,
@@ -449,8 +449,8 @@ export function JoiningScreen({
                       } else alert("Invalid Meeting Id");
                     }}
                     _handleOnCreateMeeting={async () => {
-                      // const token = await getToken();
-                      const token = await tokenGeneration({ roles : 'crawler' });
+                      const token = await getToken();
+                      // const token = await tokenGeneration({ roles : 'crawler' });
                       sessionStorage.setItem('accessToken', token);
                       const _meetingId = await createRoomMeeting({
                         customRoomId: "",

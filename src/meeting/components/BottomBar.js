@@ -48,6 +48,8 @@ import { useLocation } from "react-router-dom";
 import { Modal, Button } from 'react-bootstrap';
 import './Bottombar.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { stopMeetingRecording } from "../../services/meeting_api";
+
 const MicBTN = () => {
   const { selectedMicDevice, setSelectedMicDevice } = useMeetingAppContext();
   const { getCustomAudioTrack } = useCustomTrack();
@@ -641,7 +643,7 @@ export function BottomBar({ bottomBarHeight }) {
   };
 
   const RecordingBTN = ({ isMobile, isTab }) => {
-    const { startRecording, stopRecording, recordingState } = useMeeting();
+    const { startRecording, stopRecording, recordingState, meetingId } = useMeeting();
     const defaultOptions = {
       loop: true,
       autoplay: true,
@@ -660,11 +662,12 @@ export function BottomBar({ bottomBarHeight }) {
       isRecordingRef.current = isRecording;
     }, [isRecording]);
 
-    const _handleClick = () => {
+    const _handleClick = async() => {
       const isRecording = isRecordingRef.current;
 
       if (isRecording) {
-        stopRecording();
+        await stopRecording();
+        await stopMeetingRecording({ roomId : meetingId})
       } else {
         startRecording();
       }

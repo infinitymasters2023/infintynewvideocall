@@ -36,3 +36,17 @@ export const start_Meeting = async (iData) => {
         }
     });
 };
+
+
+export const stopMeetingRecording = async (iData) => {
+    await post('recording/stop', iData).then((response) => {
+        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+            return response.data
+        }
+        else {
+            return response.data
+        }
+    }).catch((error) => {
+        return error
+    })
+};
