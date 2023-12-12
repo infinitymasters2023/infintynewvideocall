@@ -43,7 +43,7 @@ export const validateMeeting = async ({ roomId, token }) => {
   };
 
   const result = await fetch(url, options)
-    .then((response) => response.json()) //result will have meeting id
+    .then((response) => response.json()) 
     .catch((error) => console.error("error", error));
 
   return result ? result.roomId === roomId : false;
