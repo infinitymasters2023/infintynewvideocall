@@ -24,3 +24,15 @@ export const createRoomMeeting = async (iData) => {
         }
     })
 };
+export const start_Meeting = async (iData) => {
+    return await post('meeting/start_meeting', iData).then((response) => {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
+            const { meetingId } = response.data;
+            console.log('response',response);
+            return meetingId;
+        } else {
+            console.error('Error starting the meeting:', response.error);
+            return '';
+        }
+    });
+};

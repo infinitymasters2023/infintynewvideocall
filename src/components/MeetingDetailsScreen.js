@@ -14,7 +14,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
 import { tokenGeneration } from '../services/meeting_api'
-
+import { start_Meeting } from '../../src/services/meeting_api'
 export function MeetingDetailsScreen({
   onClickJoin,
   _handleOnCreateMeeting,
@@ -65,7 +65,6 @@ export function MeetingDetailsScreen({
 
   const createMeeting = async () => {
     try {
-      // First API call to get the access token
       const responseToken = await axios.post(
         'https://meetingsapi.infyshield.com/v1/meeting/tokenGeneration',
         {
@@ -84,11 +83,9 @@ export function MeetingDetailsScreen({
       const { data: dataToken } = responseToken;
 
       if (dataToken.statusCode === 200) {
-        // Store the access token in session storage
         const { accessToken } = dataToken.data;
         sessionStorage.setItem('accessToken', accessToken);
 
-        // Generate formatted date (yy-mm-dd hh:mm:ss)
         const now = new Date();
         const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
           .toString()
@@ -100,19 +97,19 @@ export function MeetingDetailsScreen({
           .toString()
           .padStart(2, '0')}`;
 
-        // Second API call to create a meeting using the obtained access token
+        
         const responseMeeting = await axios.post(
           'https://meetingsapi.infyshield.com/v1/room/create',
           {
             roomId: meetingId,
             customRoomId: meetingId + '_' + formattedDate,
-            ticketNo:  meetingId, // Replace 'string' with the actual ticket number
+            ticketNo:  meetingId, 
           },
           {
             headers: {
               accept: 'application/json',
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`, // Include the access token in the headers
+              Authorization: `Bearer ${accessToken}`, 
             },
           }
         );
@@ -122,7 +119,7 @@ export function MeetingDetailsScreen({
         if (dataMeeting.statusCode === 200) {
           console.log('Meeting created successfully:', dataMeeting.data);
 
-          // You can store any relevant information in session storage or state if needed
+         
           return dataMeeting.data.meetingId;
         } else {
           console.log('Failed to create meeting. Response:', responseMeeting);
@@ -190,7 +187,9 @@ export function MeetingDetailsScreen({
     }
   };
   const handleCreateMeeting = async () => {
-    // Display a confirmation dialog
+  
+    
+  
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
@@ -199,18 +198,21 @@ export function MeetingDetailsScreen({
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button
                 style={{ marginLeft: '10px', display: 'flex', alignItems: 'center' }}
-                onClick={() => {
+                onClick={async () => {
                   onClose();
-                  // User clicked "No" - invoke handleCopyLink logic
                   handleCopyLink();
-                  createVideoMeetingAPI();
+                  await start_Meeting({
+                    roomId: meetingId,
+                    fullName: participantName,
+                    mobile: mobileNumber,
+                    email: email,
+                  });
                   if (videoTrack) {
                     videoTrack.stop();
                     setVideoTrack(null);
                   }
                   onClickStartMeeting();
                   localStorage.setItem('ticketNo', ticketNo);
-
                 }}
               >
                 <span style={{ marginRight: '5px' }}>Copy Link</span>
@@ -218,11 +220,14 @@ export function MeetingDetailsScreen({
               </button>
               <button
                 style={{ marginRight: '10px' }}
-                onClick={() => {
+                onClick={async () => {
                   onClose();
-                  // Proceed with link copying logic on user-initiated event (e.g., button click)
-                  // Continue with the rest of your logic
-                  createVideoMeetingAPI();
+                   await start_Meeting({
+                    roomId: meetingId,
+                    fullName: participantName,
+                    mobile: mobileNumber,
+                    email: email,
+                  });
                   if (videoTrack) {
                     videoTrack.stop();
                     setVideoTrack(null);
@@ -239,6 +244,7 @@ export function MeetingDetailsScreen({
       },
     });
   };
+  
 
 
 
@@ -483,19 +489,18 @@ export function MeetingDetailsScreen({
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
 
-    // Remove spaces and check if the input contains only letters and no consecutive spaces
     const sanitizedInput = inputValue.replace(/\s\s+/g, ' ').replace(/[^a-zA-Z\s]/g, '');
 
-    // You can modify this regex based on your specific requirements
+    
     const isValidInput = /^[a-zA-Z\s]*$/.test(sanitizedInput);
 
     if (isValidInput) {
       setParticipantName(sanitizedInput);
 
-      // Update session storage with the new participant name
+      
       localStorage.setItem('participantName', sanitizedInput);
     }
-    // You can add an else block here to display an error message or handle invalid input
+    
   };
 
 
