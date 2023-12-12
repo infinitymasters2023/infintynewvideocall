@@ -63,80 +63,80 @@ export function MeetingDetailsScreen({
     }
   };
 
-  const createMeeting = async () => {
-    try {
-      // First API call to get the access token
-      const responseToken = await axios.post(
-        'https://meetingsapi.infyshield.com/v1/meeting/tokenGeneration',
-        {
-          roomId: meetingId,
-          participantId: '',
-          roles: 'crawler',
-        },
-        {
-          headers: {
-            accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+  // const createMeeting = async () => {
+  //   try {
+  //     // First API call to get the access token
+  //     const responseToken = await axios.post(
+  //       'https://meetingsapi.infyshield.com/v1/meeting/tokenGeneration',
+  //       {
+  //         roomId: meetingId,
+  //         participantId: '',
+  //         roles: 'crawler',
+  //       },
+  //       {
+  //         headers: {
+  //           accept: 'application/json',
+  //           'Content-Type': 'application/json',
+  //         },
+  //       }
+  //     );
 
-      const { data: dataToken } = responseToken;
+  //     const { data: dataToken } = responseToken;
 
-      if (dataToken.statusCode === 200) {
-        // Store the access token in session storage
-        const { accessToken } = dataToken.data;
-        sessionStorage.setItem('accessToken', accessToken);
+  //     if (dataToken.statusCode === 200) {
+  //       // Store the access token in session storage
+  //       const { accessToken } = dataToken.data;
+  //       sessionStorage.setItem('accessToken', accessToken);
 
-        // Generate formatted date (yy-mm-dd hh:mm:ss)
-        const now = new Date();
-        const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-          .toString()
-          .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now
-          .getHours()
-          .toString()
-          .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now
-          .getSeconds()
-          .toString()
-          .padStart(2, '0')}`;
+  //       // Generate formatted date (yy-mm-dd hh:mm:ss)
+  //       const now = new Date();
+  //       const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+  //         .toString()
+  //         .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now
+  //         .getHours()
+  //         .toString()
+  //         .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now
+  //         .getSeconds()
+  //         .toString()
+  //         .padStart(2, '0')}`;
 
-        // Second API call to create a meeting using the obtained access token
-        const responseMeeting = await axios.post(
-          'https://meetingsapi.infyshield.com/v1/room/create',
-          {
-            roomId: meetingId,
-            customRoomId: meetingId + '_' + formattedDate,
-            ticketNo:  meetingId, // Replace 'string' with the actual ticket number
-          },
-          {
-            headers: {
-              accept: 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`, // Include the access token in the headers
-            },
-          }
-        );
+  //       // Second API call to create a meeting using the obtained access token
+  //       const responseMeeting = await axios.post(
+  //         'https://meetingsapi.infyshield.com/v1/room/create',
+  //         {
+  //           roomId: meetingId,
+  //           customRoomId: meetingId + '_' + formattedDate,
+  //           ticketNo:  meetingId, // Replace 'string' with the actual ticket number
+  //         },
+  //         {
+  //           headers: {
+  //             accept: 'application/json',
+  //             'Content-Type': 'application/json',
+  //             Authorization: `Bearer ${accessToken}`, // Include the access token in the headers
+  //           },
+  //         }
+  //       );
 
-        const { data: dataMeeting } = responseMeeting;
+  //       const { data: dataMeeting } = responseMeeting;
 
-        if (dataMeeting.statusCode === 200) {
-          console.log('Meeting created successfully:', dataMeeting.data);
+  //       if (dataMeeting.statusCode === 200) {
+  //         console.log('Meeting created successfully:', dataMeeting.data);
 
-          // You can store any relevant information in session storage or state if needed
-          return dataMeeting.data.meetingId;
-        } else {
-          console.log('Failed to create meeting. Response:', responseMeeting);
-          return null;
-        }
-      } else {
-        console.log('Failed to get access token. Response:', responseToken);
-        return null;
-      }
-    } catch (error) {
-      console.error('Error creating meeting:', error);
-      return null;
-    }
-  };
+  //         // You can store any relevant information in session storage or state if needed
+  //         return dataMeeting.data.meetingId;
+  //       } else {
+  //         console.log('Failed to create meeting. Response:', responseMeeting);
+  //         return null;
+  //       }
+  //     } else {
+  //       console.log('Failed to get access token. Response:', responseToken);
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating meeting:', error);
+  //     return null;
+  //   }
+  // };
 
   // const createMeeting = async () => {
   //   try {
@@ -925,7 +925,7 @@ export function MeetingDetailsScreen({
                       const meetingId = await _handleOnCreateMeeting();
                       setMeetingId(meetingId);
                       setIscreateMeetingClicked(true);
-                      createMeeting()
+                      // createMeeting()
                     }}
                   >
                     Create a meeting

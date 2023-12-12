@@ -452,11 +452,11 @@ export function JoiningScreen({
                       const token = await getToken();
                       // const token = await tokenGeneration({ roles : 'crawler' });
                       sessionStorage.setItem('accessToken', token);
-                      const _meetingId = await createRoomMeeting({
-                        customRoomId: "",
-                        ticketNo: "",
-                      })
-                      // const _meetingId = await createMeeting({ token });
+                      // const _meetingId = await createRoomMeeting({
+                      //   customRoomId: "",
+                      //   ticketNo: "",
+                      // })
+                      const _meetingId = await createMeeting({ token });
                       setToken(token);
                       setMeetingId(_meetingId);
                       return _meetingId;
