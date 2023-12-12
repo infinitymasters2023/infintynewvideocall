@@ -277,16 +277,16 @@ export function JoiningScreen({
 
   useEffect(() => {
     getDevices({ micEnabled, webcamEnabled });
-    toast(`Join screen loaded`, {
-      position: "bottom-left",
-      autoClose: 4000,
-      hideProgressBar: true,
-      closeButton: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+    // toast(`Join screen loaded`, {
+    //   position: "bottom-left",
+    //   autoClose: 4000,
+    //   hideProgressBar: true,
+    //   closeButton: false,
+    //   pauseOnHover: true,
+    //   draggable: true,
+    //   progress: undefined,
+    //   theme: "light",
+    // });
   }, []);
 
   const ButtonWithTooltip = ({ onClick, onState, OnIcon, OffIcon, mic }) => {

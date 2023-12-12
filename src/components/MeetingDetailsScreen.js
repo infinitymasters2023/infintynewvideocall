@@ -64,93 +64,10 @@ export function MeetingDetailsScreen({
   };
 
   const createMeeting = async () => {
-    try {
-      const responseToken = await axios.post(
-        'https://meetingsapi.infyshield.com/v1/meeting/tokenGeneration',
-        {
-          roomId: meetingId,
-          participantId: '',
-          roles: 'crawler',
-        },
-        {
-          headers: {
-            accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const { data: dataToken } = responseToken;
-
-      if (dataToken.statusCode === 200) {
-        const { accessToken } = dataToken.data;
-        sessionStorage.setItem('accessToken', accessToken);
-
-        const now = new Date();
-        const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-          .toString()
-          .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now
-          .getHours()
-          .toString()
-          .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now
-          .getSeconds()
-          .toString()
-          .padStart(2, '0')}`;
-
-        
-        const responseMeeting = await axios.post(
-          'https://meetingsapi.infyshield.com/v1/room/create',
-          {
-            roomId: meetingId,
-            customRoomId: meetingId + '_' + formattedDate,
-            ticketNo:  meetingId, 
-          },
-          {
-            headers: {
-              accept: 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`, 
-            },
-          }
-        );
-
-        const { data: dataMeeting } = responseMeeting;
-
-        if (dataMeeting.statusCode === 200) {
-          console.log('Meeting created successfully:', dataMeeting.data);
-
-         
-          return dataMeeting.data.meetingId;
-        } else {
-          console.log('Failed to create meeting. Response:', responseMeeting);
-          return null;
-        }
-      } else {
-        console.log('Failed to get access token. Response:', responseToken);
-        return null;
-      }
-    } catch (error) {
-      console.error('Error creating meeting:', error);
-      return null;
-    }
+  
   };
 
-  // const createMeeting = async () => {
-  //   try {
-  //     await tokenGeneration({
-  //       roomId: meetingId,
-  //       participantId: '',
-  //       roles: 'crawler',
-  //     }).then((response) => {
-  //       console.log('res', response);
-  //     }).catch((error) => {
-  //       console.log('error', error);
-  //     })
-  //   } catch (error) {
-  //     console.error('Error creating meeting:', error);
-  //     return null;
-  //   }
-  // };
+
 
   const createVideoMeetingAPI = async () => {
     const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/meeting/start_meeting';
@@ -187,9 +104,6 @@ export function MeetingDetailsScreen({
     }
   };
   const handleCreateMeeting = async () => {
-  
-    
-  
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
