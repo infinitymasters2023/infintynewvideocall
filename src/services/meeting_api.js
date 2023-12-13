@@ -1,4 +1,5 @@
 import { get, post, put, del } from "./instance";
+import axios from 'axios';
 
 export const tokenGenerationAPI = async (iData) => {
     return await post('meeting/tokenGeneration', iData).then((response) => {
@@ -41,7 +42,7 @@ export const startMeetingAPI = async (iData) => {
     return await post('meeting/start_meeting', iData).then((response) => {
         if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             const { meetingId } = response.data;
-            console.log('response',response);
+            console.log('response', response);
             return meetingId;
         } else {
             console.error('Error starting the meeting:', response.error);
@@ -104,3 +105,18 @@ export const endMeetingAPI = async (iData) => {
         return error
     })
 };
+
+export const uploadFileAPI = async (iData) => {
+    try {
+        const accessToken = sessionStorage.getItem('accessToken');
+        const response = await axios.post(`https://meetingsapi.infyshield.com/v1/meeting/upload-doc?ticketNo=${iData.ticketNo}`, iData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        return response.data
+    } catch (error) {
+        console.error('Upload error:', error);
+    }
+}
