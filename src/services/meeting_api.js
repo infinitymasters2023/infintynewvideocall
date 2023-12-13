@@ -107,16 +107,30 @@ export const endMeetingAPI = async (iData) => {
 };
 
 export const uploadFileAPI = async (iData) => {
-    try {
-        const accessToken = sessionStorage.getItem('accessToken');
-        const response = await axios.post(`https://meetingsapi.infyshield.com/v1/meeting/upload-doc?ticketNo=${iData.ticketNo}`, iData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${accessToken}`
-            },
-        });
-        return response.data
-    } catch (error) {
-        console.error('Upload error:', error);
-    }
+    // try {
+    //     const accessToken = sessionStorage.getItem('accessToken');
+    //     const response = await axios.post(`https://meetingsapi.infyshield.com/v1/meeting/upload-doc?ticketNo=${iData.ticketNo}`, iData, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data',
+    //             'Authorization': `Bearer ${accessToken}`
+    //         },
+    //     });
+    //     return response.data
+    // } catch (error) {
+    //     console.error('Upload error:', error);
+    // }
+    return await post(`meeting/upload-doc?ticketNo=${iData.ticketNo}`, iData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }).then((response) => {
+        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+            return response.data
+        }
+        else {
+            return response.data
+        }
+    }).catch((error) => {
+        return error
+    })
 }
