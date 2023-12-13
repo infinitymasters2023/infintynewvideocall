@@ -912,7 +912,80 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
-
+  const MeetingView = () => {
+    const [mediastream, setMediaStream] = useState(null);
+    const { changeWebcam } = useMeeting({});
+    const videoProcessor = new VirtualBackgroundProcessor();
+    const { meetingId } = useMeeting();
+  
+    const startVirtualBackground = async () => {
+      if (!videoProcessor.ready) {
+        await videoProcessor.init();
+      }
+  
+      const config = {
+        type: "image", // "blur"
+        imageUrl: "https://cdn.videosdk.live/virtual-background/cloud.jpeg",
+      };
+  
+      const stream = await createCameraVideoTrack({});
+      const processedStream = await videoProcessor.start(stream, config);
+      changeWebcam(processedStream);
+      setMediaStream(processedStream);
+    };
+  
+    const stopVirtualBackground = async () => {
+      videoProcessor.stop();
+  
+      const stream = await createCameraVideoTrack({});
+      changeWebcam(stream);
+      setMediaStream(null);
+    };
+  
+    const changeConfig = async () => {
+      const config = {
+        type: "image", // "blur"
+        imageUrl: "https://cdn.videosdk.live/virtual-background/cloud.jpeg",
+      };
+  
+      videoProcessor.updateProcessorConfig(config);
+    };
+  
+    useEffect(() => {
+      const setupVirtualBackground = async () => {
+        const stream = await createCameraVideoTrack({});
+  
+        if (!videoProcessor.ready) {
+          await videoProcessor.init();
+        }
+  
+        const processedStream = await videoProcessor.start(stream, {
+          type: "image", // "blur"
+          imageUrl: "https://cdn.videosdk.live/virtual-background/cloud.jpeg",
+        });
+  
+        changeWebcam(processedStream);
+        setMediaStream(processedStream);
+      };
+  
+      setupVirtualBackground();
+    }, [changeWebcam, videoProcessor]);
+  
+    return (
+      <div>
+        <button className="white-text-button" onClick={startVirtualBackground}>
+          Start Virtual Background
+        </button>
+        <button className="white-text-button" onClick={changeConfig}>
+          Change Virtual Background
+          <FontAwesomeIcon icon={faCog} />
+        </button>
+        <button className="white-text-button" onClick={stopVirtualBackground}>
+          Stop Virtual Background
+        </button>
+      </div>
+    );
+  };
   
 
   const SidebarModalDemo = ({ participantName }) => {
@@ -921,7 +994,7 @@ export function BottomBar({ bottomBarHeight }) {
     const { meetingId } = useMeeting();
   
     useEffect(() => {
-      
+      // Retrieve the link from local storage
       const storedLink = localStorage.getItem('meetingLink');
       if (storedLink) {
         setMeetingLink(storedLink);
@@ -930,7 +1003,6 @@ export function BottomBar({ bottomBarHeight }) {
   
     const handleRightModalClose = () => setRightModalShow(false);
     const handleRightModalShow = () => setRightModalShow(true);
-    
   
     return (
       <div className="sidebar-modal-demo">
@@ -1300,7 +1372,6 @@ export function BottomBar({ bottomBarHeight }) {
       <div className="flex items-center justify-center">
     
       <SidebarModalDemo/>
-      
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>
