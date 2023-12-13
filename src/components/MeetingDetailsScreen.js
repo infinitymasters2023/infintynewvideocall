@@ -13,8 +13,9 @@ import MeetingForm from "./MeetingScheduler";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
-import { tokenGeneration } from '../services/meeting_api'
-import { start_Meeting } from '../../src/services/meeting_api'
+import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI } from '../../src/services/meeting_api'
+import { useMeeting } from "@videosdk.live/react-sdk";
+
 export function MeetingDetailsScreen({
   onClickJoin,
   _handleOnCreateMeeting,
@@ -41,7 +42,6 @@ export function MeetingDetailsScreen({
   const [proxyEmail, setProxyEmail] = useState('');
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [isSendLinkButtonDisabled, setIsSendLinkButtonDisabled] = useState(true);
-
   useEffect(() => {
     setUserId(uuidv4());
     const storedTicketNo = localStorage.getItem('ticketNo');
@@ -54,7 +54,7 @@ export function MeetingDetailsScreen({
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https//localhost:3000/api/data');
+      const response = await fetch('localhost:3000/api/data');
       const result = await response.json();
       console.log('Fetched data:', result);
     } catch (error) {
@@ -63,47 +63,121 @@ export function MeetingDetailsScreen({
     }
   };
 
-  const createMeeting = async () => {
-  
-  };
+  // const createMeeting = async () => {
+  //   try {
+  //     // First API call to get the access token
+  //     const responseToken = await axios.post(
+  //       'https://meetingsapi.infyshield.com/v1/meeting/tokenGeneration',
+  //       {
+  //         roomId: meetingId,
+  //         participantId: '',
+  //         roles: 'crawler',
+  //       },
+  //       {
+  //         headers: {
+  //           accept: 'application/json',
+  //           'Content-Type': 'application/json',
+  //         },
+  //       }
+  //     );
+
+  //     const { data: dataToken } = responseToken;
+
+  //     if (dataToken.statusCode === 200) {
+  //       // Store the access token in session storage
+  //       const { accessToken } = dataToken.data;
+  //       sessionStorage.setItem('accessToken', accessToken);
+
+  //       // Generate formatted date (yy-mm-dd hh:mm:ss)
+  //       const now = new Date();
+  //       const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+  //         .toString()
+  //         .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now
+  //         .getHours()
+  //         .toString()
+  //         .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now
+  //         .getSeconds()
+  //         .toString()
+  //         .padStart(2, '0')}`;
+
+  //       // Second API call to create a meeting using the obtained access token
+  //       const responseMeeting = await axios.post(
+  //         'https://meetingsapi.infyshield.com/v1/room/create',
+  //         {
+  //           roomId: meetingId,
+  //           customRoomId: meetingId + '_' + formattedDate,
+  //           ticketNo:  meetingId, // Replace 'string' with the actual ticket number
+  //         },
+  //         {
+  //           headers: {
+  //             accept: 'application/json',
+  //             'Content-Type': 'application/json',
+  //             Authorization: `Bearer ${accessToken}`, // Include the access token in the headers
+  //           },
+  //         }
+  //       );
+
+  //       const { data: dataMeeting } = responseMeeting;
+
+  //       if (dataMeeting.statusCode === 200) {
+  //         console.log('Meeting created successfully:', dataMeeting.data);
+
+  //         // You can store any relevant information in session storage or state if needed
+  //         return dataMeeting.data.meetingId;
+  //       } else {
+  //         console.log('Failed to create meeting. Response:', responseMeeting);
+  //         return null;
+  //       }
+  //     } else {
+  //       console.log('Failed to get access token. Response:', responseToken);
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating meeting:', error);
+  //     return null;
+  //   }
+  // };
 
 
 
-  const createVideoMeetingAPI = async () => {
-    const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/meeting/start_meeting';
+  // const createVideoMeetingAPI = async () => {
+  //   const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/meeting/start_meeting';
 
-    const accessToken = sessionStorage.getItem('accessToken');
-    console.log('tokenvalue', accessToken);
+  //   const accessToken = sessionStorage.getItem('accessToken');
+  //   console.log('tokenvalue', accessToken);
 
-    const requestData = {
-      accessToken: accessToken,
-      roomId: meetingId,
-      ticketNo: ticketNo,
-      mobile: mobileNumber,
-      email: email,
-      fullName: participantName,
-    };
+  //   const requestData = {
+  //     accessToken: accessToken,
+  //     roomId: meetingId,
+  //     ticketNo: ticketNo,
+  //     mobile: mobileNumber,
+  //     email: email,
+  //     fullName: participantName,
+  //   };
 
-    try {
-      const response = await axios.post(apiEndpoint, requestData, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+  //   try {
+  //     const response = await axios.post(apiEndpoint, requestData, {
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
 
-      console.log('Create Video Meeting API Response:', response);
+  //     console.log('Create Video Meeting API Response:', response);
 
-      if (response.status === 200) {
-        console.log('Video meeting created successfully');
-      } else {
-        console.log('Failed to create video meeting. Response:', response);
-      }
-    } catch (error) {
-      console.log('Error creating video meeting', error);
-    }
-  };
+  //     if (response.status === 200) {
+  //       console.log('Video meeting created successfully');
+  //     } else {
+  //       console.log('Failed to create video meeting. Response:', response);
+  //     }
+  //   } catch (error) {
+  //     console.log('Error creating video meeting', error);
+  //   }
+  // };
   const handleCreateMeeting = async () => {
+
+
+
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
@@ -115,7 +189,7 @@ export function MeetingDetailsScreen({
                 onClick={async () => {
                   onClose();
                   handleCopyLink();
-                  await start_Meeting({
+                  await startMeetingAPI({
                     roomId: meetingId,
                     fullName: participantName,
                     mobile: mobileNumber,
@@ -136,7 +210,7 @@ export function MeetingDetailsScreen({
                 style={{ marginRight: '10px' }}
                 onClick={async () => {
                   onClose();
-                   await start_Meeting({
+                  await startMeetingAPI({
                     roomId: meetingId,
                     fullName: participantName,
                     mobile: mobileNumber,
@@ -158,20 +232,17 @@ export function MeetingDetailsScreen({
       },
     });
   };
-  
 
 
 
+
+console.log('envdata', process.env.ENDPOINT_URL);
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
-      const link = `https//localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
-      console.log(link);
-
+      const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
       await startVideoRecordingAPI(link);
-
       await insertMeetingParticipantAPI();
-
       onClickJoin(meetingId);
     } else {
       setMeetingIdError(true);
@@ -245,7 +316,7 @@ export function MeetingDetailsScreen({
 
   const handleSendLinkToSelected = async () => {
     for (const contact of selectedContacts) {
-      const link = `https//localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+      const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
 
       try {
 
@@ -269,8 +340,7 @@ export function MeetingDetailsScreen({
 
 
   const handleSendLinkToEmail = async () => {
-    const link = `https//localhost:3000/
-?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+    const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -310,7 +380,7 @@ export function MeetingDetailsScreen({
   };
 
   const handleSendLinkToMobile = async () => {
-    const link = `https//localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
+    const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -324,18 +394,6 @@ export function MeetingDetailsScreen({
           meetingurl: link,
         }
       );
-
-      console.log('Request Payload:', {
-        email: email,
-        mobile: mobileNumber,
-        sendToOtp: "Mobile",
-        meetingId: meetingId,
-        ticket: ticketNo,
-        meetingurl: link,
-      });
-
-      console.log('Response:', response);
-
       if (response.status === 200) {
         console.log('Link sent to mobile number successfully');
       } else {
@@ -344,13 +402,11 @@ export function MeetingDetailsScreen({
     } catch (error) {
       console.log('Error sending link to mobile number', error);
     }
-
     toast.success(' link sent on Mobile successfully!');
   };
 
   useEffect(() => {
     fetchData();
-
     const urlSearchParams = new URLSearchParams(location.search);
     const urlMeetingId = urlSearchParams.get("meetingId");
     const urlTicketNo = urlSearchParams.get("ticket");
@@ -381,8 +437,7 @@ export function MeetingDetailsScreen({
   }, [location.search]);
 
   const handleCopyLink = () => {
-    const link = `https//localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}`;
-
+    const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
     navigator.clipboard.writeText(link);
     setIsCopiedLink(true);
     localStorage.setItem('meetingLink', link);
@@ -390,7 +445,6 @@ export function MeetingDetailsScreen({
       setIsCopiedLink(false);
     }, 3000);
   };
-
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -402,19 +456,12 @@ export function MeetingDetailsScreen({
   ;
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
-
     const sanitizedInput = inputValue.replace(/\s\s+/g, ' ').replace(/[^a-zA-Z\s]/g, '');
-
-    
     const isValidInput = /^[a-zA-Z\s]*$/.test(sanitizedInput);
-
     if (isValidInput) {
       setParticipantName(sanitizedInput);
-
-      
       localStorage.setItem('participantName', sanitizedInput);
     }
-    
   };
 
 
@@ -451,8 +498,9 @@ export function MeetingDetailsScreen({
             <button
               className={`w-full ${participantName.length > 2 ? "bg-purple-350" : "bg-yellow-650"
                 } text-white px-2 py-3 rounded-xl mt-3`}
-              onClick={(e) => {
-                handleJoinMeeting();
+              onClick={async (e) => {
+                await handleJoinMeeting();
+                await joinMeetingAPI({ roomId: meetingId , fullName : participantName, mobile : mobileNumber, email : email  })
               }}
               disabled={participantName.length < 2}
             >
@@ -844,7 +892,12 @@ export function MeetingDetailsScreen({
                       const meetingId = await _handleOnCreateMeeting();
                       setMeetingId(meetingId);
                       setIscreateMeetingClicked(true);
-                      createMeeting()
+                      await insertMeetingAPI({
+                        roomId: meetingId,
+                        customRoomId: meetingId,
+                        ticketNo: meetingId
+                      });
+                      // createMeeting()
                     }}
                   >
                     Create a meeting

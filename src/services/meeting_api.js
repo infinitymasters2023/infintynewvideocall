@@ -1,6 +1,6 @@
 import { get, post, put, del } from "./instance";
 
-export const tokenGeneration = async (iData) => {
+export const tokenGenerationAPI = async (iData) => {
     return await post('meeting/tokenGeneration', iData).then((response) => {
         if (response && response.isSuccess && response.statusCode == 200 && response.data) {
             const { accessToken } = response.data
@@ -13,7 +13,7 @@ export const tokenGeneration = async (iData) => {
         console.log('error', error);
     })
 };
-export const createRoomMeeting = async (iData) => {
+export const createRoomMeetingAPI = async (iData) => {
     return await post('room/create', iData).then((response) => {
         if (response && response.isSuccess && response.statusCode == 200 && response.data) {
             const { roomId } = response.data
@@ -24,7 +24,20 @@ export const createRoomMeeting = async (iData) => {
         }
     })
 };
-export const start_Meeting = async (iData) => {
+
+export const insertMeetingAPI = async (iData) => {
+    return await post('/meeting/create_meeting', iData).then((response) => {
+        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+            return response.data
+        }
+        else {
+            return response.data
+        }
+    }).catch((error) => {
+        return error
+    })
+};
+export const startMeetingAPI = async (iData) => {
     return await post('meeting/start_meeting', iData).then((response) => {
         if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             const { meetingId } = response.data;
@@ -34,12 +47,53 @@ export const start_Meeting = async (iData) => {
             console.error('Error starting the meeting:', response.error);
             return '';
         }
-    });
+    }).catch((error) => {
+        return error
+    })
 };
 
 
-export const stopMeetingRecording = async (iData) => {
+export const stopRecordingAPI = async (iData) => {
     await post('recording/stop', iData).then((response) => {
+        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+            return response.data
+        }
+        else {
+            return response.data
+        }
+    }).catch((error) => {
+        return error
+    })
+};
+
+export const joinMeetingAPI = async (iData) => {
+    return await post('/meeting/join_meeting', iData).then((response) => {
+        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+            return response.data
+        }
+        else {
+            return response.data
+        }
+    }).catch((error) => {
+        return error
+    })
+};
+
+export const leaveMeetingAPI = async (iData) => {
+    return await post('/meeting/leave_meeting', iData).then((response) => {
+        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+            return response.data
+        }
+        else {
+            return response.data
+        }
+    }).catch((error) => {
+        return error
+    })
+};
+
+export const endMeetingAPI = async (iData) => {
+    return await post('/meeting/end_meeting', iData).then((response) => {
         if (response && response.isSuccess && response.statusCode == 200 && response.data) {
             return response.data
         }

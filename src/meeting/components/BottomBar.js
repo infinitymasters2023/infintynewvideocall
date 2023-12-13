@@ -48,8 +48,14 @@ import { useLocation } from "react-router-dom";
 import { Modal, Button } from 'react-bootstrap';
 import './Bottombar.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { stopMeetingRecording } from "../../services/meeting_api";
-
+import { stopRecordingAPI, endMeetingAPI, leaveMeetingAPI } from "../../services/meeting_api";
+import {
+  MeetingProvider,
+  createCameraVideoTrack,
+} from "@videosdk.live/react-sdk";
+import { VirtualBackgroundProcessor } from "@videosdk.live/videosdk-media-processor-web";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 const MicBTN = () => {
   const { selectedMicDevice, setSelectedMicDevice } = useMeetingAppContext();
   const { getCustomAudioTrack } = useCustomTrack();
@@ -667,7 +673,9 @@ export function BottomBar({ bottomBarHeight }) {
 
       if (isRecording) {
         await stopRecording();
-        await stopMeetingRecording({ roomId : meetingId})
+        setTimeout(function(){
+          stopRecordingAPI({ roomId : meetingId})
+        }, 3000)
       } else {
         startRecording();
       }
@@ -760,7 +768,7 @@ export function BottomBar({ bottomBarHeight }) {
   // };
 
   const EndBTN = () => {
-    const { end, localParticipant } = useMeeting();
+    const { end, localParticipant, meetingId } = useMeeting();
 
     return (
       <OutlineIconTextButton
@@ -781,6 +789,7 @@ export function BottomBar({ bottomBarHeight }) {
             }
           );
           end();
+          endMeetingAPI({ roomId : meetingId})
         }}
         buttonText={"End Meeting"}
         tooltip={"End Meeting"}
@@ -866,13 +875,15 @@ export function BottomBar({ bottomBarHeight }) {
   
   
   const LeaveBTN = () => {
-    const { leave, localParticipant } = useMeeting();
+    const { leave, localParticipant, meetingId } = useMeeting();
 
     return (
       <OutlinedButton
         Icon={EndIcon}
         bgColor="bg-red-150"
         onClick={() => {
+
+
           toast(
             `${trimSnackBarText(
               nameTructed(localParticipant.displayName, 15)
@@ -890,18 +901,27 @@ export function BottomBar({ bottomBarHeight }) {
           );
 
           leave();
+          if(isAdminUser){
+            endMeetingAPI({ roomId : meetingId})
+          }
+          else{
+            leaveMeetingAPI({ roomId : meetingId})
+          }
         }}
         tooltip="Leave Meeting"
       />
     );
   };
+
+  
+
   const SidebarModalDemo = ({ participantName }) => {
     const [rightModalShow, setRightModalShow] = useState(false);
     const [meetingLink, setMeetingLink] = useState('');
     const { meetingId } = useMeeting();
   
     useEffect(() => {
-      // Retrieve the link from local storage
+      
       const storedLink = localStorage.getItem('meetingLink');
       if (storedLink) {
         setMeetingLink(storedLink);
@@ -910,6 +930,7 @@ export function BottomBar({ bottomBarHeight }) {
   
     const handleRightModalClose = () => setRightModalShow(false);
     const handleRightModalShow = () => setRightModalShow(true);
+    
   
     return (
       <div className="sidebar-modal-demo">
@@ -1277,7 +1298,9 @@ export function BottomBar({ bottomBarHeight }) {
       </div>
 
       <div className="flex items-center justify-center">
+    
       <SidebarModalDemo/>
+      
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>

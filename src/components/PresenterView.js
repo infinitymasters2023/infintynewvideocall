@@ -102,7 +102,7 @@ export function PresenterView({ height }) {
       <div className={"video-contain absolute h-full w-full"}>
         <ReactPlayer
           ref={videoPlayer}
-          playsinline // very very imp prop
+          playsinline 
           playIcon={<></>}
           pip={false}
           light={false}
