@@ -52,21 +52,17 @@
         setCropData(cropper.getCroppedCanvas().toDataURL());
       }
     };
-    const handleCropButtonClick = () => {
-      if (!imageCropped) {
-        console.log("Before setCropButtonClicked(true):", cropButtonClicked);
-        setCropButtonClicked(true);
-        getCropData();
-        console.log("After setCropButtonClicked(true):", cropButtonClicked);
-      } else {
-        console.log("Submit clicked");
-        console.log("Before setCropButtonClicked(false):", cropButtonClicked);
-        setCropButtonClicked(false);
-        setImageCropped(true); 
-        setOpen(false);
-        console.log("After setCropButtonClicked(false):", cropButtonClicked);
-      }
-    };
+     const handleCropButtonClick = () => {
+    if (!imageCropped) {
+      setCropButtonClicked(true);
+      getCropData();
+    } else {
+      setCropButtonClicked(false);
+      setImageCropped(true);
+      setOpen(false);
+    }
+  };
+
     const handleZoomIn = () => {
       cropper.zoom(0.1); // You can adjust the zoom factor as needed
     };
@@ -81,61 +77,82 @@
     const handleRotateRight = () => {
       cropper.rotate(90); // Rotate 90 degrees to the right
     };
-    const handleReadText = () => {
-      const croppedCanvas = cropper?.getCroppedCanvas();
-      if (croppedCanvas) {
-        const imageData = croppedCanvas.toDataURL('image/png');
-        recognizeText(imageData);
+  
+    const handleRevertToOriginal = () => {
+      if (cropper) {
+        cropper.reset();
       }
     };
-  
-    const recognizeText = async (imageData) => {
-      Tesseract.recognize(
-        imageData,
-        'eng', // English language
-        { logger: (info) => console.log(info) }
-      ).then(({ data: { text } }) => {
-        setRecognizedText(text);
-      });
-    };
-  
+    const view=()=>{
+      
+    }
    
     return (
       <>
-        <Transition appear show={open} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={() => {}}>
+      <Transition appear show={open} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={() => {}}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
               leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
             >
-              <div className="fixed inset-0 bg-black bg-opacity-25" />
-            </Transition.Child>
-  
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center  text-center">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  <Dialog.Panel
-                    style={{
-                      maxHeight: `calc(100vh - 150px)`,
+              <Dialog.Panel
+                style={{
+                  maxHeight: `calc(100vh - 150px)`,
+                }}
+                className="w-9/12 transform relative overflow-y-auto rounded bg-gray-750 p-4 text-left align-middle flex flex-col items-center shadow-xl transition-all"
+              >
+                {/* Move the "Upload" and "Cancel" buttons here */}
+                <div className="mt-6 flex w-full justify-end gap-2">
+                  <button
+                    type="button"
+                    className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
+                    onClick={() => {
+                      setOpen(false);
                     }}
-                    className="w-9/12 transform relative overflow-y-auto rounded bg-gray-750 p-4 text-left align-middle flex flex-col items-center shadow-xl transition-all"
                   >
-                    <Dialog.Title className="text-base font-medium  text-white w-full ">
-                      Preview
-                    </Dialog.Title>
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    Upload
+                  </button>
+                </div>
+
+                  <Dialog.Title className="text-base font-medium text-white w-full">
+                    Preview
+                  </Dialog.Title>
+                  <div className="flex items-start justify-end w-full mt-2">
+                  <button
+                    className="bg-white text-black px-2 py-1 rounded"
+                    onClick={handleCropButtonClick}
+                  >
+                    {imageCropped ? "View" : "Crop Image"}
+                  </button>
+                </div>
                     <div className="flex mt-8 items-center justify-center h-full w-full">
                       {imageSrc ? (
                         <img src={imageSrc} width={300} height={300} />
@@ -199,18 +216,20 @@
                       >
                         Rotate Right
                       </button>
+              
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleRevertToOriginal}
+                      >
+                        Revert to Original
+                      </button>
                       </>
                       )}
                     </div>
   
                     {/* Your "Crop Image" button */}
                     <div className="flex items-start justify-end w-full mt-6 fixed top-0">
-                    <button
-                      className="bg-white text-black px-3 py-2 rounded"
-                      onClick={handleCropButtonClick}
-                    >
-                      {imageCropped ? "Submit" : "Crop Image"}
-                    </button>
+                   
                   </div>
                     {cropData && cropButtonClicked && (
                       <div className="flex flex-col w-full">
@@ -222,29 +241,21 @@
                           src={cropData}
                           alt="cropped"
                         />
+                       
                       </div>
+                      
                     )}
-  
-                    <div className="mt-6 flex w-full  justify-end gap-5">
-                      <button
-                        type="button"
-                        className="rounded border border-white bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded border border-white bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        Upload
-                      </button>
-                    </div>
+                    {cropButtonClicked&&(
+                    <button
+                    type="button"
+                    className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    Upload
+                  </button>
+                    )}
                   </Dialog.Panel>
                 </Transition.Child>
               </div>

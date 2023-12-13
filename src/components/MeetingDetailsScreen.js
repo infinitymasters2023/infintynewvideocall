@@ -54,7 +54,7 @@ export function MeetingDetailsScreen({
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://meetings.infyshield.com/api/data');
+      const response = await fetch('localhost:3000/api/data');
       const result = await response.json();
       console.log('Fetched data:', result);
     } catch (error) {
@@ -138,22 +138,7 @@ export function MeetingDetailsScreen({
   //   }
   // };
 
-  // const createMeeting = async () => {
-  //   try {
-  //     await tokenGeneration({
-  //       roomId: meetingId,
-  //       participantId: '',
-  //       roles: 'crawler',
-  //     }).then((response) => {
-  //       console.log('res', response);
-  //     }).catch((error) => {
-  //       console.log('error', error);
-  //     })
-  //   } catch (error) {
-  //     console.error('Error creating meeting:', error);
-  //     return null;
-  //   }
-  // };
+
 
   // const createVideoMeetingAPI = async () => {
   //   const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/meeting/start_meeting';

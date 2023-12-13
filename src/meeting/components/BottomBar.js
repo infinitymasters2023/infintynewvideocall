@@ -899,13 +899,16 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
+
+  
+
   const SidebarModalDemo = ({ participantName }) => {
     const [rightModalShow, setRightModalShow] = useState(false);
     const [meetingLink, setMeetingLink] = useState('');
     const { meetingId } = useMeeting();
 
     useEffect(() => {
-      // Retrieve the link from local storage
+      
       const storedLink = localStorage.getItem('meetingLink');
       if (storedLink) {
         setMeetingLink(storedLink);
@@ -914,7 +917,6 @@ export function BottomBar({ bottomBarHeight }) {
 
     const handleRightModalClose = () => setRightModalShow(false);
     const handleRightModalShow = () => setRightModalShow(true);
-
     return (
       <div className="sidebar-modal-demo">
         <div className="text-center">
