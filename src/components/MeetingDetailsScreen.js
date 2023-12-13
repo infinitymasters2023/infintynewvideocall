@@ -236,11 +236,10 @@ export function MeetingDetailsScreen({
 
 
 
-console.log('envdata', process.env.ENDPOINT_URL);
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
-      const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
       await startVideoRecordingAPI(link);
       await insertMeetingParticipantAPI();
       onClickJoin(meetingId);
@@ -279,11 +278,9 @@ console.log('envdata', process.env.ENDPOINT_URL);
 
   const startVideoRecordingAPI = async (link) => {
     const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/master/startVideoRecording';
-
     const requestData = {
       ticketNo: ticketNo,
       startTime: new Date().toISOString(),
-
       userid: userId,
       meetingId: meetingId,
       mobile: mobileNumber,
@@ -316,7 +313,7 @@ console.log('envdata', process.env.ENDPOINT_URL);
 
   const handleSendLinkToSelected = async () => {
     for (const contact of selectedContacts) {
-      const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
       try {
 
@@ -340,7 +337,7 @@ console.log('envdata', process.env.ENDPOINT_URL);
 
 
   const handleSendLinkToEmail = async () => {
-    const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -380,7 +377,7 @@ console.log('envdata', process.env.ENDPOINT_URL);
   };
 
   const handleSendLinkToMobile = async () => {
-    const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -437,7 +434,7 @@ console.log('envdata', process.env.ENDPOINT_URL);
   }, [location.search]);
 
   const handleCopyLink = () => {
-    const link = `localhost:3000/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobile=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
     navigator.clipboard.writeText(link);
     setIsCopiedLink(true);
     localStorage.setItem('meetingLink', link);
