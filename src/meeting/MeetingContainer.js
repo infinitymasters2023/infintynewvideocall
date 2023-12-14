@@ -223,34 +223,7 @@ export function MeetingContainer({ onMeetingLeave }) {
   function _handleOnMeetingStateChanged(data) {
     const { state } = data;
 
-    toast(
-      `${
-        state === "CONNECTED"
-          ? "Meeting is connected"
-          : state === "CONNECTING"
-          ? "Meeting is connecting"
-          : state === "FAILED"
-          ? "Meeting connection failed"
-          : state === "DISCONNECTED"
-          ? "Meeting connection disconnected abruptly"
-          : state === "CLOSING"
-          ? "Meeting is closing"
-          : state === "CLOSED"
-          ? "Meeting connection closed"
-          : ""
-      }`,
-      {
-        position: "bottom-left",
-        autoClose: 5000,
-        type: (state === "FAILED" || state === "DISCONNECTED") && "warning",
-        hideProgressBar: true,
-        closeButton: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      }
-    );
+    
   }
 
   const mMeeting = useMeeting({

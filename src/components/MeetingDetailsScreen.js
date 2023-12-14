@@ -54,7 +54,7 @@ export function MeetingDetailsScreen({
 
   const fetchData = async () => {
     try {
-      const response = await fetch('localhost:3000/api/data');
+      const response = await fetch('https://meetings.infyshield.com/api/data');
       const result = await response.json();
       console.log('Fetched data:', result);
     } catch (error) {

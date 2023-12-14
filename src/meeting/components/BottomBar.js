@@ -716,7 +716,6 @@ export function BottomBar({ bottomBarHeight }) {
   };
 
  
-  
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
 
@@ -943,7 +942,7 @@ export function BottomBar({ bottomBarHeight }) {
               </div>
             </div>
           </div>
-        </CustomModal>
+       /</CustomModal>
       </div>
     );
   };
@@ -1223,7 +1222,7 @@ export function BottomBar({ bottomBarHeight }) {
     </div>
   ) : (
     <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
-      <MeetingIdCopyBTN />
+     
       <DisplayTimer />
       { isRecording && <RecordingDisplayTimer /> }
       <div className="flex flex-1 items-center justify-center" ref={tollTipEl}>
@@ -1250,7 +1249,7 @@ export function BottomBar({ bottomBarHeight }) {
       </div>
 
       <div className="flex items-center justify-center">
-        <SidebarModalDemo />
+      
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>

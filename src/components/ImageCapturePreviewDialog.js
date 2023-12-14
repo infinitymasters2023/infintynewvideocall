@@ -7,47 +7,39 @@ import Tesseract from 'tesseract.js';
 import React, { useEffect } from 'react';
 import { uploadFileAPI } from "../services/meeting_api";
 const ImageCapturePreviewDialog = ({ open, setOpen }) => {
-  const { meetingId , participantName } = useMeeting();
+  const { meetingId, participantName } = useMeeting();
   const [imageSrc, setImageSrc] = useState(null);
 
   const imagesMessages = {};
-  // subscribe imageTransfer
   const generateImage = (messages) => {
-    // Getting src of image
     const srcImage = messages
       .sort((a, b) => parseInt(a.index) - parseInt(b.index))
       .map(({ chunkdata }) => chunkdata)
       .join("");
-
-    // Setting src of image
     setImageSrc(srcImage);
   };
 
   usePubSub(`IMAGE_TRANSFER`, {
     onMessageReceived: ({ message }) => {
       const { id, index, totalChunk } = message.data;
-
-      // If you select multiple images, then it will store images on basis of id in imagesMessages object
       if (imagesMessages[id]) {
         imagesMessages[id].push(message.data);
       } else {
         imagesMessages[id] = [message.data];
       }
-
-      // Check whether the index of chunk and totalChunk is same, it means it is last chunk or not
       if (index + 1 === totalChunk) {
         generateImage(imagesMessages[id]);
       }
     },
   });
 
-  // end subscribe imageTransfer
 
   const [cropData, setCropData] = useState("#");
   const [cropper, setCropper] = useState();
   const [cropButtonClicked, setCropButtonClicked] = useState(false);
   const [imageCropped, setImageCropped] = useState(false);
-  const [recognizedText, setRecognizedText] = useState('');
+  const [remarks, setRemarks] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const getCropData = () => {
     if (typeof cropper !== "undefined") {
       setCropData(cropper.getCroppedCanvas().toDataURL());
@@ -84,17 +76,16 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
       cropper.reset();
     }
   };
-  const view = () => {
 
-  }
   const handleFileUpload = async () => {
     const ticketNo = localStorage.getItem('ticketNo');
     setOpen(false);
-    const formData = new FormData();
-    formData.append('file', cropData);
-    formData.append('ticketNo', ticketNo);
-    formData.append('createdBy', participantName);
-    await uploadFileAPI(formData).then((response) => {
+    const iData = {
+      file : imageSrc,
+      ticketNo : ticketNo,
+      roomId : meetingId
+    }
+    await uploadFileAPI(iData).then((response) => {
       if (response && response.isSuccess && response.statusCode == 200 && response.data) {
         return response.data
       }
@@ -106,6 +97,14 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
     })
   }
 
+
+
+  const handleStatusChange = (status) => {
+    setSelectedStatus(status);
+  };
+  const handleRemarksChange = (e) => {
+    setRemarks(e.target.value);
+  };
 
 
   return (
@@ -251,17 +250,58 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
 
                   </div>
                   {cropData && cropButtonClicked && (
-                    <div className="flex flex-col w-full">
-                      <span className="text-white font-semibold">
-                        After Crop Image
-                      </span>
-                      <img
-                        className="object-contain h-1/3 w-1/3 mt-3"
-                        src={cropData}
-                        alt="cropped"
-                      />
-
+                    <div className="container">
+                    <div className="row">
+                      <div className="col-6">
+                        <span className="text-white font-semibold">After Crop Image</span>
+                      </div>
                     </div>
+              
+                    <div className="row">
+                      <div className="col-md-6">
+                        <img
+                          className="object-contain  mt-3"
+                          src={cropData}
+                          alt="cropped"
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <span className="text-white font-semibold">Select Status:</span>
+                        <select
+                          value={selectedStatus}
+                          onChange={(e) => handleStatusChange(e.target.value)}
+                          className="ml-2 form-control"
+                        >
+                          <option value="">Select Status</option>
+                          <option value="approve">Approve</option>
+                          <option value="pending">Pending for Verification</option>
+                          <option value="reject">Reject</option>
+                        </select>
+                      </div>
+                      
+                    </div>
+              
+                    <div className="row mt-3">
+                      
+                    </div>
+              
+                    {selectedStatus && (
+                      <div className="row mt-3">
+                        <div className="col-12">
+                          <span className="text-white font-semibold">Icons:</span>
+                          {selectedStatus === 'approve' && (
+                            <span className="ml-2 text-white text-base">&#10003; Approve Icon</span>
+                          )}
+                          {selectedStatus === 'pending' && (
+                            <span className="ml-2 text-white">&#9203; Pending Icon</span>
+                          )}
+                          {selectedStatus === 'reject' && (
+                            <span className="ml-2 text-white ">&#10008; Reject Icon</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   )}
                   {cropButtonClicked && (
@@ -270,6 +310,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                       className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
                       onClick={() => {
                         setOpen(false);
+                        handleFileUpload()
                       }}
                     >
                       Upload
