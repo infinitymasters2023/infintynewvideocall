@@ -215,7 +215,7 @@ export function MeetingDetailsScreen({
                     fullName: participantName,
                     mobile: mobileNumber,
                     email: email,
-                    ticketNo:ticketNo
+                   
                   });
                   if (videoTrack) {
                     videoTrack.stop();
@@ -893,7 +893,7 @@ export function MeetingDetailsScreen({
                       await insertMeetingAPI({
                         roomId: meetingId,
                         customRoomId: meetingId,
-                        ticketNo: meetingId
+                        ticketNo: ticketNo
                       });
                       // createMeeting()
                     }}
