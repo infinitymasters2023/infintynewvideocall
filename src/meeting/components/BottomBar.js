@@ -850,6 +850,7 @@ export function BottomBar({ bottomBarHeight }) {
             stopRecording();
           }
           leave();
+          console.log('isadmin',isAdminUser)
           if (isAdminUser) {
             end();
             setTimeout(() => {
@@ -1207,7 +1208,9 @@ export function BottomBar({ bottomBarHeight }) {
                             ) : icon === BottomBarButtonTypes.END_MEETING &&
                               participantMode === participantModes.AGENT ? (
                               <EndBTN />
+                              
                             ) : null}
+                            <LeaveBTN />
                           </div>
                         );
                       })}

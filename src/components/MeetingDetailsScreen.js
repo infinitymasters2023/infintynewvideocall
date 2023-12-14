@@ -215,6 +215,7 @@ export function MeetingDetailsScreen({
                     fullName: participantName,
                     mobile: mobileNumber,
                     email: email,
+                    ticketNo:ticketNo
                   });
                   if (videoTrack) {
                     videoTrack.stop();
