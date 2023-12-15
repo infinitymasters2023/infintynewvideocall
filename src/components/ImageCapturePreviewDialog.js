@@ -1,53 +1,63 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef, useEffect } from "react";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { FiZoomIn, FiZoomOut, FiRotateCw, FiRotateCcw, FiRefreshCw } from 'react-icons/fi';
+import "cropperjs/dist/cropper.css";
 import { usePubSub, useMeeting } from "@videosdk.live/react-sdk";
-import Tesseract from 'tesseract.js';
-import React, { useEffect } from 'react';
 import { uploadFileAPI } from "../services/meeting_api";
+
+
+
+
 const ImageCapturePreviewDialog = ({ open, setOpen }) => {
-  const { meetingId , participantName } = useMeeting();
+  const { meetingId, participantName } = useMeeting();
   const [imageSrc, setImageSrc] = useState(null);
+  const [drawingData, setDrawingData] = useState(null);
+
+
+  const canvasRef = useRef(null);
+  const [drawingContext, setDrawingContext] = useState(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      setDrawingContext(ctx);
+    }
+  }, []);
 
   const imagesMessages = {};
-  // subscribe imageTransfer
   const generateImage = (messages) => {
-    // Getting src of image
     const srcImage = messages
       .sort((a, b) => parseInt(a.index) - parseInt(b.index))
       .map(({ chunkdata }) => chunkdata)
       .join("");
-
-    // Setting src of image
     setImageSrc(srcImage);
   };
 
   usePubSub(`IMAGE_TRANSFER`, {
     onMessageReceived: ({ message }) => {
       const { id, index, totalChunk } = message.data;
-
-      // If you select multiple images, then it will store images on basis of id in imagesMessages object
       if (imagesMessages[id]) {
         imagesMessages[id].push(message.data);
       } else {
         imagesMessages[id] = [message.data];
       }
-
-      // Check whether the index of chunk and totalChunk is same, it means it is last chunk or not
       if (index + 1 === totalChunk) {
         generateImage(imagesMessages[id]);
       }
     },
-  });
-
-  // end subscribe imageTransfer
+  })
 
   const [cropData, setCropData] = useState("#");
   const [cropper, setCropper] = useState();
   const [cropButtonClicked, setCropButtonClicked] = useState(false);
   const [imageCropped, setImageCropped] = useState(false);
-  const [recognizedText, setRecognizedText] = useState('');
+  const [remarks, setRemarks] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [brushColor, setBrushColor] = useState('#ff0000');
+  const [brushWidth, setBrushWidth] = useState(5);
   const getCropData = () => {
     if (typeof cropper !== "undefined") {
       setCropData(cropper.getCroppedCanvas().toDataURL());
@@ -84,18 +94,16 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
       cropper.reset();
     }
   };
-  const view = () => {
-
-  }
 
   const handleFileUpload = async () => {
     const ticketNo = localStorage.getItem('ticketNo');
     setOpen(false);
-    const formData = new FormData();
-    formData.append('file', imageSrc);
-    formData.append('ticketNo', ticketNo);
-    formData.append('createdBy', 'Ajay Dhangar');
-    await uploadFileAPI(formData).then((response) => {
+    const iData = {
+      file : imageSrc,
+      ticketNo : ticketNo,
+      roomId : meetingId
+    }
+    await uploadFileAPI(iData).then((response) => {
       if (response && response.isSuccess && response.statusCode == 200 && response.data) {
         return response.data
       }
@@ -108,6 +116,65 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   }
 
 
+
+  const handleStatusChange = (status) => {
+    setSelectedStatus(status);
+  };
+
+
+  const handleRemarksChange = (e) => {
+    if (e.target && e.target.value !== undefined) {
+      setRemarks(e.target.value);
+    }
+  };
+  const toggleDrawingMode = () => {
+    setIsDrawing(!isDrawing);
+  };
+
+  const handleBrushColorChange = (color) => {
+    setBrushColor(color.hex);
+  };
+
+  const handleBrushWidthChange = (width) => {
+    setBrushWidth(width);
+  };
+  const handleMouseDown = (e) => {
+    const { offsetX, offsetY } = e.nativeEvent;
+    drawingContext.beginPath();
+    drawingContext.moveTo(offsetX, offsetY);
+    setDrawingData({ tool: 'pen', points: [{ x: offsetX, y: offsetY }] });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDrawing) return;
+
+    const { offsetX, offsetY } = e.nativeEvent;
+    drawingContext.lineTo(offsetX, offsetY);
+    drawingContext.stroke();
+    setDrawingData((prevData) => ({
+      ...prevData,
+      points: [...prevData.points, { x: offsetX, y: offsetY }],
+    }));
+  };
+
+  const handleMouseUp = () => {
+    setDrawingData(null);
+  };
+
+  useEffect(() => {
+    if (!isDrawing) return;
+
+    const canvas = canvasRef.current;
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDrawing]);
 
   return (
     <>
@@ -186,96 +253,133 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                     {/* Conditionally render the Cropper based on button click */}
                     {cropButtonClicked && (
                       <>
-
-
-                        <Cropper
-                          className="ml-4"
-                          style={{
-                            height: '33.33%',
-                            width: '33.33%',
-                            objectFit: 'contain',
-                          }}
-                          zoomTo={0.5}
-                          initialAspectRatio={1}
-                          preview=".img-preview"
-                          src={imageSrc}
-                          viewMode={1}
-                          minCropBoxHeight={10}
-                          minCropBoxWidth={10}
-                          background={false}
-                          responsive={true}
-                          autoCropArea={1}
-                          checkOrientation={false}
-                          onInitialized={(instance) => {
-                            setCropper(instance);
-                          }}
-                          guides={true}
-                          crossOrigin="anonymous"
-                        />
-                        <button
-                          className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                          onClick={handleZoomIn}
-                        >
-                          Zoom In
-                        </button>
-                        <button
-                          className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                          onClick={handleZoomOut}
-                        >
-                          Zoom Out
-                        </button>
-                        <button
-                          className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                          onClick={handleRotateLeft}
-                        >
-                          Rotate Left
-                        </button>
-                        <button
-                          className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                          onClick={handleRotateRight}
-                        >
-                          Rotate Right
-                        </button>
-
-                        <button
-                          className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                          onClick={handleRevertToOriginal}
-                        >
-                          Revert to Original
-                        </button>
-                      </>
+                      <Cropper
+                        className="ml-4"
+                        style={{
+                          height: '33.33%',
+                          width: '33.33%',
+                          objectFit: 'contain',
+                        }}
+                        zoomTo={0.5}
+                        initialAspectRatio={1}
+                        preview=".img-preview"
+                        src={imageSrc}
+                        viewMode={1}
+                        minCropBoxHeight={10}
+                        minCropBoxWidth={10}
+                        background={true}
+                        responsive={true}
+                        autoCropArea={1}
+                        checkOrientation={true}
+                        onInitialized={(instance) => {
+                          setCropper(instance);
+                        }}
+                        guides={true}
+                        crossOrigin="anonymous"
+                      />
+                      <div className="col-md-4 ">
+                      <span className="text-white font-semibold">Select Status:</span>
+                      <select
+                     
+                        onChange={(e) => handleStatusChange(e.target.value)}
+                        className="ml-2 form-control "
+                      >
+                        <option value="">Select Status</option>
+                        <option value="approve">Approve</option>
+                        <option value="pending">Pending for Verification</option>
+                        <option value="reject">Reject</option>
+                      </select>
+                      <div className="col-md-12 mt-3">
+                      <span className="text-white font-semibold">Remarks:</span>
+                      <input
+                      type="text"
+                      value={remarks}
+                      onChange={(e) => handleRemarksChange(e.target.value)}
+                      className="ml-2 form-control"
+                    />
+                    </div>
+                    {cropButtonClicked && (
+                      <button
+                        type="button"
+                        className="rounded border border-white bg-transparent px-3 py-2  mt-4 float-end text-sm font-medium text-white hover:bg-gray-700"
+                        onClick={() => {
+                          setOpen(false);
+                          handleFileUpload()
+                        }}
+                      >
+                        Upload
+                      </button>
+                    )}
+                    </div>
+                      
+                    </>
                     )}
                   </div>
 
                   {/* Your "Crop Image" button */}
                   <div className="flex items-start justify-end w-full mt-6 fixed top-0">
-
+                  
                   </div>
                   {cropData && cropButtonClicked && (
-                    <div className="flex flex-col w-full">
-                      <span className="text-white font-semibold">
-                        After Crop Image
-                      </span>
-                      <img
-                        className="object-contain h-1/3 w-1/3 mt-3"
-                        src={cropData}
-                        alt="cropped"
-                      />
-
+                    <div className="container">
+                    <div className="row">
+                      <div className="col-6">
+                        <span className="text-white font-semibold">After Crop Image</span>
+                      </div>
+                      <div className="mt-2 float-end col-4"> {/* Adjust the margin-top as needed */}
+                      <button
+                        className="bg-white text-black px-2 py-1  rounded ml-2 text-sm"
+                        onClick={handleZoomIn}
+                      >
+                        <FiZoomIn />
+                      </button>
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleZoomOut}
+                      >
+                        <FiZoomOut />
+                      </button>
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleRotateLeft}
+                      >
+                        <FiRotateCcw />
+                      </button>
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleRotateRight}
+                      >
+                        <FiRotateCw />
+                      </button>
+                      <button
+                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                        onClick={handleRevertToOriginal}
+                      >
+                        <FiRefreshCw />
+                      </button>
                     </div>
+                    </div>
+                    {cropData && cropButtonClicked && (
+                      <div className="row">
+                      <div className="col-md-6">
+                        <img
+                          className="object-contain mt-3"
+                          src={cropData}
+                          alt="cropped"
+                        />
+                      </div>
+                     
+                      
+                    </div>
+                    )}
+              
+                   
+                      
+                   
+                  </div>
 
                   )}
-                  {cropButtonClicked && (
-                    <button
-                      type="button"
-                      className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
-                      Upload
-                    </button>
-                  )}
+                  
                 </Dialog.Panel>
               </Transition.Child>
             </div>

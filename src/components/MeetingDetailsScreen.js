@@ -54,7 +54,7 @@ export function MeetingDetailsScreen({
 
   const fetchData = async () => {
     try {
-      const response = await fetch('localhost:3000/api/data');
+      const response = await fetch('https://meetings.infyshield.com/api/data');
       const result = await response.json();
       console.log('Fetched data:', result);
     } catch (error) {
@@ -215,6 +215,7 @@ export function MeetingDetailsScreen({
                     fullName: participantName,
                     mobile: mobileNumber,
                     email: email,
+                   
                   });
                   if (videoTrack) {
                     videoTrack.stop();
@@ -403,7 +404,7 @@ export function MeetingDetailsScreen({
   };
 
   useEffect(() => {
-    fetchData();
+ 
     const urlSearchParams = new URLSearchParams(location.search);
     const urlMeetingId = urlSearchParams.get("meetingId");
     const urlTicketNo = urlSearchParams.get("ticket");
@@ -466,6 +467,7 @@ export function MeetingDetailsScreen({
     <div className={`flex flex-1 flex-col justify-center w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked || (isJoinMeetingClicked && hasJoinedThroughLink) ? (
         <>
+        {(adminId === '') ? (
           <input
             value={ticketNo}
             onChange={(e) => setTicketNo(e.target.value)}
@@ -473,6 +475,7 @@ export function MeetingDetailsScreen({
             className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
             readOnly
           />
+        ) : null}
           <input
             value={participantName}
             onChange={handleInputChange}
@@ -892,7 +895,7 @@ export function MeetingDetailsScreen({
                       await insertMeetingAPI({
                         roomId: meetingId,
                         customRoomId: meetingId,
-                        ticketNo: meetingId
+                        ticketNo: ticketNo
                       });
                       // createMeeting()
                     }}

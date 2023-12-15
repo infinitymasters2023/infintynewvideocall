@@ -1,9 +1,8 @@
 import { get, post, put, del } from "./instance";
-import axios from 'axios';
 
 export const tokenGenerationAPI = async (iData) => {
     return await post('meeting/tokenGeneration', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             const { accessToken } = response.data
             return accessToken
         }
@@ -16,7 +15,7 @@ export const tokenGenerationAPI = async (iData) => {
 };
 export const createRoomMeetingAPI = async (iData) => {
     return await post('room/create', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             const { roomId } = response.data
             return roomId
         }
@@ -28,7 +27,7 @@ export const createRoomMeetingAPI = async (iData) => {
 
 export const insertMeetingAPI = async (iData) => {
     return await post('/meeting/create_meeting', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             return response.data
         }
         else {
@@ -56,7 +55,7 @@ export const startMeetingAPI = async (iData) => {
 
 export const stopRecordingAPI = async (iData) => {
     await post('recording/stop', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             return response.data
         }
         else {
@@ -69,7 +68,7 @@ export const stopRecordingAPI = async (iData) => {
 
 export const joinMeetingAPI = async (iData) => {
     return await post('/meeting/join_meeting', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             return response.data
         }
         else {
@@ -82,7 +81,7 @@ export const joinMeetingAPI = async (iData) => {
 
 export const leaveMeetingAPI = async (iData) => {
     return await post('/meeting/leave_meeting', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             return response.data
         }
         else {
@@ -95,7 +94,7 @@ export const leaveMeetingAPI = async (iData) => {
 
 export const endMeetingAPI = async (iData) => {
     return await post('/meeting/end_meeting', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             return response.data
         }
         else {
@@ -107,24 +106,8 @@ export const endMeetingAPI = async (iData) => {
 };
 
 export const uploadFileAPI = async (iData) => {
-    // try {
-    //     const accessToken = sessionStorage.getItem('accessToken');
-    //     const response = await axios.post(`https://meetingsapi.infyshield.com/v1/meeting/upload-doc?ticketNo=${iData.ticketNo}`, iData, {
-    //         headers: {
-    //             'Content-Type': 'multipart/form-data',
-    //             'Authorization': `Bearer ${accessToken}`
-    //         },
-    //     });
-    //     return response.data
-    // } catch (error) {
-    //     console.error('Upload error:', error);
-    // }
-    return await post(`meeting/upload-doc?ticketNo=${iData.ticketNo}`, iData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }).then((response) => {
-        if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+    return await post('/meeting/upload-doc', iData).then((response) => {
+        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             return response.data
         }
         else {

@@ -715,42 +715,7 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
-  // const ScreenShareModeBTN = ({ isMobile }) => {
-  //   const { publish } = usePubSub(`CHANGE_MODE`, {});
-
-  //   const { meetingMode } = useMeetingAppContext();
-
-  //   return (
-  //     <OutlineIconTextButton
-  //       onClick={() => {
-  //         publish(
-  //           {
-  //             mode:
-  //               meetingMode === meetingModes.SCREEN_SHARE
-  //                 ? meetingModes.CONFERENCE
-  //                 : meetingModes.SCREEN_SHARE,
-  //           },
-  //           {
-  //             persist: true,
-  //           }
-  //         );
-  //       }}
-  //       isFocused={meetingMode === meetingModes.SCREEN_SHARE}
-  //       buttonText={
-  //         meetingMode === meetingModes.SCREEN_SHARE
-  //           ? "Stop screen share mode"
-  //           : "Screen share mode"
-  //       }
-  //       tooltip={
-  //         meetingMode === meetingModes.SCREEN_SHARE
-  //           ? "Stop screen share mode"
-  //           : "Screen share mode"
-  //       }
-  //       disabled={isMobile ? true : false}
-  //     />
-  //   );
-  // };
-
+ 
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
 
@@ -885,6 +850,7 @@ export function BottomBar({ bottomBarHeight }) {
             stopRecording();
           }
           leave();
+          console.log('isadmin',isAdminUser)
           if (isAdminUser) {
             end();
             setTimeout(() => {
@@ -899,7 +865,7 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
-
+ 
   
 
   const SidebarModalDemo = ({ participantName }) => {
@@ -908,7 +874,7 @@ export function BottomBar({ bottomBarHeight }) {
     const { meetingId } = useMeeting();
 
     useEffect(() => {
-      
+      // Retrieve the link from local storage
       const storedLink = localStorage.getItem('meetingLink');
       if (storedLink) {
         setMeetingLink(storedLink);
@@ -977,7 +943,7 @@ export function BottomBar({ bottomBarHeight }) {
               </div>
             </div>
           </div>
-        </CustomModal>
+       /</CustomModal>
       </div>
     );
   };
@@ -1242,7 +1208,9 @@ export function BottomBar({ bottomBarHeight }) {
                             ) : icon === BottomBarButtonTypes.END_MEETING &&
                               participantMode === participantModes.AGENT ? (
                               <EndBTN />
+                              
                             ) : null}
+                            <LeaveBTN />
                           </div>
                         );
                       })}
@@ -1257,7 +1225,7 @@ export function BottomBar({ bottomBarHeight }) {
     </div>
   ) : (
     <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
-      <MeetingIdCopyBTN />
+     
       <DisplayTimer />
       { isRecording && <RecordingDisplayTimer /> }
       <div className="flex flex-1 items-center justify-center" ref={tollTipEl}>
@@ -1284,7 +1252,7 @@ export function BottomBar({ bottomBarHeight }) {
       </div>
 
       <div className="flex items-center justify-center">
-        <SidebarModalDemo />
+      
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>
