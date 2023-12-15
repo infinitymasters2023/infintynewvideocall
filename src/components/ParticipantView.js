@@ -1,6 +1,6 @@
 import { CameraIcon } from "@heroicons/react/24/solid";
 import { useParticipant, usePubSub } from "@videosdk.live/react-sdk";
-import React, { useEffect, useMemo, useRef, useState, Fragment } from "react";
+import React, { useEffect, useMemo, useRef, useState, Fragment} from "react";
 import { useMeetingAppContext } from "../context/MeetingAppContext";
 import ImageCapturePreviewDialog from "./ImageCapturePreviewDialog";
 import * as ReactDOM from "react-dom";
@@ -10,6 +10,8 @@ import { useMediaQuery } from "react-responsive";
 import useWindowSize from "../hooks/useWindowSize";
 import MicOffSmallIcon from "../icons/MicOffSmallIcon";
 import SpeakerIcon from "../icons/SpeakerIcon";
+import { useLocation } from 'react-router-dom';
+
 import {
   getQualityScore,
   nameTructed,
@@ -20,6 +22,7 @@ import NetworkIcon from "../icons/NetworkIcon";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ZoomIn from "./Zoom";
 import ZoomControls from "./Zoom";
+import logo from '../../src/components/assests/infintylogo.png'
 
 export const CornerDisplayName = ({
   participantId,
@@ -48,6 +51,20 @@ export const CornerDisplayName = ({
     [statsBoxHeightRef]
   );
 
+  const location = useLocation();
+  const [userId, setUserId] = useState("");
+  const [adminId, setAdminId] = useState("");
+
+
+  useEffect(() => {
+    const urlSearchParams = new URLSearchParams(location.search);
+    const userJoinId = urlSearchParams.get("userId");
+    if (userJoinId) {
+      setAdminId(userJoinId);
+    }
+  }, [location.search]);
+  
+  const isAdminUser = adminId == '' && userId !== '' && adminId !== userId;  
   const statsBoxWidth = useMemo(
     () => statsBoxWidthRef?.offsetWidth,
     [statsBoxWidthRef]
@@ -594,13 +611,17 @@ function ParticipantView({
         />
       ) : (
         <div className="h-full w-full flex items-center justify-center">
-          <div
-            className={`z-10 flex items-center justify-center rounded-full bg-gray-800 2xl:h-[92px] h-[52px] 2xl:w-[92px] w-[52px]`}
-          >
-            <p className="text-2xl text-white">
-              {String(displayName).charAt(0).toUpperCase()}
-            </p>
-          </div>
+        <div className={`z-10 flex items-center justify-center rounded-full bg-gray-800 2xl:h-[92px] h-[52px] 2xl:w-[92px] w-[52px]`}>
+        {isLocal ? (
+          <p className="text-4xl text-white z-10 flex items-center justify-center rounded-full bg-gray-800 2xl:h-[92px] h-[52px] 2xl:w-[92px] w-[52px]">
+            <img src={logo} alt="Logo" />
+          </p>
+        ) : (
+          <p className="text-4xl text-white">
+            {String(displayName).charAt(0).toUpperCase()}
+          </p>
+        )}
+      </div>
         </div>
       )}
 
