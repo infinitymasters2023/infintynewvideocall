@@ -404,7 +404,7 @@ export function MeetingDetailsScreen({
   };
 
   useEffect(() => {
-    fetchData();
+ 
     const urlSearchParams = new URLSearchParams(location.search);
     const urlMeetingId = urlSearchParams.get("meetingId");
     const urlTicketNo = urlSearchParams.get("ticket");
@@ -467,6 +467,7 @@ export function MeetingDetailsScreen({
     <div className={`flex flex-1 flex-col justify-center w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked || (isJoinMeetingClicked && hasJoinedThroughLink) ? (
         <>
+        {(adminId === '') ? (
           <input
             value={ticketNo}
             onChange={(e) => setTicketNo(e.target.value)}
@@ -474,6 +475,7 @@ export function MeetingDetailsScreen({
             className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
             readOnly
           />
+        ) : null}
           <input
             value={participantName}
             onChange={handleInputChange}

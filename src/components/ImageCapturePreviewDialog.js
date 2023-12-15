@@ -1,15 +1,30 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef, useEffect } from "react";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { usePubSub, useMeeting } from "@videosdk.live/react-sdk";
-import Tesseract from 'tesseract.js';
-import React, { useEffect } from 'react';
-import { uploadFileAPI } from "../services/meeting_api";
 import { FiZoomIn, FiZoomOut, FiRotateCw, FiRotateCcw, FiRefreshCw } from 'react-icons/fi';
+import "cropperjs/dist/cropper.css";
+import { usePubSub, useMeeting } from "@videosdk.live/react-sdk";
+import { uploadFileAPI } from "../services/meeting_api";
+
+
+
+
 const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const { meetingId, participantName } = useMeeting();
   const [imageSrc, setImageSrc] = useState(null);
+  const [drawingData, setDrawingData] = useState(null);
+
+
+  const canvasRef = useRef(null);
+  const [drawingContext, setDrawingContext] = useState(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      setDrawingContext(ctx);
+    }
+  }, []);
 
   const imagesMessages = {};
   const generateImage = (messages) => {
@@ -32,8 +47,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
         generateImage(imagesMessages[id]);
       }
     },
-  });
-
+  })
 
   const [cropData, setCropData] = useState("#");
   const [cropper, setCropper] = useState();
@@ -41,6 +55,9 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const [imageCropped, setImageCropped] = useState(false);
   const [remarks, setRemarks] = useState('');
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [brushColor, setBrushColor] = useState('#ff0000');
+  const [brushWidth, setBrushWidth] = useState(5);
   const getCropData = () => {
     if (typeof cropper !== "undefined") {
       setCropData(cropper.getCroppedCanvas().toDataURL());
@@ -110,6 +127,55 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
       setRemarks(e.target.value);
     }
   };
+  const toggleDrawingMode = () => {
+    setIsDrawing(!isDrawing);
+  };
+
+  const handleBrushColorChange = (color) => {
+    setBrushColor(color.hex);
+  };
+
+  const handleBrushWidthChange = (width) => {
+    setBrushWidth(width);
+  };
+  const handleMouseDown = (e) => {
+    const { offsetX, offsetY } = e.nativeEvent;
+    drawingContext.beginPath();
+    drawingContext.moveTo(offsetX, offsetY);
+    setDrawingData({ tool: 'pen', points: [{ x: offsetX, y: offsetY }] });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDrawing) return;
+
+    const { offsetX, offsetY } = e.nativeEvent;
+    drawingContext.lineTo(offsetX, offsetY);
+    drawingContext.stroke();
+    setDrawingData((prevData) => ({
+      ...prevData,
+      points: [...prevData.points, { x: offsetX, y: offsetY }],
+    }));
+  };
+
+  const handleMouseUp = () => {
+    setDrawingData(null);
+  };
+
+  useEffect(() => {
+    if (!isDrawing) return;
+
+    const canvas = canvasRef.current;
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDrawing]);
+
   return (
     <>
       <Transition appear show={open} as={Fragment}>
@@ -211,8 +277,41 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                         guides={true}
                         crossOrigin="anonymous"
                       />
-                      
+                      <div className="col-md-4 ">
+                      <span className="text-white font-semibold">Select Status:</span>
+                      <select
                      
+                        onChange={(e) => handleStatusChange(e.target.value)}
+                        className="ml-2 form-control "
+                      >
+                        <option value="">Select Status</option>
+                        <option value="approve">Approve</option>
+                        <option value="pending">Pending for Verification</option>
+                        <option value="reject">Reject</option>
+                      </select>
+                      <div className="col-md-12 mt-3">
+                      <span className="text-white font-semibold">Remarks:</span>
+                      <input
+                      type="text"
+                      value={remarks}
+                      onChange={(e) => handleRemarksChange(e.target.value)}
+                      className="ml-2 form-control"
+                    />
+                    </div>
+                    {cropButtonClicked && (
+                      <button
+                        type="button"
+                        className="rounded border border-white bg-transparent px-3 py-2  mt-4 float-end text-sm font-medium text-white hover:bg-gray-700"
+                        onClick={() => {
+                          setOpen(false);
+                          handleFileUpload()
+                        }}
+                      >
+                        Upload
+                      </button>
+                    )}
+                    </div>
+                      
                     </>
                     )}
                   </div>
@@ -227,7 +326,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                       <div className="col-6">
                         <span className="text-white font-semibold">After Crop Image</span>
                       </div>
-                      <div className="mt-2 float-end col-6"> {/* Adjust the margin-top as needed */}
+                      <div className="mt-2 float-end col-4"> {/* Adjust the margin-top as needed */}
                       <button
                         className="bg-white text-black px-2 py-1  rounded ml-2 text-sm"
                         onClick={handleZoomIn}
@@ -269,61 +368,13 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                           alt="cropped"
                         />
                       </div>
-                      <div className="col-md-4 ">
-                        <span className="text-white font-semibold">Select Status:</span>
-                        <select
-                          value={selectedStatus}
-                          onChange={(e) => handleStatusChange(e.target.value)}
-                          className="ml-2 form-control "
-                        >
-                          <option value="">Select Status</option>
-                          <option value="approve">Approve</option>
-                          <option value="pending">Pending for Verification</option>
-                          <option value="reject">Reject</option>
-                        </select>
-                        <div className="col-md-12 mt-3">
-                        <span className="text-white font-semibold">Remarks:</span>
-                        <input
-                        type="text"
-                        value={remarks}
-                        onChange={(e) => handleRemarksChange(e.target.value)}
-                        className="ml-2 form-control"
-                      />
-                      </div>
-                      {cropButtonClicked && (
-                        <button
-                          type="button"
-                          className="rounded border border-white bg-transparent px-3 py-2  mt-4 float-end text-sm font-medium text-white hover:bg-gray-700"
-                          onClick={() => {
-                            setOpen(false);
-                            handleFileUpload()
-                          }}
-                        >
-                          Upload
-                        </button>
-                      )}
-                      </div>
+                     
                       
                     </div>
                     )}
               
                    
-                    {selectedStatus && (
-                      <div className="row mt-3">
-                        <div className="col-12">
-                          <span className="text-white font-semibold">Icons:</span>
-                          {selectedStatus === 'approve' && (
-                            <span className="ml-2 text-white text-base">&#10003; Approve Icon</span>
-                          )}
-                          {selectedStatus === 'pending' && (
-                            <span className="ml-2 text-white">&#9203; Pending Icon</span>
-                          )}
-                          {selectedStatus === 'reject' && (
-                            <span className="ml-2 text-white ">&#10008; Reject Icon</span>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                      
                    
                   </div>
 
