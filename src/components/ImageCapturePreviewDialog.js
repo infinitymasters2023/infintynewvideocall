@@ -87,13 +87,14 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const view = () => {
 
   }
+
   const handleFileUpload = async () => {
     const ticketNo = localStorage.getItem('ticketNo');
     setOpen(false);
     const formData = new FormData();
-    formData.append('file', cropData);
+    formData.append('file', imageSrc);
     formData.append('ticketNo', ticketNo);
-    formData.append('createdBy', participantName);
+    formData.append('createdBy', 'Ajay Dhangar');
     await uploadFileAPI(formData).then((response) => {
       if (response && response.isSuccess && response.statusCode == 200 && response.data) {
         return response.data
