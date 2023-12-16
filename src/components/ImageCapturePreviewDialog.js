@@ -6,9 +6,8 @@ import { FiZoomIn, FiZoomOut, FiRotateCw, FiRotateCcw, FiRefreshCw } from 'react
 import "cropperjs/dist/cropper.css";
 import { usePubSub, useMeeting } from "@videosdk.live/react-sdk";
 import { uploadFileAPI } from "../services/meeting_api";
-
-
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark, faCrop } from '@fortawesome/free-solid-svg-icons';
 
 const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const { meetingId, participantName } = useMeeting();
@@ -99,9 +98,9 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
     const ticketNo = localStorage.getItem('ticketNo');
     setOpen(false);
     const iData = {
-      file : imageSrc,
-      ticketNo : ticketNo,
-      roomId : meetingId
+      file: imageSrc,
+      ticketNo: ticketNo,
+      roomId: meetingId
     }
     await uploadFileAPI(iData).then((response) => {
       if (response && response.isSuccess && response.statusCode == 200 && response.data) {
@@ -203,183 +202,181 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
+
                 <Dialog.Panel
                   style={{
                     maxHeight: `calc(100vh - 150px)`,
                   }}
-                  className="w-9/12 transform relative overflow-y-auto rounded bg-gray-750 p-4 text-left align-middle flex flex-col items-center shadow-xl transition-all"
+                  className="w-10/12 transform relative overflow-y-auto rounded bg-gray-750 text-left align-middle flex flex-col items-center shadow-xl transition-all"
                 >
-                  {/* Move the "Upload" and "Cancel" buttons here */}
-                  <div className="mt-6 flex w-full justify-end gap-2">
-                    <button
-                      type="button"
-                      className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
+                  <div className="card w-full">
+                    <div className="card-header">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h5 className="m-0"></h5>
+                        </div>
+                        <div className="text-end">
+                          <div className="inline-flex rounded-md shadow-sm">
+                            <button className="btn btn-sm" onClick={handleCropButtonClick}>
+                              <FontAwesomeIcon icon={faCrop} style={{ color: 'black' }} />
+                            </button>
+                            <button className="btn btn-sm" onClick={() => {
+                              setOpen(false);
+                            }}>
+                              <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card-body border-b py-3">
+                      <div class="flex">
+                        <div class="h-full w-2/4 flex-col">
+                          {imageSrc ? <img src={imageSrc} /> : <p className="text-center">
+                            Loading Image...
+                          </p>}
+                        </div>
+                        <div class="h-full w-2/4 flex flex-col">
+                          <div class="h-full w-2/4 flex-col">
+                          {cropButtonClicked && (
+                            <>
+                              <Cropper
+                                className="ml-4"
+                                style={{
+                                  height: '33.33%',
+                                  width: '33.33%',
+                                  objectFit: 'contain',
+                                }}
+                                zoomTo={0.5}
+                                initialAspectRatio={1}
+                                preview=".img-preview"
+                                src={imageSrc}
+                                viewMode={1}
+                                minCropBoxHeight={10}
+                                minCropBoxWidth={10}
+                                background={true}
+                                responsive={true}
+                                autoCropArea={1}
+                                checkOrientation={true}
+                                onInitialized={(instance) => {
+                                  setCropper(instance);
+                                }}
+                                guides={true}
+                                crossOrigin="anonymous"
+                              />
+                              <div className="col-md-4 ">
+                                <span className="text-white font-semibold">Select Status:</span>
+                                <select
+
+                                  onChange={(e) => handleStatusChange(e.target.value)}
+                                  className="ml-2 form-control "
+                                >
+                                  <option value="">Select Status</option>
+                                  <option value="approve">Approve</option>
+                                  <option value="pending">Pending for Verification</option>
+                                  <option value="reject">Reject</option>
+                                </select>
+                                <div className="col-md-12 mt-3">
+                                  <span className="text-white font-semibold">Remarks:</span>
+                                  <input
+                                    type="text"
+                                    value={remarks}
+                                    onChange={(e) => handleRemarksChange(e.target.value)}
+                                    className="ml-2 form-control"
+                                  />
+                                </div>
+                                {cropButtonClicked && (
+                                  <button
+                                    type="button"
+                                    className="rounded border border-white bg-transparent px-3 py-2  mt-4 float-end text-sm font-medium text-white hover:bg-gray-700"
+                                    onClick={() => {
+                                      setOpen(false);
+                                      handleFileUpload()
+                                    }}
+                                  >
+                                    Upload
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          )}
+                          </div>
+                          <div class="w-2/4 flex-col">
+                          </div>
+
+
+                          {cropData && cropButtonClicked && (
+                            <div className="container">
+                              <div className="row">
+                                <div className="col-6">
+                                  <span className="text-white font-semibold">After Crop Image</span>
+                                </div>
+                                <div className="mt-2 float-end col-4">
+                                  <button
+                                    className="bg-white text-black px-2 py-1  rounded ml-2 text-sm"
+                                    onClick={handleZoomIn}
+                                  >
+                                    <FiZoomIn />
+                                  </button>
+                                  <button
+                                    className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                                    onClick={handleZoomOut}
+                                  >
+                                    <FiZoomOut />
+                                  </button>
+                                  <button
+                                    className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                                    onClick={handleRotateLeft}
+                                  >
+                                    <FiRotateCcw />
+                                  </button>
+                                  <button
+                                    className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                                    onClick={handleRotateRight}
+                                  >
+                                    <FiRotateCw />
+                                  </button>
+                                  <button
+                                    className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
+                                    onClick={handleRevertToOriginal}
+                                  >
+                                    <FiRefreshCw />
+                                  </button>
+                                </div>
+                              </div>
+                              {cropData && cropButtonClicked && (
+                                <div className="row">
+                                  <div className="col-md-6">
+                                    <img
+                                      className="object-contain mt-3"
+                                      src={cropData}
+                                      alt="cropped"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card-footer border-b py-3">
+
+                    </div>
+                  </div>
+                  {/* <div className="inline-flex rounded-md shadow-sm">
+                    <button type="button" className="px-4 py-2 text-sm font-medium text-gray-900 border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
+                      setOpen(false);
+                    }}>
                       Cancel
                     </button>
-                    <button
-                      type="button"
-                      className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                      onClick={handleFileUpload}
-                    >
+                    <button type="button" className="px-4 py-2 text-sm font-medium text-gray-900 border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={handleFileUpload}>
                       Upload
                     </button>
-                  </div>
-
-                  <Dialog.Title className="text-base font-medium text-white w-full">
-                    Preview
-                  </Dialog.Title>
-                  <div className="flex items-start justify-end w-full mt-2">
-                    <button
-                      className="bg-white text-black px-2 py-1 rounded"
-                      onClick={handleCropButtonClick}
-                    >
+                    <button type="button" className="px-4 py-2 text-sm font-medium text-gray-900 border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={handleCropButtonClick}>
                       {imageCropped ? "View" : "Crop Image"}
                     </button>
-                  </div>
-                  <div className="flex mt-8 items-center justify-center h-full w-full">
-                    {imageSrc ? (
-                      <img src={imageSrc} width={300} height={300} />
-                    ) : (
-                      <div width={300} height={300}>
-                        <p className=" text-white  text-center">
-                          Loading Image...
-                        </p>
-                      </div>
-                    )}
-                    {/* Conditionally render the Cropper based on button click */}
-                    {cropButtonClicked && (
-                      <>
-                      <Cropper
-                        className="ml-4"
-                        style={{
-                          height: '33.33%',
-                          width: '33.33%',
-                          objectFit: 'contain',
-                        }}
-                        zoomTo={0.5}
-                        initialAspectRatio={1}
-                        preview=".img-preview"
-                        src={imageSrc}
-                        viewMode={1}
-                        minCropBoxHeight={10}
-                        minCropBoxWidth={10}
-                        background={true}
-                        responsive={true}
-                        autoCropArea={1}
-                        checkOrientation={true}
-                        onInitialized={(instance) => {
-                          setCropper(instance);
-                        }}
-                        guides={true}
-                        crossOrigin="anonymous"
-                      />
-                      <div className="col-md-4 ">
-                      <span className="text-white font-semibold">Select Status:</span>
-                      <select
-                     
-                        onChange={(e) => handleStatusChange(e.target.value)}
-                        className="ml-2 form-control "
-                      >
-                        <option value="">Select Status</option>
-                        <option value="approve">Approve</option>
-                        <option value="pending">Pending for Verification</option>
-                        <option value="reject">Reject</option>
-                      </select>
-                      <div className="col-md-12 mt-3">
-                      <span className="text-white font-semibold">Remarks:</span>
-                      <input
-                      type="text"
-                      value={remarks}
-                      onChange={(e) => handleRemarksChange(e.target.value)}
-                      className="ml-2 form-control"
-                    />
-                    </div>
-                    {cropButtonClicked && (
-                      <button
-                        type="button"
-                        className="rounded border border-white bg-transparent px-3 py-2  mt-4 float-end text-sm font-medium text-white hover:bg-gray-700"
-                        onClick={() => {
-                          setOpen(false);
-                          handleFileUpload()
-                        }}
-                      >
-                        Upload
-                      </button>
-                    )}
-                    </div>
-                      
-                    </>
-                    )}
-                  </div>
-
-                  {/* Your "Crop Image" button */}
-                  <div className="flex items-start justify-end w-full mt-6 fixed top-0">
-                  
-                  </div>
-                  {cropData && cropButtonClicked && (
-                    <div className="container">
-                    <div className="row">
-                      <div className="col-6">
-                        <span className="text-white font-semibold">After Crop Image</span>
-                      </div>
-                      <div className="mt-2 float-end col-4"> {/* Adjust the margin-top as needed */}
-                      <button
-                        className="bg-white text-black px-2 py-1  rounded ml-2 text-sm"
-                        onClick={handleZoomIn}
-                      >
-                        <FiZoomIn />
-                      </button>
-                      <button
-                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                        onClick={handleZoomOut}
-                      >
-                        <FiZoomOut />
-                      </button>
-                      <button
-                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                        onClick={handleRotateLeft}
-                      >
-                        <FiRotateCcw />
-                      </button>
-                      <button
-                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                        onClick={handleRotateRight}
-                      >
-                        <FiRotateCw />
-                      </button>
-                      <button
-                        className="bg-white text-black px-2 py-1 rounded ml-2 text-sm"
-                        onClick={handleRevertToOriginal}
-                      >
-                        <FiRefreshCw />
-                      </button>
-                    </div>
-                    </div>
-                    {cropData && cropButtonClicked && (
-                      <div className="row">
-                      <div className="col-md-6">
-                        <img
-                          className="object-contain mt-3"
-                          src={cropData}
-                          alt="cropped"
-                        />
-                      </div>
-                     
-                      
-                    </div>
-                    )}
-              
-                   
-                      
-                   
-                  </div>
-
-                  )}
-                  
+                  </div> */}
                 </Dialog.Panel>
               </Transition.Child>
             </div>

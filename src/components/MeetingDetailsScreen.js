@@ -1,5 +1,5 @@
 import { CheckIcon, ClipboardIcon } from "@heroicons/react/24/outline";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FaMobile, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,7 +13,7 @@ import MeetingForm from "./MeetingScheduler";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
-import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI } from '../../src/services/meeting_api'
+import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI, serviceCallInfoAPI } from '../../src/services/meeting_api'
 import { useMeeting } from "@videosdk.live/react-sdk";
 
 export function MeetingDetailsScreen({
@@ -26,6 +26,7 @@ export function MeetingDetailsScreen({
   onClickStartMeeting,
 }) {
   const location = useLocation();
+  const [ticketInfo, setTicketInfo] = useState({});
   const [meetingId, setMeetingId] = useState("");
   const [meetingIdError, setMeetingIdError] = useState(false);
   const [ticketNo, setTicketNo] = useState("");
@@ -42,26 +43,36 @@ export function MeetingDetailsScreen({
   const [proxyEmail, setProxyEmail] = useState('');
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [isSendLinkButtonDisabled, setIsSendLinkButtonDisabled] = useState(true);
-  useEffect(() => {
-    setUserId(uuidv4());
-    const storedTicketNo = localStorage.getItem('ticketNo');
-    if (storedTicketNo) {
-      setTicketNo(storedTicketNo);
-    }
-  }, []);
-
-
-
-  const fetchData = async () => {
+  let url = new URL(window.location.href);
+  let searchParams = new URLSearchParams(url.search);
+  const participantMode = searchParams.get("mode");
+  const customRoomId = searchParams.get("qu");
+  const userid = searchParams.get("userid");
+  const fetchServiceCallInfo = useCallback(async () => {
     try {
-      const response = await fetch('https://meetings.infyshield.com/api/data');
-      const result = await response.json();
-      console.log('Fetched data:', result);
+      if (customRoomId && userid && participantMode === 'AGENT') {
+        await serviceCallInfoAPI({ quNumber: customRoomId, userid }).then((response) => {
+          if (response && response.isSuccess && response.statusCode === 200 && response.data) {
+            setTicketInfo(response.data)
+            setParticipantName(response.data.UserName);
+          }
+        }).catch((error) => {
+          return error
+        })
+      }
     } catch (error) {
-      console.log('Error fetching data', error);
-
+      console.error('An error occurred while fetching service call info:', error);
     }
-  };
+  }, [userid, customRoomId, participantMode]);
+
+  useEffect(() => {
+    if (userid && customRoomId) {
+      setUserId(userid);
+      fetchServiceCallInfo()
+    }
+  }, [userid, customRoomId]);
+
+  console.log('ticketInfo', ticketInfo);
 
   // const createMeeting = async () => {
   //   try {
@@ -175,9 +186,6 @@ export function MeetingDetailsScreen({
   //   }
   // };
   const handleCreateMeeting = async () => {
-
-
-
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
@@ -200,7 +208,7 @@ export function MeetingDetailsScreen({
                     setVideoTrack(null);
                   }
                   onClickStartMeeting();
-                  localStorage.setItem('ticketNo', ticketNo);
+                  localStorage.setItem('ticketNo', ticketInfo.TicketNO);
                 }}
               >
                 <span style={{ marginRight: '5px' }}>Copy Link</span>
@@ -215,14 +223,14 @@ export function MeetingDetailsScreen({
                     fullName: participantName,
                     mobile: mobileNumber,
                     email: email,
-                   
+
                   });
                   if (videoTrack) {
                     videoTrack.stop();
                     setVideoTrack(null);
                   }
                   onClickStartMeeting();
-                  localStorage.setItem('ticketNo', ticketNo);
+                  localStorage.setItem('ticketNo', ticketInfo.TicketNO);
                 }}
               >
                 Yes
@@ -240,14 +248,14 @@ export function MeetingDetailsScreen({
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
-      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
       await startVideoRecordingAPI(link);
       await insertMeetingParticipantAPI();
       onClickJoin(meetingId);
     } else {
       setMeetingIdError(true);
     }
-    localStorage.setItem('ticketNo', ticketNo);
+    localStorage.setItem('ticketNo', ticketInfo.TicketNO);
   };
 
   const insertMeetingParticipantAPI = async () => {
@@ -280,7 +288,7 @@ export function MeetingDetailsScreen({
   const startVideoRecordingAPI = async (link) => {
     const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/master/startVideoRecording';
     const requestData = {
-      ticketNo: ticketNo,
+      ticketNo: ticketInfo.TicketNO,
       startTime: new Date().toISOString(),
       userid: userId,
       meetingId: meetingId,
@@ -314,7 +322,7 @@ export function MeetingDetailsScreen({
 
   const handleSendLinkToSelected = async () => {
     for (const contact of selectedContacts) {
-      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
       try {
 
@@ -323,7 +331,7 @@ export function MeetingDetailsScreen({
           mobile: contact.mobile,
           sendToOtp: "Email",
           meetingId: meetingId,
-          ticket: ticketNo,
+          ticket: ticketInfo.TicketNO,
           meetingurl: link,
         });
 
@@ -338,7 +346,7 @@ export function MeetingDetailsScreen({
 
 
   const handleSendLinkToEmail = async () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -349,7 +357,7 @@ export function MeetingDetailsScreen({
           mobile: mobileNumber,
           sendToOtp: "Email",
           meetingId: meetingId,
-          ticket: ticketNo,
+          ticket: ticketInfo.TicketNO,
           meetingurl: link,
         }
       );
@@ -360,7 +368,7 @@ export function MeetingDetailsScreen({
         mobile: mobileNumber,
         sendToOtp: "Mobile",
         meetingId: meetingId,
-        ticket: ticketNo,
+        ticket: ticketInfo.TicketNO,
         meetingurl: link,
       });
 
@@ -378,7 +386,7 @@ export function MeetingDetailsScreen({
   };
 
   const handleSendLinkToMobile = async () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -388,7 +396,7 @@ export function MeetingDetailsScreen({
           mobile: mobileNumber,
           sendToOtp: "Mobile",
           meetingId: meetingId,
-          ticket: ticketNo,
+          ticket: ticketInfo.TicketNO,
           meetingurl: link,
         }
       );
@@ -404,7 +412,7 @@ export function MeetingDetailsScreen({
   };
 
   useEffect(() => {
- 
+
     const urlSearchParams = new URLSearchParams(location.search);
     const urlMeetingId = urlSearchParams.get("meetingId");
     const urlTicketNo = urlSearchParams.get("ticket");
@@ -435,7 +443,7 @@ export function MeetingDetailsScreen({
   }, [location.search]);
 
   const handleCopyLink = () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
     navigator.clipboard.writeText(link);
     setIsCopiedLink(true);
     localStorage.setItem('meetingLink', link);
@@ -467,27 +475,27 @@ export function MeetingDetailsScreen({
     <div className={`flex flex-1 flex-col justify-center w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked || (isJoinMeetingClicked && hasJoinedThroughLink) ? (
         <>
-        {(adminId === '') ? (
-          <input
-            value={ticketNo}
-            onChange={(e) => setTicketNo(e.target.value)}
-            placeholder="Enter ticket number"
-            className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
-            readOnly
-          />
-        ) : null}
+          {(adminId === '') ? (
+            <input
+              value={ticketInfo.TicketNO}
+              onChange={(e) => setTicketNo(e.target.value)}
+              placeholder="Enter ticket number"
+              className="px-4 py-2 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
+              readOnly
+            />
+          ) : null}
           <input
             value={participantName}
             onChange={handleInputChange}
             placeholder="Enter your name"
-            className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
+            className="px-4 py-2 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
             maxLength={20}
           />
 
           {(adminId === '') ? (
             <button
               className={`w-full ${participantName.length < 3 ? "bg-gray-650" : "bg-purple-350"
-                }  text-white px-2 py-3 rounded-xl mt-3`}
+                }  text-white px-2 py-2 rounded-xl mt-3`}
               onClick={handleCreateMeeting}
               disabled={participantName.length < 2}
             >
@@ -497,10 +505,10 @@ export function MeetingDetailsScreen({
           ) : (
             <button
               className={`w-full ${participantName.length > 2 ? "bg-purple-350" : "bg-yellow-650"
-                } text-white px-2 py-3 rounded-xl mt-3`}
+                } text-white px-2 py-2 rounded-xl mt-3`}
               onClick={async (e) => {
                 await handleJoinMeeting();
-                await joinMeetingAPI({ roomId: meetingId , fullName : participantName, mobile : mobileNumber, email : email  })
+                await joinMeetingAPI({ roomId: meetingId, fullName: participantName, mobile: mobileNumber, email: email })
               }}
               disabled={participantName.length < 2}
             >
@@ -524,7 +532,7 @@ export function MeetingDetailsScreen({
                 <button className="text-white text-sm cursor-pointer" onClick={openModal}>
                   Send Link
                 </button>
-                <Modal show={isModalOpen} onHide={closeModal} centered size="xl">
+                <Modal show={isModalOpen} onHide={closeModal} centered size="md">
                   <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: '15px', fontWeight: '500' }} >
                       Send Link
@@ -532,349 +540,187 @@ export function MeetingDetailsScreen({
                   </Modal.Header>
                   <Modal.Body>
                     <Form>
-                      <div className="grid grid-cols-2 gap-1 md-1">
-
-                        {/* Left Side: Email */}
-                        <div>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="exampleForm.ControlTextarea1"
-                          >
-                            <Form.Label>Mobile No:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-                                  value={mobileNumber}
-                                  onChange={(e) => setMobileNumber(e.target.value)}
-
-                                  className="text-center border-2 px-1 py-1 border-black rounded-md"
-                                  readOnly
-                                  style={{ width: '300px' }}
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaMobile
-                                  className={`ml- ${mobileNumber.length === 0 ? 'text-gray-200' : 'text-black'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToMobile}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=""
-                                />
+                      <h4 className="text-sm text-gray-700 px-2">Customer Name :<span className="text-gray-600">{ticketInfo.customername}</span></h4>
+                      <div className="flex flex-row py-2">
+                        {ticketInfo.emailidaddress &&
+                          <div className="basis-7/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="emailidaddress" value={ticketInfo.emailidaddress} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
                               </div>
                             </div>
-                          </Form.Group>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="exampleForm.ControlTextarea1"
-                          >
-                            <Form.Label>Proxy Mobile No:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-
-                                  className="text-center border-2 px-1 py-1 border-black rounded-md"
-                                  style={{ width: '300px' }}
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaMobile
-                                  className={`ml- ${mobileNumber.length === 0 ? 'text-gray-200' : 'text-black'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToMobile}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=""
-                                />
+                          </div>
+                        }
+                        {ticketInfo.mobileno &&
+                          <div className="basis-5/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="mobileno" value={ticketInfo.mobileno} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
                               </div>
                             </div>
-                          </Form.Group>
-                          {/* Additional Phone Numbers */}
-                          <Form.Group
-                            className="mb-3"
-                            controlId="exampleForm.ControlTextarea1"
-                          >
-                            <Form.Label>Proxy Mobile No 1:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-
-                                  className="text-center px-1 py-1 border-2 border-black rounded-md"
-                                  style={{ width: '300px' }}
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaMobile
-                                  className={`ml- ${mobileNumber.length === 0 ? 'text-gray-200' : 'text-black'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToMobile}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=""
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="exampleForm.ControlTextarea1"
-                          >
-                            <Form.Label>Proxy Mobile No 2:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-                                  className="text-center px-1 py-1 border-2 border-black rounded-md"
-                                  style={{ width: '300px' }}
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaMobile
-                                  className={`ml- ${mobileNumber.length === 0 ? 'text-gray-200' : 'text-black'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToMobile}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=""
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-                          <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                            <Form.Label>ASC Phone No:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-                                  className="text-center px-1 py-1 border-2 border-black rounded-md"
-                                  style={{ width: '300px' }}
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaMobile
-                                  className={`ml- ${mobileNumber.length === 0 ? 'text-gray-200' : 'text-black'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToMobile}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=""
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-                          {/* Service Center Phone Number */}
-                          <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                            <Form.Label>Service Center Phone No:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-                                  className="text-center border-2 px-1 py-1 border-black rounded-md"
-                                  style={{ width: '300px' }}
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaMobile
-                                  className={`ml- ${mobileNumber.length === 0 ? 'text-gray-200' : 'text-black'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToMobile}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=""
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-
-                          {/* Dealer Phone Number */}
-                          <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                            <Form.Label className="my-2">Dealer Phone No:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-
-                                  className="text-center border-2 px-1 py-1 border-black rounded-md"
-                                  style={{ width: '300px' }}
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaMobile
-                                  className={`ml- ${mobileNumber.length === 0 ? 'text-gray-200' : 'text-black'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToMobile}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=""
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-                        </div>
-
-                        {/* Right Side: Phone Numbers */}
-                        <div>
-                          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Email address:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-                                  value={email}
-                                  onChange={(e) => setEmail(e.target.value)}
-
-                                  className="w-full text-center rounded-md border-2 border-black px-1 py-1 my-2"
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaEnvelope
-                                  className={`text-sm mt-3 ${email.length === 0 ? 'text-gray-200' : 'text-black-200'
-                                    } cursor-pointer`}
-                                  onClick={handleSendLinkToEmail}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className="mt-3"
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-
-                          {/* Alternate Email */}
-                          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Alternate Email:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-                                  className="w-full   px-1 py-1 text-center rounded-md border-2 border-black"
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaEnvelope
-                                  className={`text-sm mt-3 ${email.length === 0 ? 'text-gray-200' : 'text-black-200'
-                                    } cursor-pointer`}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className="mt-3"
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-                          {/* Service Center Email */}
-                          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Service Center Email:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-                                  className="w-full text-center rounded-md border-2  px-1 py-1 border-black"
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-1">
-                                <FaEnvelope
-                                  className={`text-sm mt-3 ${email.length === 0 ? 'text-gray-200' : 'text-black-200'
-                                    } cursor-pointer`}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className=" mt-3"
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-                          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Dealer Email:</Form.Label>
-                            <div className="row">
-                              <div className="col-8">
-                                <input
-
-                                  className="w-full px-1 py-1 text-center rounded-md border-2 border-black"
-                                  readOnly
-                                />
-                              </div>
-                              <div className="col-2 mt-3">
-                                <FaEnvelope
-                                  className={`text-sm ${email.length === 0 ? 'text-gray-200' : 'text-black-200'
-                                    } cursor-pointer`}
-                                />
-                              </div>
-                              <div className="col-1">
-                                <input
-                                  type="checkbox"
-                                  id="sendToMobile"
-                                  className="mt-3"
-                                />
-                              </div>
-                            </div>
-                          </Form.Group>
-                        </div>
+                          </div>
+                        }
                       </div>
-
-                      <Form.Group controlId="sendToSelected">
-                        <Form.Check
-                          type="checkbox"
-                          label="Send Link to Selected"
-                          onChange={() => {
-                            setIsSendLinkButtonDisabled(!isSendLinkButtonDisabled);
-                          }}
-                        />
-                      </Form.Group>
-
-                      <BootstrapButton
-                        variant="primary"
-                        disabled={isSendLinkButtonDisabled}
-                        onClick={handleSendLinkToSelected}
-                        className="mt-3"
-                      >
-                        Send Link
-                      </BootstrapButton>
+                      <div className="flex flex-row py-2">
+                        {ticketInfo.alternateEmailID &&
+                          <div className="basis-7/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Alternate Email Id</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="alternateEmailID" value={ticketInfo.alternateEmailID} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                        {ticketInfo.landlineno &&
+                          <div className="basis-5/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Alternate Mobile No:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="landlineno" value={ticketInfo.landlineno} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                      <h4 className="text-sm text-gray-700 px-2">Proxy Name: <span className="text-gray-600">{ticketInfo.customername}</span></h4>
+                      <div className="flex flex-row py-2">
+                        {ticketInfo.proxyMobile1 &&
+                          <div className="basis-1/2 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Proxy Mobile No:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="proxyMobile1" value={ticketInfo.proxyMobile1} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                        {ticketInfo.proxyMobile2 &&
+                          <div className="basis-1/2 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Proxy Mobile No:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="proxyMobile2" value={ticketInfo.proxyMobile2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                      <h4 className="text-sm text-gray-700 px-2">Service Center Name :<span className="text-gray-600">{ticketInfo.customername}</span></h4>
+                      <div className="flex flex-row py-1">
+                        {ticketInfo.serviceCenterEmail &&
+                          <div className="basis-7/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="serviceCenterEmail" value={ticketInfo.serviceCenterEmail} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                        {ticketInfo.serviceCenterMobile &&
+                          <div className="basis-5/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="serviceCenterMobile" value={ticketInfo.serviceCenterMobile} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                      <h4 className="text-sm text-gray-700 px-2">Dealer Name :<span className="text-gray-600">{ticketInfo.customername}</span></h4>
+                      <div className="flex flex-row py-1">
+                        {ticketInfo.dealerEmailID &&
+                          <div className="basis-7/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="dealerEmailID" value={ticketInfo.dealerEmailID} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                        {ticketInfo.dealerMobileNo &&
+                          <div className="basis-5/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="dealerMobileNo" value={ticketInfo.dealerMobileNo} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                      <div className="flex flex-row py-0">
+                        {ticketInfo.dealerEmailID2 &&
+                          <div className="basis-7/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Alternate Email Id:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="dealerEmailID2" value={ticketInfo.dealerEmailID2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                        {ticketInfo.dealerMobileNo2 &&
+                          <div className="basis-5/12 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
+                            <div className="flex rounded-lg shadow-sm">
+                              <input type="text" name="dealerMobileNo2" value={ticketInfo.dealerMobileNo2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " />
+                              <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
+                                <span className="text-sm text-gray-500 dark:text-gray-600">
+                                  <input type="checkbox" className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                      <div>
+                        <button type="button" className="py-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-500 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right">
+                          Send Link
+                        </button>
+                      </div>
                     </Form>
                   </Modal.Body>
                 </Modal>
-
               </div>
-
             </>
           )}
         </>
@@ -887,15 +733,16 @@ export function MeetingDetailsScreen({
 
                 {adminId === '' && userId !== '' && (
                   <button
-                    className="w-full bg-purple-350 text-white px-2 py-3 rounded-xl"
+                    className="w-full bg-purple-350 text-white px-2 py-2 rounded-xl"
                     onClick={async (e) => {
                       const meetingId = await _handleOnCreateMeeting();
                       setMeetingId(meetingId);
                       setIscreateMeetingClicked(true);
                       await insertMeetingAPI({
                         roomId: meetingId,
-                        customRoomId: meetingId,
-                        ticketNo: ticketNo
+                        customRoomId: customRoomId,
+                        ticketNo: ticketInfo.TicketNO,
+                        userid: userid,
                       });
                       // createMeeting()
                     }}
@@ -905,7 +752,7 @@ export function MeetingDetailsScreen({
                 )}
                 {adminId !== '' && userId !== '' && adminId !== userId && participantName.length < 3 && (
                   <button
-                    className="w-full bg-gray-650 text-white px-2 py-3 rounded-xl mt-3"
+                    className="w-full bg-gray-650 text-white px-2 py-2 rounded-xl mt-3"
                     onClick={(e) => {
                       setIsJoinMeetingClicked(true);
                     }}
