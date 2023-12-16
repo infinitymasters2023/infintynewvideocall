@@ -7,14 +7,12 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from "react-router-dom";
-import { Button as BootstrapButton, Form, Modal, Col, Container, Row } from 'react-bootstrap';
-import MeetingScheduler from "./MeetingScheduler";
-import MeetingForm from "./MeetingScheduler";
+import { Button as BootstrapButton, Form, Modal} from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
 import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI } from '../../src/services/meeting_api'
-import { useMeeting } from "@videosdk.live/react-sdk";
+
 
 export function MeetingDetailsScreen({
   onClickJoin,
@@ -742,7 +740,6 @@ export function MeetingDetailsScreen({
                           </Form.Group>
                         </div>
 
-                        {/* Right Side: Phone Numbers */}
                         <div>
                           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Label>Email address:</Form.Label>
@@ -897,7 +894,6 @@ export function MeetingDetailsScreen({
                         customRoomId: meetingId,
                         ticketNo: ticketNo
                       });
-                      // createMeeting()
                     }}
                   >
                     Create a meeting

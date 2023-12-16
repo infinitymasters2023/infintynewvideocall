@@ -34,7 +34,7 @@ export const MobileIconButton = ({
     setTooltipShow(false);
   };
 
-  const iconSize = 24 * (large ? 1.7 : 1);
+  const iconSize = 18 * (large ? 1.7 : 1);
 
   return (
     <>

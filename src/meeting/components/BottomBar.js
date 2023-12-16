@@ -1,9 +1,4 @@
-import {
-  Constants,
-  createScreenShareVideoTrack,
-  useMeeting,
-  usePubSub,
-} from "@videosdk.live/react-sdk";
+import {Constants,createScreenShareVideoTrack,useMeeting,usePubSub} from "@videosdk.live/react-sdk";
 import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   ClipboardIcon,
@@ -93,15 +88,17 @@ const MicBTN = () => {
         {({ close }) => (
           <>
             <Popover.Button
-              className={`flex items-center justify-center  rounded-lg ${bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
-                } ${mouseOver
+              className={`flex items-center justify-center  rounded-lg ${
+                bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
+              } ${
+                mouseOver
                   ? "border-2 border-transparent border-solid"
                   : borderColor
-                    ? `border-2 border-[${borderColor}] border-solid`
-                    : bgColor
-                      ? "border-2 border-transparent border-solid"
-                      : "border-2 border-solid border-[#ffffff33]"
-                } md:m-2 m-1`}
+                  ? `border-2 border-[${borderColor}] border-solid`
+                  : bgColor
+                  ? "border-2 border-transparent border-solid"
+                  : "border-2 border-solid border-[#ffffff33]"
+              } md:m-2 m-1`}
             >
               <button
                 className={`cursor-pointer flex items-center justify-center`}
@@ -162,14 +159,16 @@ const MicBTN = () => {
                             ({ deviceId, label }, index) => {
                               return (
                                 <div
-                                  className={`px-3 py-1 my-1 pl-6 text-white text-left ${deviceId === selectedMicDevice.deviceId &&
+                                  className={`px-3 py-1 my-1 pl-6 text-white text-left ${
+                                    deviceId === selectedMicDevice.deviceId &&
                                     "bg-gray-150"
-                                    }`}
+                                  }`}
                                 >
                                   <button
-                                    className={`flex flex-1 w-full ${deviceId === selectedMicDevice.deviceId &&
+                                    className={`flex flex-1 w-full ${
+                                      deviceId === selectedMicDevice.deviceId &&
                                       "bg-gray-150"
-                                      }`}
+                                    }`}
                                     key={`mics_${deviceId}`}
                                     onClick={async () => {
                                       setSelectedMicDevice({
@@ -214,6 +213,7 @@ const MicBTN = () => {
   );
 };
 
+
 const OutputMicBTN = () => {
   const { selectedOutputDevice, setSelectedOutputDevice } =
     useMeetingAppContext();
@@ -253,13 +253,15 @@ const OutputMicBTN = () => {
       {({ close }) => (
         <>
           <Popover.Button
-            className={`flex items-center justify-center  rounded-lg ${bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
-              } ${borderColor
+            className={`flex items-center justify-center  rounded-lg ${
+              bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
+            } ${
+              borderColor
                 ? `border-2 border-[${borderColor}] border-solid`
                 : bgColor
-                  ? "border-2 border-transparent border-solid"
-                  : "border-2 border-solid border-[#ffffff33]"
-              } md:m-2 m-1`}
+                ? "border-2 border-transparent border-solid"
+                : "border-2 border-solid border-[#ffffff33]"
+            } md:m-2 m-1`}
           >
             <button
               className={`cursor-pointer flex items-center justify-center`}
@@ -320,14 +322,16 @@ const OutputMicBTN = () => {
                           ({ deviceId, label }, index) => {
                             return (
                               <div
-                                className={`px-3 py-1 my-1 pl-6 text-white text-left ${deviceId === selectedOutputDevice.id &&
+                                className={`px-3 py-1 my-1 pl-6 text-white text-left ${
+                                  deviceId === selectedOutputDevice.id &&
                                   "bg-gray-150"
-                                  }`}
+                                }`}
                               >
                                 <button
-                                  className={`flex flex-1 w-full ${deviceId === selectedOutputDevice.id &&
+                                  className={`flex flex-1 w-full ${
+                                    deviceId === selectedOutputDevice.id &&
                                     "bg-gray-150"
-                                    }`}
+                                  }`}
                                   key={`mics_${deviceId}`}
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -359,6 +363,7 @@ const OutputMicBTN = () => {
     </Popover>
   );
 };
+
 
 const WebCamBTN = ({ isMobile }) => {
   const { selectedWebcamDevice, setSelectedWebcamDevice } =
@@ -413,13 +418,15 @@ const WebCamBTN = ({ isMobile }) => {
       {({ close }) => (
         <>
           <Popover.Button
-            className={`flex items-center justify-center  rounded-lg ${bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
-              } ${borderColor
+            className={`flex items-center justify-center  rounded-lg ${
+              bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
+            } ${
+              borderColor
                 ? `border-2 border-[${borderColor}] border-solid`
                 : bgColor
-                  ? "border-2 border-transparent border-solid"
-                  : "border-2 border-solid border-[#ffffff33]"
-              } md:m-2 m-1`}
+                ? "border-2 border-transparent border-solid"
+                : "border-2 border-solid border-[#ffffff33]"
+            } md:m-2 m-1`}
           >
             <button
               className={`cursor-pointer flex items-center justify-center`}
@@ -489,14 +496,16 @@ const WebCamBTN = ({ isMobile }) => {
                       <div className="flex flex-col">
                         {webcams.map(({ deviceId, label }, index) => (
                           <div
-                            className={`px-3 py-1 my-1 pl-6 text-white text-left ${deviceId === selectedWebcamDevice.id &&
+                            className={`px-3 py-1 my-1 pl-6 text-white text-left ${
+                              deviceId === selectedWebcamDevice.id &&
                               "bg-gray-150"
-                              }`}
+                            }`}
                           >
                             <button
-                              className={`flex flex-1 w-full ${deviceId === selectedWebcamDevice.id &&
+                              className={`flex flex-1 w-full ${
+                                deviceId === selectedWebcamDevice.id &&
                                 "bg-gray-150"
-                                }`}
+                              }`}
                               key={`output_webcams_${deviceId}`}
                               onClick={async () => {
                                 setSelectedWebcamDevice({
@@ -674,23 +683,23 @@ export function BottomBar({ bottomBarHeight }) {
           recordingState === Constants.recordingEvents.RECORDING_STARTED
             ? "Stop Recording"
             : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-                ? "Start Recording"
-                : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-                  ? "Stopping Recording"
-                  : "Start Recording"
+            ? "Starting Recording"
+            : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+            ? "Start Recording"
+            : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+            ? "Stopping Recording"
+            : "Start Recording"
         }
         tooltip={
           recordingState === Constants.recordingEvents.RECORDING_STARTED
             ? "Stop Recording"
             : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-                ? "Start Recording"
-                : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-                  ? "Stopping Recording"
-                  : "Start Recording"
+            ? "Starting Recording"
+            : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+            ? "Start Recording"
+            : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+            ? "Stopping Recording"
+            : "Start Recording"
         }
         lottieOption={isRecording ? defaultOptions : null}
       />
@@ -703,18 +712,17 @@ export function BottomBar({ bottomBarHeight }) {
           recordingState === Constants.recordingEvents.RECORDING_STARTED
             ? "Stop Recording"
             : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-                ? "Start Recording"
-                : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-                  ? "Stopping Recording"
-                  : "Start Recording"
+            ? "Starting Recording"
+            : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+            ? "Start Recording"
+            : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+            ? "Stopping Recording"
+            : "Start Recording"
         }
         lottieOption={isRecording ? defaultOptions : null}
       />
     );
   };
-
  
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
@@ -850,9 +858,7 @@ export function BottomBar({ bottomBarHeight }) {
             stopRecording();
           }
           leave();
-          console.log('isadmin',isAdminUser)
           if (isAdminUser) {
-            end();
             setTimeout(() => {
               endMeetingAPI({ roomId: meetingId })
             }, 2000);
@@ -1086,29 +1092,24 @@ export function BottomBar({ bottomBarHeight }) {
   ];
 
   function getBrowserName(userAgent) {
-    // The order matters here, and this may report false positives for unlisted browsers.
-
     if (userAgent.includes("Firefox")) {
-      // "Mozilla/5.0 (X11; Linux i686; rv:104.0) Gecko/20100101 Firefox/104.0"
       return "Mozilla Firefox";
     } else if (userAgent.includes("SamsungBrowser")) {
-      // "Mozilla/5.0 (Linux; Android 9; SAMSUNG SM-G955F Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/9.4 Chrome/67.0.3396.87 Mobile Safari/537.36"
       return "Samsung Internet";
     } else if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
-      // "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36 OPR/90.0.4480.54"
       return "Opera";
     } else if (userAgent.includes("Edge")) {
-      // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299"
       return "Microsoft Edge (Legacy)";
     } else if (userAgent.includes("Edg")) {
-      // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36 Edg/104.0.1293.70"
       return "Microsoft Edge (Chromium)";
     } else if (userAgent.includes("Chrome")) {
-      // "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
       return "Google Chrome or Chromium";
     } else if (userAgent.includes("Safari")) {
-      // "Mozilla/5.0 (iPhone; CPU iPhone OS 15_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6 Mobile/15E148 Safari/604.1"
       return "Apple Safari";
+    } else if (userAgent.includes("Brave")) {
+      return "Brave Browser";
+    } else if (userAgent.includes("Vivaldi")) {
+      return "Vivaldi";
     } else {
       return "unknown";
     }
@@ -1178,14 +1179,17 @@ export function BottomBar({ bottomBarHeight }) {
                       {otherFeatures.map(({ icon }) => {
                         return (
                           <div
-                            className={`grid items-center justify-center  ${icon === BottomBarButtonTypes.MEETING_ID_COPY ||
-                                icon ===
+                            className={`grid items-center justify-center  ${
+                              icon === BottomBarButtonTypes.MEETING_ID_COPY ||
+                              icon ===
                                 BottomBarButtonTypes.SCREEN_SHARE_MODE_BUTTON
                                 ? "col-span-7 sm:col-span-5 md:col-span-3 lg:col-sapn-2"
                                 : "col-span-4 sm:col-span-3 md:col-span-2"
-                              }`}
+                            }`}
                           >
-                            {icon === BottomBarButtonTypes.SCREEN_SHARE ? (
+                            {icon === BottomBarButtonTypes.RAISE_HAND ? (
+                              <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
+                            ) : icon === BottomBarButtonTypes.SCREEN_SHARE ? (
                               <ScreenShareBTN
                                 isMobile={isMobile}
                                 isTab={isTab}
@@ -1205,12 +1209,10 @@ export function BottomBar({ bottomBarHeight }) {
                                 isMobile={isMobile}
                                 isTab={isTab}
                               />
-                            ) : icon === BottomBarButtonTypes.END_MEETING &&
+                            )  : icon === BottomBarButtonTypes.END_MEETING &&
                               participantMode === participantModes.AGENT ? (
                               <EndBTN />
-                              
                             ) : null}
-                            <LeaveBTN />
                           </div>
                         );
                       })}
@@ -1224,7 +1226,7 @@ export function BottomBar({ bottomBarHeight }) {
       </Transition>
     </div>
   ) : (
-    <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
+  <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
      
       <DisplayTimer />
       { isRecording && <RecordingDisplayTimer /> }
@@ -1233,26 +1235,25 @@ export function BottomBar({ bottomBarHeight }) {
           <><RecordingBTN isTab={isTab} isMobile={isMobile} />
           </>
         )}
-
+        <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
         <MicBTN />
 
         <WebCamBTN />
         {(browserName === "Google Chrome or Chromium" ||
           browserName === "Microsoft Edge (Legacy)" ||
           browserName === "Opera") && <OutputMicBTN />}
-
-        {/* {participantMode === participantModes.AGENT && (
+        <ScreenShareBTN isMobile={isMobile} isTab={isTab} />
+        {participantMode === participantModes.AGENT && (
           <>
-         
+           
             <EndBTN />
           </>
-        )} */}
+        )}
 
         <LeaveBTN />
       </div>
 
       <div className="flex items-center justify-center">
-      
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>

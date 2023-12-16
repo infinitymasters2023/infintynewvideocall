@@ -75,18 +75,18 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   };
 
   const handleZoomIn = () => {
-    cropper.zoom(0.1); // You can adjust the zoom factor as needed
+    cropper.zoom(0.1); 
   };
 
   const handleZoomOut = () => {
-    cropper.zoom(-0.1); // You can adjust the zoom factor as needed
+    cropper.zoom(-0.1); 
   };
   const handleRotateLeft = () => {
-    cropper.rotate(-90); // Rotate 90 degrees to the left
+    cropper.rotate(-90); 
   };
 
   const handleRotateRight = () => {
-    cropper.rotate(90); // Rotate 90 degrees to the right
+    cropper.rotate(90); 
   };
 
   const handleRevertToOriginal = () => {
@@ -209,26 +209,6 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                   }}
                   className="w-9/12 transform relative overflow-y-auto rounded bg-gray-750 p-4 text-left align-middle flex flex-col items-center shadow-xl transition-all"
                 >
-                  {/* Move the "Upload" and "Cancel" buttons here */}
-                  <div className="mt-6 flex w-full justify-end gap-2">
-                    <button
-                      type="button"
-                      className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded border border-white bg-transparent px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                      onClick={handleFileUpload}
-                    >
-                      Upload
-                    </button>
-                  </div>
-
                   <Dialog.Title className="text-base font-medium text-white w-full">
                     Preview
                   </Dialog.Title>
@@ -243,14 +223,15 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                   <div className="flex mt-8 items-center justify-center h-full w-full">
                     {imageSrc ? (
                       <img src={imageSrc} width={300} height={300} />
+                   
                     ) : (
                       <div width={300} height={300}>
                         <p className=" text-white  text-center">
                           Loading Image...
                         </p>
                       </div>
+                      
                     )}
-                    {/* Conditionally render the Cropper based on button click */}
                     {cropButtonClicked && (
                       <>
                       <Cropper
@@ -291,25 +272,10 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                       </select>
                       <div className="col-md-12 mt-3">
                       <span className="text-white font-semibold">Remarks:</span>
-                      <input
-                      type="text"
-                      value={remarks}
-                      onChange={(e) => handleRemarksChange(e.target.value)}
+                      <textarea
                       className="ml-2 form-control"
-                    />
+                    ></textarea>
                     </div>
-                    {cropButtonClicked && (
-                      <button
-                        type="button"
-                        className="rounded border border-white bg-transparent px-3 py-2  mt-4 float-end text-sm font-medium text-white hover:bg-gray-700"
-                        onClick={() => {
-                          setOpen(false);
-                          handleFileUpload()
-                        }}
-                      >
-                        Upload
-                      </button>
-                    )}
                     </div>
                       
                     </>
@@ -323,9 +289,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                   {cropData && cropButtonClicked && (
                     <div className="container">
                     <div className="row">
-                      <div className="col-6">
-                        <span className="text-white font-semibold">After Crop Image</span>
-                      </div>
+                      <div className="col-4"></div>
                       <div className="mt-2 float-end col-4"> {/* Adjust the margin-top as needed */}
                       <button
                         className="bg-white text-black px-2 py-1  rounded ml-2 text-sm"
@@ -359,27 +323,51 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                       </button>
                     </div>
                     </div>
-                    {cropData && cropButtonClicked && (
-                      <div className="row">
-                      <div className="col-md-6">
-                        <img
-                          className="object-contain mt-3"
-                          src={cropData}
-                          alt="cropped"
-                        />
-                      </div>
-                     
-                      
-                    </div>
-                    )}
-              
-                   
-                      
-                   
                   </div>
 
                   )}
-                  
+                  <div className=" flex w-full justify-end gap-2">
+                  <button
+                  type="button"
+                  className="rounded border border-white bg-transparent text-white hover:bg-gray-700 mr-2 px-3 text-sm"
+                  style={{ height: '30px' }}
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="rounded border border-white bg-transparent px-4 text-sm font-medium text-white hover:bg-gray-700"
+                  style={{ height: '30px' }}
+                  onClick={handleFileUpload}
+                >
+                  Upload
+                </button>
+
+                    <>
+                    {!cropButtonClicked && (
+                      <div>
+                        <span className="text-white font-semibold">Select Status:</span>
+                        <select
+                          onChange={(e) => handleStatusChange(e.target.value)}
+                          className="ml-2 form-control"
+                        >
+                          <option value="">Select Status</option>
+                          <option value="approve">Approve</option>
+                          <option value="pending">Pending for Verification</option>
+                          <option value="reject">Reject</option>
+                        </select>
+                    
+                        <div className="col-md-12 mt-3">
+                          <span className="text-white font-semibold">Remarks:</span>
+                          <textarea className="ml-2 form-control"></textarea>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>

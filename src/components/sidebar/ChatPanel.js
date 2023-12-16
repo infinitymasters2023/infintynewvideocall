@@ -7,6 +7,16 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
   const localSender = localParticipantId === senderId;
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setIsCopied(true);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    });
+  };
 
   return (
     <div
@@ -20,19 +30,26 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
           localSender ? "items-end" : "items-start"
         } flex-col py-1 px-2 rounded-md bg-gray-700`}
       >
-        <p style={{ color: "#ffffff80" }}>
+      <p
+      style={{ color: '#ffffff80', cursor: 'pointer' }}
+      onClick={handleCopy}
+    >
           {localSender ? "You" : nameTructed(senderName, 15)}
         </p>
         <div>
-          <p className="inline-block whitespace-pre-wrap break-words text-right text-white">
-            {text}
-          </p>
+        <p
+        className="inline-block whitespace-pre-wrap break-words text-right text-white"
+        onClick={handleCopy}
+      >
+        {text}
+      </p>
         </div>
         <div className="mt-1">
           <p className="text-xs italic" style={{ color: "#ffffff80" }}>
             {formatAMPM(new Date(timestamp))}
           </p>
         </div>
+       
       </div>
     </div>
   );
@@ -42,7 +59,10 @@ const ChatInput = ({ inputHeight }) => {
   const [message, setMessage] = useState("");
   const { publish } = usePubSub("CHAT");
   const input = useRef();
-
+  const isLink = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    return urlRegex.test(text);
+  };
   return (
     <div
       className="w-full flex items-center px-2"
@@ -73,30 +93,31 @@ const ChatInput = ({ inputHeight }) => {
           </button>
         </span>
         <input
-          type="text"
-          className={` px-2 py-4 text-base text-white bg-gray-750 border-[1px] border-gray-500 focus:outline-none focus:border-purple-350 rounded pr-10  w-full`}
-          placeholder="Write your message"
-          autocomplete="off"
-          ref={input}
-          value={message}
-          onChange={(e) => {
-            setMessage(e.target.value);
-          }}
-          onKeyPress={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              const messageText = message.trim();
-
-              if (messageText.length > 0) {
-                publish(messageText, { persist: true });
-                setTimeout(() => {
-                  setMessage("");
-                }, 100);
-                input.current?.focus();
-              }
+        type="text"
+        className={` px-2 py-4 text-base text-white bg-gray-750 border-[1px] border-gray-500 focus:outline-none focus:border-purple-350 rounded pr-10  w-full`}
+        placeholder="Write your message"
+        autocomplete="off"
+        ref={input}
+        value={message}
+        onChange={(e) => {
+          setMessage(e.target.value);
+        }}
+        onKeyPress={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            const messageText = message.trim();
+      
+            if (messageText.length > 0) {
+              publish(messageText, { persist: true });
+              setTimeout(() => {
+                setMessage("");
+              }, 100);
+              input.current?.focus();
             }
-          }}
-        />
+          }
+        }}
+      />
+
       </div>
     </div>
   );
