@@ -77,6 +77,7 @@ function ParticipantListItem({ participantId, raisedHand }) {
     const [userId, setUserId] = useState("");
     const [adminId, setAdminId] = useState("");
 
+   
     useEffect(() => {
       setUserId(uuidv4());
       ;
@@ -88,8 +89,8 @@ function ParticipantListItem({ participantId, raisedHand }) {
         setAdminId(userJoinId);
       }
     }, [location.search]);
-    console.log('user',userId)
-    console.log('admin',adminId)
+    console.log('user', userId)
+    console.log('admin', adminId)
     const isAdminUser = adminId == '' && userId !== '' && adminId !== userId;
 
   return (
