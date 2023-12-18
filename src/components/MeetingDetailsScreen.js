@@ -11,7 +11,7 @@ import { Button as BootstrapButton, Form, Modal} from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
-import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI } from '../../src/services/meeting_api'
+import {createRoomMeetingAPI, insertMeetingAPI, startMeetingAPI, joinMeetingAPI } from '../services/meeting_api'
 
 
 export function MeetingDetailsScreen({

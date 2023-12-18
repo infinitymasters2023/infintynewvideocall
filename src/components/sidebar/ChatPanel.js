@@ -12,28 +12,22 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const handleCopy = () => {
     if (isLink) {
       try {
-        // Attempt to parse the link using the URL constructor
+       
         const parsedURL = new URL(text);
 
-        // Extract the pathname, which contains only the path without the protocol and base URL
+       
         const pathWithoutBaseURL = parsedURL.pathname;
 
-        // Create a temporary textarea element to facilitate copying
+      
         const textarea = document.createElement('textarea');
         textarea.value = pathWithoutBaseURL;
         document.body.appendChild(textarea);
-
-        // Select the text in the textarea
         textarea.select();
         document.execCommand('copy');
-
-        // Remove the temporary textarea
         document.body.removeChild(textarea);
 
-        // You can provide user feedback, such as a tooltip or a message
         alert('Link copied to clipboard!');
       } catch (error) {
-        // Handle the case where the URL is invalid
         console.error('Invalid URL:', error.message);
       }
     }

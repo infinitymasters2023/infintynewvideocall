@@ -12,7 +12,7 @@ import MicOffIcon from "../../icons/MicOffIcon";
 import MicOnIcon from "../../icons/Bottombar/MicOnIcon";
 import { toast } from "react-toastify";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { tokenGeneration, createRoomMeeting } from '../../services/meeting_api'
+import { tokenGeneration, createRoomMeetingAPI } from '../../services/meeting_api'
 export function JoiningScreen({
   participantName,
   setParticipantName,
@@ -450,7 +450,7 @@ export function JoiningScreen({
                       const token = await getToken();
                       // const token = await tokenGeneration({ roles : 'crawler' });
                       sessionStorage.setItem('accessToken', token);
-                      const _meetingId = await createRoomMeeting({
+                      const _meetingId = await createRoomMeetingAPI({
                         customRoomId: "",
                         ticketNo: "",
                       })
