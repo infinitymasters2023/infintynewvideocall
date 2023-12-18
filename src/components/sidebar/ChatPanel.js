@@ -7,15 +7,51 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
   const localSender = localParticipantId === senderId;
-  const [isCopied, setIsCopied] = useState(false);
+  const isLink = /^(https?:\/\/|www\.)\S+/i.test(text);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(text).then(() => {
-      setIsCopied(true);
-      setTimeout(() => {
-        setIsCopied(false);
-      }, 2000);
-    });
+    if (isLink) {
+      try {
+        // Attempt to parse the link using the URL constructor
+        const parsedURL = new URL(text);
+
+        // Extract the pathname, which contains only the path without the protocol and base URL
+        const pathWithoutBaseURL = parsedURL.pathname;
+
+        // Create a temporary textarea element to facilitate copying
+        const textarea = document.createElement('textarea');
+        textarea.value = pathWithoutBaseURL;
+        document.body.appendChild(textarea);
+
+        // Select the text in the textarea
+        textarea.select();
+        document.execCommand('copy');
+
+        // Remove the temporary textarea
+        document.body.removeChild(textarea);
+
+        // You can provide user feedback, such as a tooltip or a message
+        alert('Link copied to clipboard!');
+      } catch (error) {
+        // Handle the case where the URL is invalid
+        console.error('Invalid URL:', error.message);
+      }
+    }
+  };
+
+  const renderContent = () => {
+    if (isLink) {
+      return (
+        <span
+          onClick={handleCopy}
+          style={{ cursor: 'pointer', color: 'inherit', textDecoration: 'underline' }}
+        >
+          {text}
+        </span>
+      );
+    } else {
+      return text;
+    }
   };
 
   return (
@@ -30,26 +66,24 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
           localSender ? "items-end" : "items-start"
         } flex-col py-1 px-2 rounded-md bg-gray-700`}
       >
-      <p
-      style={{ color: '#ffffff80', cursor: 'pointer' }}
-      onClick={handleCopy}
-    >
+        <p style={{ color: "#ffffff80" }}>
           {localSender ? "You" : nameTructed(senderName, 15)}
         </p>
         <div>
-        <p
-        className="inline-block whitespace-pre-wrap break-words text-right text-white"
-        onClick={handleCopy}
-      >
-        {text}
-      </p>
-        </div>
+  <p
+    className="inline-block whitespace-pre-wrap break-words text-right text-white"
+    style={{ cursor: 'pointer' }}
+    onClick={handleCopy}
+  >
+  {renderContent()}
+  </p>
+</div>
         <div className="mt-1">
           <p className="text-xs italic" style={{ color: "#ffffff80" }}>
             {formatAMPM(new Date(timestamp))}
           </p>
         </div>
-       
+        
       </div>
     </div>
   );
