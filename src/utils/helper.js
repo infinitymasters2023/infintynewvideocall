@@ -35,3 +35,17 @@ export function formatAMPM(date) {
   var strTime = hours + ":" + minutes + " " + ampm;
   return strTime;
 }
+
+export const allowOnlyMobileNumber = (originalValue) => {
+  var transformValue = originalValue.replace(/d{10}/g, '')
+  transformValue = transformValue.replace(/\D/g, '')
+  transformValue = transformValue.replace(/\s/g, "");
+  return transformValue
+}
+
+export const allowOnlyEmailAddresses = (originalValue) => {
+  var transformValue = originalValue.toLowerCase();
+  transformValue = transformValue.replace(/[^A-Za-z0-9\-_.@]/g, '')
+  transformValue = transformValue.replace(/\s/g, "");
+  return transformValue
+}
