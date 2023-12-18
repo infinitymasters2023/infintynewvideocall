@@ -1,5 +1,5 @@
 import { CheckIcon, ClipboardIcon } from "@heroicons/react/24/outline";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FaMobile, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -7,7 +7,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from "react-router-dom";
-import { Button as BootstrapButton, Form, Modal} from 'react-bootstrap';
+import { Button as BootstrapButton, Form, Modal } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
@@ -40,26 +40,35 @@ export function MeetingDetailsScreen({
   const [proxyEmail, setProxyEmail] = useState('');
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [isSendLinkButtonDisabled, setIsSendLinkButtonDisabled] = useState(true);
-  useEffect(() => {
-    setUserId(uuidv4());
-    const storedTicketNo = localStorage.getItem('ticketNo');
-    if (storedTicketNo) {
-      setTicketNo(storedTicketNo);
+  const [ticketInfo, setTicketInfo] = useState({});
+  const url = new URL(window.location.href);
+  const searchParams = new URLSearchParams(url.search);
+  const participantMode = searchParams.get("mode");
+  const customRoomId = searchParams.get("qu");
+  const userid = searchParams.get("userid");
+
+  const fetchTicketInfo = useCallback(async () => {
+    if (customRoomId && userid) {
+      const iData = { quNumber : customRoomId, userid : userid }
+      await serviceCallInfoAPI(iData).then(async (response) => {
+        if (response && response.isSuccess && response.statusCode == 200) {
+          setTicketInfo(response.data)
+        }
+      })
+        .catch((error) => {
+        })
     }
+
+  }, []);
+
+  useEffect(() => {
+    setUserId(userid);
+    fetchTicketInfo()
   }, []);
 
 
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('https://meetings.infyshield.com/api/data');
-      const result = await response.json();
-      console.log('Fetched data:', result);
-    } catch (error) {
-      console.log('Error fetching data', error);
-
-    }
-  };
+ console.log('ticketInfo', ticketInfo);
 
   // const createMeeting = async () => {
   //   try {
@@ -173,9 +182,6 @@ export function MeetingDetailsScreen({
   //   }
   // };
   const handleCreateMeeting = async () => {
-
-
-
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
@@ -190,8 +196,8 @@ export function MeetingDetailsScreen({
                   await startMeetingAPI({
                     roomId: meetingId,
                     fullName: participantName,
-                    mobile: mobileNumber,
-                    email: email,
+                    mobile: ticketInfo.mobileno,
+                    email: ticketInfo.emailidaddress,
                   });
                   if (videoTrack) {
                     videoTrack.stop();
@@ -211,9 +217,9 @@ export function MeetingDetailsScreen({
                   await startMeetingAPI({
                     roomId: meetingId,
                     fullName: participantName,
-                    mobile: mobileNumber,
-                    email: email,
-                   
+                    mobile: ticketInfo.mobileno,
+                    email: ticketInfo.emailidaddress,
+
                   });
                   if (videoTrack) {
                     videoTrack.stop();
@@ -402,7 +408,7 @@ export function MeetingDetailsScreen({
   };
 
   useEffect(() => {
- 
+
     const urlSearchParams = new URLSearchParams(location.search);
     const urlMeetingId = urlSearchParams.get("meetingId");
     const urlTicketNo = urlSearchParams.get("ticket");
@@ -465,15 +471,15 @@ export function MeetingDetailsScreen({
     <div className={`flex flex-1 flex-col justify-center w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked || (isJoinMeetingClicked && hasJoinedThroughLink) ? (
         <>
-        {(adminId === '') ? (
-          <input
-            value={ticketNo}
-            onChange={(e) => setTicketNo(e.target.value)}
-            placeholder="Enter ticket number"
-            className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
-            readOnly
-          />
-        ) : null}
+          {(adminId === '') ? (
+            <input
+              value={ticketInfo.TicketNO}
+              onChange={(e) => setTicketNo(e.target.value)}
+              placeholder="Enter ticket number"
+              className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
+              readOnly
+            />
+          ) : null}
           <input
             value={participantName}
             onChange={handleInputChange}
@@ -498,7 +504,7 @@ export function MeetingDetailsScreen({
                 } text-white px-2 py-3 rounded-xl mt-3`}
               onClick={async (e) => {
                 await handleJoinMeeting();
-                await joinMeetingAPI({ roomId: meetingId , fullName : participantName, mobile : mobileNumber, email : email  })
+                await joinMeetingAPI({ roomId: meetingId, fullName: participantName, mobile: mobileNumber, email: email })
               }}
               disabled={participantName.length < 2}
             >
@@ -529,7 +535,7 @@ export function MeetingDetailsScreen({
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
+                    <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
                   </Modal.Body>
                 </Modal>
 
@@ -554,8 +560,10 @@ export function MeetingDetailsScreen({
                       setIscreateMeetingClicked(true);
                       await insertMeetingAPI({
                         roomId: meetingId,
-                        customRoomId: meetingId,
-                        ticketNo: ticketNo
+                        customRoomId: customRoomId,
+                        ticketNo: ticketInfo.TicketNO,
+                        roomId : meetingId,
+                        userid : userid
                       });
                     }}
                   >

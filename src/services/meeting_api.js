@@ -15,6 +15,7 @@ export const tokenGenerationAPI = async (iData) => {
 };
 export const createRoomMeetingAPI = async (iData) => {
     return await post('room/create', iData).then((response) => {
+        console.log('res', response);
         if (response && response.isSuccess && response.statusCode === 200 && response.data) {
             const { roomId } = response.data
             return roomId

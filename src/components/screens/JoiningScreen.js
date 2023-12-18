@@ -12,7 +12,7 @@ import MicOffIcon from "../../icons/MicOffIcon";
 import MicOnIcon from "../../icons/Bottombar/MicOnIcon";
 import { toast } from "react-toastify";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { tokenGeneration, createRoomMeeting } from '../../services/meeting_api'
+import { tokenGenerationAPI, serviceCallInfoAPI } from '../../services/meeting_api'
 export function JoiningScreen({
   participantName,
   setParticipantName,
@@ -51,6 +51,31 @@ export function JoiningScreen({
   const [settingDialogueOpen, setSettingDialogueOpen] = useState(false);
 
   const [audioTrack, setAudioTrack] = useState(null);
+
+  const [ticketInfo, setTicketInfo] = useState({});
+  const url = new URL(window.location.href);
+  const searchParams = new URLSearchParams(url.search);
+  const participantMode = searchParams.get("mode");
+  const customRoomId = searchParams.get("qu");
+  const userid = searchParams.get("userid");
+
+  const fetchTicketInfo = useCallback(async () => {
+    if (customRoomId && userid) {
+      const iData = { quNumber : customRoomId, userid : userid }
+      await serviceCallInfoAPI(iData).then(async (response) => {
+        if (response && response.isSuccess && response.statusCode == 200) {
+          setTicketInfo(response.data)
+        }
+      })
+        .catch((error) => {
+        })
+    }
+
+  }, []);
+
+  useEffect(() => {
+    fetchTicketInfo()
+  }, []);
 
   const handleClickOpen = () => {
     setSettingDialogueOpen(true);
@@ -312,9 +337,8 @@ export function JoiningScreen({
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             onClick={onClick}
-            className={`rounded-full min-w-auto w-11 h-11 flex items-center justify-center ${
-              onState ? "bg-white" : "bg-red-650 text-white"
-            }`}
+            className={`rounded-full min-w-auto w-11 h-11 flex items-center justify-center ${onState ? "bg-white" : "bg-red-650 text-white"
+              }`}
           >
             {onState ? (
               <OnIcon fillcolor={onState ? "#050A0E" : "#fff"} />
@@ -325,9 +349,8 @@ export function JoiningScreen({
         </div>
         <div
           style={{ zIndex: 999 }}
-          className={`${
-            tooltipShow ? "" : "hidden"
-          } overflow-hidden flex flex-col items-center justify-center pb-1.5`}
+          className={`${tooltipShow ? "" : "hidden"
+            } overflow-hidden flex flex-col items-center justify-center pb-1.5`}
           ref={tooltipRef}
         >
           <div className={"rounded-md p-1.5 bg-black "}>
@@ -428,8 +451,9 @@ export function JoiningScreen({
                     setVideoTrack={setVideoTrack}
                     onClickStartMeeting={onClickStartMeeting}
                     onClickJoin={async (id) => {
-                      const token = await getToken();
-                      // const token = await tokenGeneration({ roles : 'rtc' });
+                      // const token = await getToken();
+                      const token = await tokenGenerationAPI({ roles : 'rtc' });
+                      console.log('token', token);
                       sessionStorage.setItem('accessToken', token);
                       const valid = await validateMeeting({
                         roomId: id,
@@ -447,15 +471,21 @@ export function JoiningScreen({
                       } else alert("Invalid Meeting Id");
                     }}
                     _handleOnCreateMeeting={async () => {
-                      const token = await getToken();
-                      // const token = await tokenGeneration({ roles : 'crawler' });
+                      // const token = await getToken();
+                      const token = await tokenGenerationAPI({ roles : 'crawler' });
                       sessionStorage.setItem('accessToken', token);
-                      const _meetingId = await createRoomMeeting({
-                        customRoomId: "",
-                        ticketNo: "",
-                      })
-                      // const _meetingId = await createMeeting({ token });
-                      setToken(token);
+                      // const _meetingId = await createRoomMeetingAPI({
+                      //   customRoomId: customRoomId,
+                      //   ticketNo: ticketInfo.TicketNO,
+                      // }).then((response) => {
+                      //   console.log('response',response);
+                      //   // setToken(token);
+                      //   // setMeetingId(_meetingId);
+                      //   // return _meetingId;
+                      // }).catch((error) => {
+                      //   return error
+                      // })
+                      const _meetingId = await createMeeting({ token });
                       setMeetingId(_meetingId);
                       return _meetingId;
                     }}

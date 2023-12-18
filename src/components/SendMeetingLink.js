@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { allowOnlyMobileNumber, 
     allowOnlyEmailAddresses } from '../utils/helper'
-const SendMeetingLink = ({ ticketInfo, }) => {
+const SendMeetingLink = ({ ticketInfo }) => {
     const [requestBody, setRequestBody] = useState([]);
     const [otherMobile, setOtherMobile] = useState('');
     const [otherEmail, setOtherEmail] = useState('');
@@ -157,7 +157,7 @@ const SendMeetingLink = ({ ticketInfo, }) => {
                     </div>
                 }
             </div>
-            <h4 className="text-xs text-gray-700 px-2">Service Center Name :<span className="text-gray-600 px-2">{ticketInfo.customername}</span></h4>
+            <h4 className="text-xs text-gray-700 px-2">Service Center Name :<span className="text-gray-600 px-2">{ticketInfo.serviceCenterName}</span></h4>
             <div className="flex flex-row py-1">
                 {ticketInfo.serviceCenterEmail &&
                     <div className="basis-7/12 px-2">
