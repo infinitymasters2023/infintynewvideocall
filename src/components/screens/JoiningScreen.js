@@ -452,7 +452,7 @@ export function JoiningScreen({
                     onClickStartMeeting={onClickStartMeeting}
                     onClickJoin={async (id) => {
                       // const token = await getToken();
-                      const token = await tokenGenerationAPI({ roles : 'rtc' });
+                      const token = await tokenGenerationAPI({ roles :  'rtc' });
                       console.log('token', token);
                       sessionStorage.setItem('accessToken', token);
                       const valid = await validateMeeting({
