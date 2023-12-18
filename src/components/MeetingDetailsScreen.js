@@ -334,11 +334,7 @@ export function MeetingDetailsScreen({
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-<<<<<<< Updated upstream
-                    <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
-=======
                   <SendMeetingLink key={'SendLink'} />
->>>>>>> Stashed changes
                   </Modal.Body>
                 </Modal>
 
