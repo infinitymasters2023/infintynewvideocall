@@ -1,5 +1,5 @@
 import { CheckIcon, ClipboardIcon } from "@heroicons/react/24/outline";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { FaMobile, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -7,9 +7,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from "react-router-dom";
-import { Button as BootstrapButton, Form, Modal, Col, Container, Row } from 'react-bootstrap';
-import MeetingScheduler from "./MeetingScheduler";
-import MeetingForm from "./MeetingScheduler";
+import { Button as BootstrapButton, Form, Modal} from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
@@ -26,7 +24,6 @@ export function MeetingDetailsScreen({
   onClickStartMeeting,
 }) {
   const location = useLocation();
-  const [ticketInfo, setTicketInfo] = useState({});
   const [meetingId, setMeetingId] = useState("");
   const [meetingIdError, setMeetingIdError] = useState(false);
   const [ticketNo, setTicketNo] = useState("");
@@ -43,36 +40,26 @@ export function MeetingDetailsScreen({
   const [proxyEmail, setProxyEmail] = useState('');
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [isSendLinkButtonDisabled, setIsSendLinkButtonDisabled] = useState(true);
-  let url = new URL(window.location.href);
-  let searchParams = new URLSearchParams(url.search);
-  const participantMode = searchParams.get("mode");
-  const customRoomId = searchParams.get("qu");
-  const userid = searchParams.get("userid");
-  const fetchServiceCallInfo = useCallback(async () => {
-    try {
-      if (customRoomId && userid && participantMode === 'AGENT') {
-        await serviceCallInfoAPI({ quNumber: customRoomId, userid }).then((response) => {
-          if (response && response.isSuccess && response.statusCode === 200 && response.data) {
-            setTicketInfo(response.data)
-            setParticipantName(response.data.UserName);
-          }
-        }).catch((error) => {
-          return error
-        })
-      }
-    } catch (error) {
-      console.error('An error occurred while fetching service call info:', error);
-    }
-  }, [userid, customRoomId, participantMode]);
-
   useEffect(() => {
-    if (userid && customRoomId) {
-      setUserId(userid);
-      fetchServiceCallInfo()
+    setUserId(uuidv4());
+    const storedTicketNo = localStorage.getItem('ticketNo');
+    if (storedTicketNo) {
+      setTicketNo(storedTicketNo);
     }
-  }, [userid, customRoomId]);
+  }, []);
 
-  console.log('ticketInfo', ticketInfo);
+
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://meetings.infyshield.com/api/data');
+      const result = await response.json();
+      console.log('Fetched data:', result);
+    } catch (error) {
+      console.log('Error fetching data', error);
+
+    }
+  };
 
   // const createMeeting = async () => {
   //   try {
@@ -186,6 +173,9 @@ export function MeetingDetailsScreen({
   //   }
   // };
   const handleCreateMeeting = async () => {
+
+
+
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
@@ -208,7 +198,7 @@ export function MeetingDetailsScreen({
                     setVideoTrack(null);
                   }
                   onClickStartMeeting();
-                  localStorage.setItem('ticketNo', ticketInfo.TicketNO);
+                  localStorage.setItem('ticketNo', ticketNo);
                 }}
               >
                 <span style={{ marginRight: '5px' }}>Copy Link</span>
@@ -223,14 +213,14 @@ export function MeetingDetailsScreen({
                     fullName: participantName,
                     mobile: mobileNumber,
                     email: email,
-
+                   
                   });
                   if (videoTrack) {
                     videoTrack.stop();
                     setVideoTrack(null);
                   }
                   onClickStartMeeting();
-                  localStorage.setItem('ticketNo', ticketInfo.TicketNO);
+                  localStorage.setItem('ticketNo', ticketNo);
                 }}
               >
                 Yes
@@ -248,14 +238,14 @@ export function MeetingDetailsScreen({
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
-      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
       await startVideoRecordingAPI(link);
       await insertMeetingParticipantAPI();
       onClickJoin(meetingId);
     } else {
       setMeetingIdError(true);
     }
-    localStorage.setItem('ticketNo', ticketInfo.TicketNO);
+    localStorage.setItem('ticketNo', ticketNo);
   };
 
   const insertMeetingParticipantAPI = async () => {
@@ -288,7 +278,7 @@ export function MeetingDetailsScreen({
   const startVideoRecordingAPI = async (link) => {
     const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/master/startVideoRecording';
     const requestData = {
-      ticketNo: ticketInfo.TicketNO,
+      ticketNo: ticketNo,
       startTime: new Date().toISOString(),
       userid: userId,
       meetingId: meetingId,
@@ -322,7 +312,7 @@ export function MeetingDetailsScreen({
 
   const handleSendLinkToSelected = async () => {
     for (const contact of selectedContacts) {
-      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
       try {
 
@@ -331,7 +321,7 @@ export function MeetingDetailsScreen({
           mobile: contact.mobile,
           sendToOtp: "Email",
           meetingId: meetingId,
-          ticket: ticketInfo.TicketNO,
+          ticket: ticketNo,
           meetingurl: link,
         });
 
@@ -346,7 +336,7 @@ export function MeetingDetailsScreen({
 
 
   const handleSendLinkToEmail = async () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -357,7 +347,7 @@ export function MeetingDetailsScreen({
           mobile: mobileNumber,
           sendToOtp: "Email",
           meetingId: meetingId,
-          ticket: ticketInfo.TicketNO,
+          ticket: ticketNo,
           meetingurl: link,
         }
       );
@@ -368,7 +358,7 @@ export function MeetingDetailsScreen({
         mobile: mobileNumber,
         sendToOtp: "Mobile",
         meetingId: meetingId,
-        ticket: ticketInfo.TicketNO,
+        ticket: ticketNo,
         meetingurl: link,
       });
 
@@ -386,7 +376,7 @@ export function MeetingDetailsScreen({
   };
 
   const handleSendLinkToMobile = async () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
 
     try {
       const response = await axios.post(
@@ -396,7 +386,7 @@ export function MeetingDetailsScreen({
           mobile: mobileNumber,
           sendToOtp: "Mobile",
           meetingId: meetingId,
-          ticket: ticketInfo.TicketNO,
+          ticket: ticketNo,
           meetingurl: link,
         }
       );
@@ -412,7 +402,7 @@ export function MeetingDetailsScreen({
   };
 
   useEffect(() => {
-
+ 
     const urlSearchParams = new URLSearchParams(location.search);
     const urlMeetingId = urlSearchParams.get("meetingId");
     const urlTicketNo = urlSearchParams.get("ticket");
@@ -443,7 +433,7 @@ export function MeetingDetailsScreen({
   }, [location.search]);
 
   const handleCopyLink = () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketInfo.TicketNO}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
+    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
     navigator.clipboard.writeText(link);
     setIsCopiedLink(true);
     localStorage.setItem('meetingLink', link);
@@ -475,27 +465,27 @@ export function MeetingDetailsScreen({
     <div className={`flex flex-1 flex-col justify-center w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked || (isJoinMeetingClicked && hasJoinedThroughLink) ? (
         <>
-          {(adminId === '') ? (
-            <input
-              value={ticketInfo.TicketNO}
-              onChange={(e) => setTicketNo(e.target.value)}
-              placeholder="Enter ticket number"
-              className="px-4 py-2 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
-              readOnly
-            />
-          ) : null}
+        {(adminId === '') ? (
+          <input
+            value={ticketNo}
+            onChange={(e) => setTicketNo(e.target.value)}
+            placeholder="Enter ticket number"
+            className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
+            readOnly
+          />
+        ) : null}
           <input
             value={participantName}
             onChange={handleInputChange}
             placeholder="Enter your name"
-            className="px-4 py-2 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
+            className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
             maxLength={20}
           />
 
           {(adminId === '') ? (
             <button
               className={`w-full ${participantName.length < 3 ? "bg-gray-650" : "bg-purple-350"
-                }  text-white px-2 py-2 rounded-xl mt-3`}
+                }  text-white px-2 py-3 rounded-xl mt-3`}
               onClick={handleCreateMeeting}
               disabled={participantName.length < 2}
             >
@@ -505,10 +495,10 @@ export function MeetingDetailsScreen({
           ) : (
             <button
               className={`w-full ${participantName.length > 2 ? "bg-purple-350" : "bg-yellow-650"
-                } text-white px-2 py-2 rounded-xl mt-3`}
+                } text-white px-2 py-3 rounded-xl mt-3`}
               onClick={async (e) => {
                 await handleJoinMeeting();
-                await joinMeetingAPI({ roomId: meetingId, fullName: participantName, mobile: mobileNumber, email: email })
+                await joinMeetingAPI({ roomId: meetingId , fullName : participantName, mobile : mobileNumber, email : email  })
               }}
               disabled={participantName.length < 2}
             >
@@ -532,7 +522,7 @@ export function MeetingDetailsScreen({
                 <button className="text-white text-sm cursor-pointer" onClick={openModal}>
                   Send Link
                 </button>
-                <Modal show={isModalOpen} onHide={closeModal} centered size="md">
+                <Modal show={isModalOpen} onHide={closeModal} centered size="xl">
                   <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: '15px', fontWeight: '500' }} >
                       Send Link
@@ -542,7 +532,9 @@ export function MeetingDetailsScreen({
                   <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
                   </Modal.Body>
                 </Modal>
+
               </div>
+
             </>
           )}
         </>
@@ -555,18 +547,16 @@ export function MeetingDetailsScreen({
 
                 {adminId === '' && userId !== '' && (
                   <button
-                    className="w-full bg-purple-350 text-white px-2 py-2 rounded-xl"
+                    className="w-full bg-purple-350 text-white px-2 py-3 rounded-xl"
                     onClick={async (e) => {
                       const meetingId = await _handleOnCreateMeeting();
                       setMeetingId(meetingId);
                       setIscreateMeetingClicked(true);
                       await insertMeetingAPI({
                         roomId: meetingId,
-                        customRoomId: customRoomId,
-                        ticketNo: ticketInfo.TicketNO,
-                        userid: userid,
+                        customRoomId: meetingId,
+                        ticketNo: ticketNo
                       });
-                      // createMeeting()
                     }}
                   >
                     Create a meeting
@@ -574,7 +564,7 @@ export function MeetingDetailsScreen({
                 )}
                 {adminId !== '' && userId !== '' && adminId !== userId && participantName.length < 3 && (
                   <button
-                    className="w-full bg-gray-650 text-white px-2 py-2 rounded-xl mt-3"
+                    className="w-full bg-gray-650 text-white px-2 py-3 rounded-xl mt-3"
                     onClick={(e) => {
                       setIsJoinMeetingClicked(true);
                     }}

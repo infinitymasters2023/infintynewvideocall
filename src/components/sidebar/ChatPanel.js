@@ -7,6 +7,52 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
   const localSender = localParticipantId === senderId;
+  const isLink = /^(https?:\/\/|www\.)\S+/i.test(text);
+
+  const handleCopy = () => {
+    if (isLink) {
+      try {
+        // Attempt to parse the link using the URL constructor
+        const parsedURL = new URL(text);
+
+        // Extract the pathname, which contains only the path without the protocol and base URL
+        const pathWithoutBaseURL = parsedURL.pathname;
+
+        // Create a temporary textarea element to facilitate copying
+        const textarea = document.createElement('textarea');
+        textarea.value = pathWithoutBaseURL;
+        document.body.appendChild(textarea);
+
+        // Select the text in the textarea
+        textarea.select();
+        document.execCommand('copy');
+
+        // Remove the temporary textarea
+        document.body.removeChild(textarea);
+
+        // You can provide user feedback, such as a tooltip or a message
+        alert('Link copied to clipboard!');
+      } catch (error) {
+        // Handle the case where the URL is invalid
+        console.error('Invalid URL:', error.message);
+      }
+    }
+  };
+
+  const renderContent = () => {
+    if (isLink) {
+      return (
+        <span
+          onClick={handleCopy}
+          style={{ cursor: 'pointer', color: 'inherit', textDecoration: 'underline' }}
+        >
+          {text}
+        </span>
+      );
+    } else {
+      return text;
+    }
+  };
 
   return (
     <div
@@ -24,15 +70,20 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
           {localSender ? "You" : nameTructed(senderName, 15)}
         </p>
         <div>
-          <p className="inline-block whitespace-pre-wrap break-words text-right text-white">
-            {text}
-          </p>
-        </div>
+  <p
+    className="inline-block whitespace-pre-wrap break-words text-right text-white"
+    style={{ cursor: 'pointer' }}
+    onClick={handleCopy}
+  >
+  {renderContent()}
+  </p>
+</div>
         <div className="mt-1">
           <p className="text-xs italic" style={{ color: "#ffffff80" }}>
             {formatAMPM(new Date(timestamp))}
           </p>
         </div>
+        
       </div>
     </div>
   );
@@ -42,7 +93,10 @@ const ChatInput = ({ inputHeight }) => {
   const [message, setMessage] = useState("");
   const { publish } = usePubSub("CHAT");
   const input = useRef();
-
+  const isLink = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    return urlRegex.test(text);
+  };
   return (
     <div
       className="w-full flex items-center px-2"
@@ -73,30 +127,31 @@ const ChatInput = ({ inputHeight }) => {
           </button>
         </span>
         <input
-          type="text"
-          className={` px-2 py-4 text-base text-white bg-gray-750 border-[1px] border-gray-500 focus:outline-none focus:border-purple-350 rounded pr-10  w-full`}
-          placeholder="Write your message"
-          autocomplete="off"
-          ref={input}
-          value={message}
-          onChange={(e) => {
-            setMessage(e.target.value);
-          }}
-          onKeyPress={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              const messageText = message.trim();
-
-              if (messageText.length > 0) {
-                publish(messageText, { persist: true });
-                setTimeout(() => {
-                  setMessage("");
-                }, 100);
-                input.current?.focus();
-              }
+        type="text"
+        className={` px-2 py-4 text-base text-white bg-gray-750 border-[1px] border-gray-500 focus:outline-none focus:border-purple-350 rounded pr-10  w-full`}
+        placeholder="Write your message"
+        autocomplete="off"
+        ref={input}
+        value={message}
+        onChange={(e) => {
+          setMessage(e.target.value);
+        }}
+        onKeyPress={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            const messageText = message.trim();
+      
+            if (messageText.length > 0) {
+              publish(messageText, { persist: true });
+              setTimeout(() => {
+                setMessage("");
+              }, 100);
+              input.current?.focus();
             }
-          }}
-        />
+          }
+        }}
+      />
+
       </div>
     </div>
   );

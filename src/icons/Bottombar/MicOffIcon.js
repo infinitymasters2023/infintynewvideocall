@@ -4,16 +4,16 @@ function MicOffIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width="18"
+      height="18"
       fill="none"
       viewBox="0 0 24 24"
     >
       <mask
         id="mask0_25_170"
         style={{ maskType: "alpha" }}
-        width="24"
-        height="24"
+        width="23"
+        height="23"
         x="0"
         y="0"
         maskUnits="userSpaceOnUse"
