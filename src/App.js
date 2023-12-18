@@ -21,7 +21,6 @@ const App = () => {
   let url = new URL(window.location.href);
   let searchParams = new URLSearchParams(url.search);
   const participantMode = searchParams.get("mode");
-
   const isMobile = window.matchMedia(
     "only screen and (max-width: 768px)"
   ).matches;
@@ -33,7 +32,6 @@ const App = () => {
       };
     }
   }, [isMobile]);
-
   return (
     <>
       {isMeetingStarted ? (
@@ -52,6 +50,7 @@ const App = () => {
               webcamEnabled: webcamOn,
               name: participantName ? participantName : "TestUser",
               multiStream: false,
+              priority : "PIN"
             }}
             token={token}
             reinitialiseMeetingOnConfigChange={true}

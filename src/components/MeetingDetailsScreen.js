@@ -13,6 +13,8 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FiCopy } from 'react-icons/fi';
 import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI } from '../../src/services/meeting_api'
 
+import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI, serviceCallInfoAPI } from '../../src/services/meeting_api'
+import { useMeeting } from "@videosdk.live/react-sdk";
 
 export function MeetingDetailsScreen({
   onClickJoin,

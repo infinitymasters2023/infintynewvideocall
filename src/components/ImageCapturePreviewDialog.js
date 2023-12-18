@@ -209,6 +209,49 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                   }}
                   className="w-9/12 transform relative overflow-y-auto rounded bg-gray-750 p-4 text-left align-middle flex flex-col items-center shadow-xl transition-all"
                 >
+                  <div className="mt-6 flex w-full justify-end gap-2">
+                 <button
+  type="button"
+  className="rounded border border-white bg-transparent text-white hover:bg-gray-700 mr-2 px-3 text-sm"
+  style={{ height: '30px' }}
+  onClick={() => {
+    setOpen(false);
+  }}
+>
+  Cancel
+</button>
+<button
+  type="button"
+  className="rounded border border-white bg-transparent px-4 text-sm font-medium text-white hover:bg-gray-700"
+  style={{ height: '30px' }}
+  onClick={handleFileUpload}
+>
+  Upload
+</button>
+
+                    <>
+                    {!cropButtonClicked && (
+                      <div>
+                        <span className="text-white font-semibold">Select Status:</span>
+                        <select
+                          onChange={(e) => handleStatusChange(e.target.value)}
+                          className="ml-2 form-control"
+                        >
+                          <option value="">Select Status</option>
+                          <option value="approve">Approve</option>
+                          <option value="pending">Pending for Verification</option>
+                          <option value="reject">Reject</option>
+                        </select>
+                    
+                        <div className="col-md-12 mt-3">
+                          <span className="text-white font-semibold">Remarks:</span>
+                          <textarea className="ml-2 form-control"></textarea>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                  </div>
+
                   <Dialog.Title className="text-base font-medium text-white w-full">
                     Preview
                   </Dialog.Title>
@@ -326,48 +369,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                   </div>
 
                   )}
-                  <div className=" flex w-full justify-end gap-2">
-                  <button
-                  type="button"
-                  className="rounded border border-white bg-transparent text-white hover:bg-gray-700 mr-2 px-3 text-sm"
-                  style={{ height: '30px' }}
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="rounded border border-white bg-transparent px-4 text-sm font-medium text-white hover:bg-gray-700"
-                  style={{ height: '30px' }}
-                  onClick={handleFileUpload}
-                >
-                  Upload
-                </button>
-
-                    <>
-                    {!cropButtonClicked && (
-                      <div>
-                        <span className="text-white font-semibold">Select Status:</span>
-                        <select
-                          onChange={(e) => handleStatusChange(e.target.value)}
-                          className="ml-2 form-control"
-                        >
-                          <option value="">Select Status</option>
-                          <option value="approve">Approve</option>
-                          <option value="pending">Pending for Verification</option>
-                          <option value="reject">Reject</option>
-                        </select>
-                    
-                        <div className="col-md-12 mt-3">
-                          <span className="text-white font-semibold">Remarks:</span>
-                          <textarea className="ml-2 form-control"></textarea>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                  </div>
+                  
                 </Dialog.Panel>
               </Transition.Child>
             </div>
