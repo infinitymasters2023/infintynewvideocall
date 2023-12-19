@@ -61,7 +61,7 @@ export function JoiningScreen({
 
   const fetchTicketInfo = useCallback(async () => {
     if (customRoomId && userid) {
-      const iData = { quNumber : customRoomId, userid : userid }
+      const iData = { quNumber: customRoomId, userid: userid }
       await serviceCallInfoAPI(iData).then(async (response) => {
         if (response && response.isSuccess && response.statusCode == 200) {
           setTicketInfo(response.data)
@@ -451,9 +451,8 @@ export function JoiningScreen({
                     setVideoTrack={setVideoTrack}
                     onClickStartMeeting={onClickStartMeeting}
                     onClickJoin={async (id) => {
-                      // const token = await getToken();
-                      const token = await tokenGenerationAPI({ roles :  'rtc' });
-                      console.log('token', token);
+                      const token = await getToken();
+                      // const token = await tokenGeneration({ roles : 'rtc' });
                       sessionStorage.setItem('accessToken', token);
                       const valid = await validateMeeting({
                         roomId: id,
@@ -471,24 +470,55 @@ export function JoiningScreen({
                       } else alert("Invalid Meeting Id");
                     }}
                     _handleOnCreateMeeting={async () => {
-                      // const token = await getToken();
-                      const token = await tokenGenerationAPI({ roles : 'crawler' });
+                      const token = await getToken();
+                      // const token = await tokenGeneration({ roles : 'crawler' });
                       sessionStorage.setItem('accessToken', token);
-                      // const _meetingId = await createRoomMeetingAPI({
-                      //   customRoomId: customRoomId,
-                      //   ticketNo: ticketInfo.TicketNO,
-                      // }).then((response) => {
-                      //   console.log('response',response);
-                      //   // setToken(token);
-                      //   // setMeetingId(_meetingId);
-                      //   // return _meetingId;
-                      // }).catch((error) => {
-                      //   return error
-                      // })
                       const _meetingId = await createMeeting({ token });
+                      console.log('_meetingId', _meetingId);
+                      setToken(token);
                       setMeetingId(_meetingId);
                       return _meetingId;
                     }}
+                  // onClickJoin={async (id) => {
+                  //   // const token = await getToken();
+                  //   const token = await tokenGenerationAPI({ roles :  'rtc' });
+                  //   console.log('token', token);
+                  //   sessionStorage.setItem('accessToken', token);
+                  //   const valid = await validateMeeting({
+                  //     roomId: id,
+                  //     token,
+                  //   });
+
+                  //   if (valid) {
+                  //     setToken(token);
+                  //     setMeetingId(id);
+                  //     if (videoTrack) {
+                  //       videoTrack.stop();
+                  //       setVideoTrack(null);
+                  //     }
+                  //     onClickStartMeeting();
+                  //   } else alert("Invalid Meeting Id");
+                  // }}
+                  // _handleOnCreateMeeting={async () => {
+                  //   // const token = await getToken();
+                  //   const token = await tokenGenerationAPI({ roles : 'crawler' });
+                  //   sessionStorage.setItem('accessToken', token);
+                  //   // const _meetingId = await createRoomMeetingAPI({
+                  //   //   customRoomId: customRoomId,
+                  //   //   ticketNo: ticketInfo.TicketNO,
+                  //   // }).then((response) => {
+                  //   //   console.log('response',response);
+                  //   //   // setToken(token);
+                  //   //   // setMeetingId(_meetingId);
+                  //   //   // return _meetingId;
+                  //   // }).catch((error) => {
+                  //   //   return error
+                  //   // })
+                  //   const _meetingId = await createMeeting({ token });
+
+                  //   setMeetingId(_meetingId);
+                  //   return _meetingId;
+                  // }}
                   />
                 </div>
               </div>

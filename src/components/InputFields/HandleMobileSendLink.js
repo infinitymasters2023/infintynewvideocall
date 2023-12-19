@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-import { allowOnlyMobileNumber, allowOnlyEmailAddresses } from '../../utils/helper'
+import { allowOnlyMobileNumber } from '../../utils/helper'
 import { useFormik, getIn } from 'formik';
 import { ValidateMobileSchema } from '../../validation/send_link_validation';
 import InputTextField from './InputTextField'
@@ -11,8 +11,10 @@ const HandleMobileSendLink = ({ mobiles, setMobiles }) => {
     const refArray = Array(2).fill(null).map(() => (null));
     const [MobileRef] = refArray;
     const handleSubmit = async () => {
-        if (!getIn(formik.errors, 'mobile')) {
+        if (!getIn(formik.errors, 'mobile') && formik.values.mobile) {
             mobiles.push(formik.values.mobile)
+            const updatedMobile = [...new Set(mobiles)];
+            setMobiles(updatedMobile)
             await formik.setFieldValue('mobile', '')
         }
     };
@@ -35,6 +37,20 @@ const HandleMobileSendLink = ({ mobiles, setMobiles }) => {
         const updatedMobiles = mobiles.filter((number) => number !== item);
         setMobiles(updatedMobiles)
     };
+    const handleOnBlur = async (event) => {
+        const { name } = event.currentTarget;
+        switch (name) {
+            case 'mobile':
+                if (!getIn(formik.errors, 'mobile') && formik.values.mobile) {
+                    mobiles.push(formik.values.mobile)
+                    const updatedMobile = [...new Set(mobiles)];
+                    setMobiles(updatedMobile)
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     return (
         <>
@@ -61,6 +77,7 @@ const HandleMobileSendLink = ({ mobiles, setMobiles }) => {
                     placeholder="Enter Mobile"
                     inputFieldRef={MobileRef}
                     handleOnChange={handleInputChange}
+                    handleOnBlur={handleOnBlur}
                     maxLength={10}
                     minLength={10}
                     isDisabled={false}

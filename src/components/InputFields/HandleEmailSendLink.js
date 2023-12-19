@@ -7,12 +7,13 @@ import { ValidateEmailSchema } from '../../validation/send_link_validation';
 import InputTextField from './InputTextField'
 
 const HandleEmailSendLink = ({ emails, setEmail }) => {
-
     const refArray = Array(2).fill(null).map(() => (null));
     const [EmailRef] = refArray;
     const handleSubmit = async () => {
-        if (!getIn(formik.errors, 'email')) {
+        if (!getIn(formik.errors, 'email') && formik.values.email) {
             emails.push(formik.values.email)
+            const updatedEmail = [...new Set(emails)];
+            setEmail(updatedEmail)
             await formik.setFieldValue('email', '')
         }
     };
@@ -36,6 +37,20 @@ const HandleEmailSendLink = ({ emails, setEmail }) => {
         setEmail(updatedEmail)
     };
 
+    const handleOnBlur = async (event) => {
+        const { name } = event.currentTarget;
+        switch (name) {
+            case 'email':
+                if (!getIn(formik.errors, 'email') && formik.values.email) {
+                    emails.push(formik.values.email)
+                    const updatedEmail = [...new Set(emails)];
+                    setEmail(updatedEmail)
+                }
+                break;
+            default:
+                break;
+        }
+    }
     return (
         <>
             {
@@ -61,6 +76,7 @@ const HandleEmailSendLink = ({ emails, setEmail }) => {
                     placeholder="Enter Email"
                     inputFieldRef={EmailRef}
                     handleOnChange={handleInputChange}
+                    handleOnBlur={handleOnBlur}
                     maxLength={100}
                     minLength={8}
                     isDisabled={false}

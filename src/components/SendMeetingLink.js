@@ -41,38 +41,38 @@ const SendMeetingLink = ({ ticketInfo }) => {
 
     return (
         <form method="Post" onSubmit={handleSendMeetingLink}>
-            <h4 className="text-xs text-gray-700 px-2">Customer Name :<span className="text-gray-600 px-2">{ticketInfo.customername}</span></h4>
+            <h4 className="text-xs text-gray-700 px-2">Customer Name :<span className="text-gray-600 px-2">{ticketInfo?.customername}</span></h4>
             <div className="flex flex-row py-2">
-                {ticketInfo.emailidaddress &&
+                {ticketInfo?.emailidaddress &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="emailidaddress" value={ticketInfo.emailidaddress} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="emailidaddress" value={ticketInfo?.emailidaddress} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.emailidaddress)}
-                                        value={ticketInfo.emailidaddress}
+                                        checked={requestBody.includes(ticketInfo?.emailidaddress)}
+                                        value={ticketInfo?.emailidaddress}
                                     />
                                 </span>
                             </div>
                         </div>
                     </div>
                 }
-                {ticketInfo.mobileno &&
+                {ticketInfo?.mobileno &&
                     <div className="basis-5/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="mobileno" value={ticketInfo.mobileno} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="mobileno" value={ticketInfo?.mobileno} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.mobileno)}
-                                        value={ticketInfo.mobileno}
+                                        checked={requestBody.includes(ticketInfo?.mobileno)}
+                                        value={ticketInfo?.mobileno}
                                     />
                                 </span>
                             </div>
@@ -81,36 +81,36 @@ const SendMeetingLink = ({ ticketInfo }) => {
                 }
             </div>
             <div className="flex flex-row py-2">
-                {ticketInfo.alternateEmailID &&
+                {ticketInfo?.alternateEmailID &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Alternate Email Id</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="alternateEmailID" value={ticketInfo.alternateEmailID} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="alternateEmailID" value={ticketInfo?.alternateEmailID} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.alternateEmailID)}
-                                        value={ticketInfo.alternateEmailID}
+                                        checked={requestBody.includes(ticketInfo?.alternateEmailID)}
+                                        value={ticketInfo?.alternateEmailID}
                                     />
                                 </span>
                             </div>
                         </div>
                     </div>
                 }
-                {ticketInfo.landlineno &&
+                {ticketInfo?.landlineno &&
                     <div className="basis-5/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Alternate Mobile No:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="landlineno" value={ticketInfo.landlineno} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="landlineno" value={ticketInfo?.landlineno} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.landlineno)}
-                                        value={ticketInfo.landlineno}
+                                        checked={requestBody.includes(ticketInfo?.landlineno)}
+                                        value={ticketInfo?.landlineno}
                                     />
                                 </span>
                             </div>
@@ -118,38 +118,37 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
-            <h4 className="text-xs text-gray-700 px-2">Proxy Name: <span className="text-gray-600 px-2">{ticketInfo.customername}</span></h4>
             <div className="flex flex-row py-2">
-                {ticketInfo.proxyMobile1 &&
+                {ticketInfo?.proxyMobile1 &&
                     <div className="basis-1/2 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Proxy Mobile No:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="proxyMobile1" value={ticketInfo.proxyMobile1} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="proxyMobile1" value={ticketInfo?.proxyMobile1} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.proxyMobile1)}
-                                        value={ticketInfo.proxyMobile1}
+                                        checked={requestBody.includes(ticketInfo?.proxyMobile1)}
+                                        value={ticketInfo?.proxyMobile1}
                                     />
                                 </span>
                             </div>
                         </div>
                     </div>
                 }
-                {ticketInfo.proxyMobile2 &&
+                {ticketInfo?.proxyMobile2 &&
                     <div className="basis-1/2 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Proxy Mobile No:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="proxyMobile2" value={ticketInfo.proxyMobile2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="proxyMobile2" value={ticketInfo?.proxyMobile2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.proxyMobile2)}
-                                        value={ticketInfo.proxyMobile2}
+                                        checked={requestBody.includes(ticketInfo?.proxyMobile2)}
+                                        value={ticketInfo?.proxyMobile2}
                                     />
                                 </span>
                             </div>
@@ -157,38 +156,39 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
-            <h4 className="text-xs text-gray-700 px-2">Service Center Name :<span className="text-gray-600 px-2">{ticketInfo.serviceCenterName}</span></h4>
+            <hr />
+            <h4 className="text-xs text-gray-700 px-2">Service Center Name :<span className="text-gray-600 px-2">{ticketInfo?.serviceCenterName}</span></h4>
             <div className="flex flex-row py-1">
-                {ticketInfo.serviceCenterEmail &&
+                {ticketInfo?.serviceCenterEmail &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="serviceCenterEmail" value={ticketInfo.serviceCenterEmail} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="serviceCenterEmail" value={ticketInfo?.serviceCenterEmail} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.serviceCenterEmail)}
-                                        value={ticketInfo.serviceCenterEmail}
+                                        checked={requestBody.includes(ticketInfo?.serviceCenterEmail)}
+                                        value={ticketInfo?.serviceCenterEmail}
                                     />
                                 </span>
                             </div>
                         </div>
                     </div>
                 }
-                {ticketInfo.serviceCenterMobile &&
+                {ticketInfo?.serviceCenterMobile &&
                     <div className="basis-5/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="serviceCenterMobile" value={ticketInfo.serviceCenterMobile} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="serviceCenterMobile" value={ticketInfo?.serviceCenterMobile} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.serviceCenterMobile)}
-                                        value={ticketInfo.serviceCenterMobile}
+                                        checked={requestBody.includes(ticketInfo?.serviceCenterMobile)}
+                                        value={ticketInfo?.serviceCenterMobile}
                                     />
                                 </span>
                             </div>
@@ -196,38 +196,39 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
-            <h4 className="text-xs text-gray-700 px-2">Dealer Name :<span className="text-gray-600 px-2">{ticketInfo.dealerName}</span></h4>
+            <hr />
+            <h4 className="text-xs text-gray-700 px-2">Dealer Name :<span className="text-gray-600 px-2">{ticketInfo?.dealerName}</span></h4>
             <div className="flex flex-row py-1">
-                {ticketInfo.dealerEmailID &&
+                {ticketInfo?.dealerEmailID &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="dealerEmailID" value={ticketInfo.dealerEmailID} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="dealerEmailID" value={ticketInfo?.dealerEmailID} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.dealerEmailID)}
-                                        value={ticketInfo.dealerEmailID}
+                                        checked={requestBody.includes(ticketInfo?.dealerEmailID)}
+                                        value={ticketInfo?.dealerEmailID}
                                     />
                                 </span>
                             </div>
                         </div>
                     </div>
                 }
-                {ticketInfo.dealerMobileNo &&
+                {ticketInfo?.dealerMobileNo &&
                     <div className="basis-5/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="dealerMobileNo" value={ticketInfo.dealerMobileNo} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="dealerMobileNo" value={ticketInfo?.dealerMobileNo} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.dealerMobileNo)}
-                                        value={ticketInfo.dealerMobileNo}
+                                        checked={requestBody.includes(ticketInfo?.dealerMobileNo)}
+                                        value={ticketInfo?.dealerMobileNo}
                                     />
                                 </span>
                             </div>
@@ -236,36 +237,36 @@ const SendMeetingLink = ({ ticketInfo }) => {
                 }
             </div>
             <div className="flex flex-row py-0">
-                {ticketInfo.dealerEmailID2 &&
+                {ticketInfo?.dealerEmailID2 &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Alternate Email Id:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="dealerEmailID2" value={ticketInfo.dealerEmailID2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="dealerEmailID2" value={ticketInfo?.dealerEmailID2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.dealerEmailID2)}
-                                        value={ticketInfo.dealerEmailID2}
+                                        checked={requestBody.includes(ticketInfo?.dealerEmailID2)}
+                                        value={ticketInfo?.dealerEmailID2}
                                     />
                                 </span>
                             </div>
                         </div>
                     </div>
                 }
-                {ticketInfo.dealerMobileNo2 &&
+                {ticketInfo?.dealerMobileNo2 &&
                     <div className="basis-5/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Mobile No:</label>
                         <div className="flex rounded-lg shadow-sm">
-                            <input type="text" name="dealerMobileNo2" value={ticketInfo.dealerMobileNo2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
+                            <input type="text" name="dealerMobileNo2" value={ticketInfo?.dealerMobileNo2} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 " readOnly />
                             <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
                                 <span className="text-sm text-gray-500 dark:text-gray-600">
                                     <input type="checkbox"
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
-                                        checked={requestBody.includes(ticketInfo.dealerMobileNo2)}
-                                        value={ticketInfo.dealerMobileNo2}
+                                        checked={requestBody.includes(ticketInfo?.dealerMobileNo2)}
+                                        value={ticketInfo?.dealerMobileNo2}
                                     />
                                 </span>
                             </div>
@@ -273,6 +274,7 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
+            <hr />
             <h4 className="text-xs text-gray-700 px-2">Send To Others</h4>
             <div className="flex flex-row py-0">
                 <div className="basis-5/12 px-2">
