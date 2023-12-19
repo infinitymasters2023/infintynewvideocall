@@ -70,119 +70,20 @@ export function MeetingDetailsScreen({
 
 
 
- console.log('ticketInfo', ticketInfo);
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://meetings.infyshield.com/api/data');
+      const result = await response.json();
+      console.log('Fetched data:', result);
+    } catch (error) {
+      console.log('Error fetching data', error);
 
-  // const createMeeting = async () => {
-  //   try {
-  //     // First API call to get the access token
-  //     const responseToken = await axios.post(
-  //       'https://meetingsapi.infyshield.com/v1/meeting/tokenGeneration',
-  //       {
-  //         roomId: meetingId,
-  //         participantId: '',
-  //         roles: 'crawler',
-  //       },
-  //       {
-  //         headers: {
-  //           accept: 'application/json',
-  //           'Content-Type': 'application/json',
-  //         },
-  //       }
-  //     );
+    }
+  };
 
-  //     const { data: dataToken } = responseToken;
-
-  //     if (dataToken.statusCode === 200) {
-  //       // Store the access token in session storage
-  //       const { accessToken } = dataToken.data;
-  //       sessionStorage.setItem('accessToken', accessToken);
-
-  //       // Generate formatted date (yy-mm-dd hh:mm:ss)
-  //       const now = new Date();
-  //       const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-  //         .toString()
-  //         .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now
-  //         .getHours()
-  //         .toString()
-  //         .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now
-  //         .getSeconds()
-  //         .toString()
-  //         .padStart(2, '0')}`;
-
-  //       // Second API call to create a meeting using the obtained access token
-  //       const responseMeeting = await axios.post(
-  //         'https://meetingsapi.infyshield.com/v1/room/create',
-  //         {
-  //           roomId: meetingId,
-  //           customRoomId: meetingId + '_' + formattedDate,
-  //           ticketNo:  meetingId, // Replace 'string' with the actual ticket number
-  //         },
-  //         {
-  //           headers: {
-  //             accept: 'application/json',
-  //             'Content-Type': 'application/json',
-  //             Authorization: `Bearer ${accessToken}`, // Include the access token in the headers
-  //           },
-  //         }
-  //       );
-
-  //       const { data: dataMeeting } = responseMeeting;
-
-  //       if (dataMeeting.statusCode === 200) {
-  //         console.log('Meeting created successfully:', dataMeeting.data);
-
-  //         // You can store any relevant information in session storage or state if needed
-  //         return dataMeeting.data.meetingId;
-  //       } else {
-  //         console.log('Failed to create meeting. Response:', responseMeeting);
-  //         return null;
-  //       }
-  //     } else {
-  //       console.log('Failed to get access token. Response:', responseToken);
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     console.error('Error creating meeting:', error);
-  //     return null;
-  //   }
-  // };
+  
 
 
-
-  // const createVideoMeetingAPI = async () => {
-  //   const apiEndpoint = 'https://meetingsapi.infyshield.com/v1/meeting/start_meeting';
-
-  //   const accessToken = sessionStorage.getItem('accessToken');
-  //   console.log('tokenvalue', accessToken);
-
-  //   const requestData = {
-  //     accessToken: accessToken,
-  //     roomId: meetingId,
-  //     ticketNo: ticketNo,
-  //     mobile: mobileNumber,
-  //     email: email,
-  //     fullName: participantName,
-  //   };
-
-  //   try {
-  //     const response = await axios.post(apiEndpoint, requestData, {
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-
-  //     console.log('Create Video Meeting API Response:', response);
-
-  //     if (response.status === 200) {
-  //       console.log('Video meeting created successfully');
-  //     } else {
-  //       console.log('Failed to create video meeting. Response:', response);
-  //     }
-  //   } catch (error) {
-  //     console.log('Error creating video meeting', error);
-  //   }
-  // };
   const handleCreateMeeting = async () => {
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -239,10 +140,6 @@ export function MeetingDetailsScreen({
       },
     });
   };
-
-
-
-
 
   const handleJoinMeeting = async () => {
     if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
@@ -310,104 +207,6 @@ export function MeetingDetailsScreen({
     }
   };
 
-  const handleCheckboxChange = (contact) => {
-    const updatedContacts = selectedContacts.includes(contact)
-      ? selectedContacts.filter((c) => c !== contact)
-      : [...selectedContacts, contact];
-
-    setSelectedContacts(updatedContacts);
-  };
-
-  const handleSendLinkToSelected = async () => {
-    for (const contact of selectedContacts) {
-      const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
-
-      try {
-
-        await axios.post('your_send_link_api_endpoint', {
-          email: contact.email,
-          mobile: contact.mobile,
-          sendToOtp: "Email",
-          meetingId: meetingId,
-          ticket: ticketNo,
-          meetingurl: link,
-        });
-
-        toast.success(`Link sent to ${contact.email || contact.mobile} successfully!`);
-      } catch (error) {
-        console.log('Error sending link', error);
-        toast.error('Failed to send link');
-      }
-    }
-  };
-
-
-
-  const handleSendLinkToEmail = async () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
-
-    try {
-      const response = await axios.post(
-        'https://retailerapi.infinitywarranty.in/v1/auth/send-meeting-link',
-        {
-          email: email,
-          proxyEmail: proxyEmail,
-          mobile: mobileNumber,
-          sendToOtp: "Email",
-          meetingId: meetingId,
-          ticket: ticketNo,
-          meetingurl: link,
-        }
-      );
-
-      console.log('Request Payload:', {
-        email: email,
-        proxyEmail: proxyEmail,
-        mobile: mobileNumber,
-        sendToOtp: "Mobile",
-        meetingId: meetingId,
-        ticket: ticketNo,
-        meetingurl: link,
-      });
-
-      console.log('Response:', response);
-
-      if (response.status === 200) {
-        console.log('Email sent successfully');
-      } else {
-        console.log('Failed to send email. Response:', response);
-      }
-    } catch (error) {
-      console.log('Error sending email', error);
-    }
-    toast.success('Email link sent successfully!');
-  };
-
-  const handleSendLinkToMobile = async () => {
-    const link = `https://meetings.infyshield.com/?meetingId=${meetingId}&ticket=${ticketNo}&userId=${userId}&email=${email}&mobileNumber=${mobileNumber}`;
-
-    try {
-      const response = await axios.post(
-        'https://retailerapi.infinitywarranty.in/v1/auth/send-meeting-link',
-        {
-          email: email,
-          mobile: mobileNumber,
-          sendToOtp: "Mobile",
-          meetingId: meetingId,
-          ticket: ticketNo,
-          meetingurl: link,
-        }
-      );
-      if (response.status === 200) {
-        console.log('Link sent to mobile number successfully');
-      } else {
-        console.log('Failed to send link to mobile number. Response:', response);
-      }
-    } catch (error) {
-      console.log('Error sending link to mobile number', error);
-    }
-    toast.success(' link sent on Mobile successfully!');
-  };
 
   useEffect(() => {
 
@@ -537,7 +336,7 @@ export function MeetingDetailsScreen({
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
+                  <SendMeetingLink key={'SendLink'} />
                   </Modal.Body>
                 </Modal>
 

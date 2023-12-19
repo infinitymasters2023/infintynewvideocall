@@ -53,7 +53,7 @@ function PipLayout({ participantIds }) {
               isPip={true}
               showImageCapture={participantMode == participantModes.AGENT}
               showResolution={
-                true //participantMode == participantModes.AGENT
+                true 
               }
             />
           )}
@@ -76,7 +76,7 @@ function PipLayout({ participantIds }) {
             }
             showImageCapture={participantMode == participantModes.AGENT}
             showResolution={
-              true //participantMode == participantModes.AGENT
+              true 
             }
           />
         )}
