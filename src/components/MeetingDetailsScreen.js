@@ -336,7 +336,7 @@ export function MeetingDetailsScreen({
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                  <SendMeetingLink key={'SendLink'} />
+                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
                   </Modal.Body>
                 </Modal>
 
