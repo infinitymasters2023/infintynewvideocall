@@ -42,7 +42,7 @@ const SendMeetingLink = ({ ticketInfo }) => {
     return (
         <form method="Post" onSubmit={handleSendMeetingLink}>
             <h4 className="text-xs text-gray-700 px-2">Customer Name :<span className="text-gray-600 px-2">{ticketInfo?.customername}</span></h4>
-            <div className="flex flex-row py-2">
+            <div className="flex flex-row py-0">
                 {ticketInfo?.emailidaddress &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
@@ -80,7 +80,7 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
-            <div className="flex flex-row py-2">
+            <div className="flex flex-row py-0">
                 {ticketInfo?.alternateEmailID &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Alternate Email Id</label>
@@ -118,7 +118,7 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
-            <div className="flex flex-row py-2">
+            <div className="flex flex-row py-1">
                 {ticketInfo?.proxyMobile1 &&
                     <div className="basis-1/2 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Proxy Mobile No:</label>
@@ -156,9 +156,9 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
-            <hr />
+            <hr/>
             <h4 className="text-xs text-gray-700 px-2">Service Center Name :<span className="text-gray-600 px-2">{ticketInfo?.serviceCenterName}</span></h4>
-            <div className="flex flex-row py-1">
+            <div className="flex flex-row">
                 {ticketInfo?.serviceCenterEmail &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>
@@ -198,7 +198,7 @@ const SendMeetingLink = ({ ticketInfo }) => {
             </div>
             <hr />
             <h4 className="text-xs text-gray-700 px-2">Dealer Name :<span className="text-gray-600 px-2">{ticketInfo?.dealerName}</span></h4>
-            <div className="flex flex-row py-1">
+            <div className="flex flex-row py-0">
                 {ticketInfo?.dealerEmailID &&
                     <div className="basis-7/12 px-2">
                         <label className="block text-sm font-medium leading-6 text-gray-600">Email Id:</label>

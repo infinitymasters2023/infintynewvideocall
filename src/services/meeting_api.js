@@ -27,28 +27,11 @@ export const createRoomMeetingAPI = async (iData) => {
 };
 
 export const insertMeetingAPI = async (iData) => {
-    return await post('/meeting/create_meeting', iData).then((response) => {
-        return response.data
-    }).catch((error) => {
-        return error
-    })
+    return await post('/meeting/create_meeting', iData)
 };
 export const startMeetingAPI = async (iData) => {
-    return await post('meeting/start_meeting', iData).then((response) => {
-        if (response && response.isSuccess && response.statusCode === 200 && response.data) {
-            const { meetingId } = response.data;
-            return meetingId;
-        } else {
-            console.error('Error starting the meeting:', response.error);
-            return '';
-        }
-    }).catch((error) => {
-        return error
-    })
+    return await post('meeting/start_meeting', iData)
 };
-
-
-
 
 export const stopRecordingAPI = async (iData) => {
     await post('recording/stop', iData).then((response) => {
@@ -59,11 +42,7 @@ export const stopRecordingAPI = async (iData) => {
 };
 
 export const joinMeetingAPI = async (iData) => {
-    return await post('/meeting/join_meeting', iData).then((response) => {
-        return response.data
-    }).catch((error) => {
-        return error
-    })
+    return await post('/meeting/join_meeting', iData)
 };
 
 export const leaveMeetingAPI = async (iData) => {
