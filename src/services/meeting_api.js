@@ -93,3 +93,7 @@ export const uploadFileAPI = async (iData) => {
 export const serviceCallInfoAPI = async (iData) => {
     return await post('meeting/service_call_info', iData)
 };
+
+export const sendMeetingLinkAPI = async (iData) => {
+    return await post('meeting/send_meeting_link', iData)
+};

@@ -52,7 +52,9 @@ export function MeetingDetailsScreen({
       const iData = { quNumber : customRoomId, userid : userid }
       await serviceCallInfoAPI(iData).then(async (response) => {
         if (response && response.isSuccess && response.statusCode == 200) {
+          const {TicketNO } = response.data
           setTicketInfo(response.data)
+          setTicketNo(TicketNO)
         }
       })
         .catch((error) => {
@@ -528,7 +530,7 @@ export function MeetingDetailsScreen({
                 <button className="text-white text-sm cursor-pointer" onClick={openModal}>
                   Send Link
                 </button>
-                <Modal show={isModalOpen} onHide={closeModal} centered size="xl">
+                <Modal show={isModalOpen} onHide={closeModal} centered size="md">
                   <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: '15px', fontWeight: '500' }} >
                       Send Link

@@ -1,15 +1,29 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { allowOnlyMobileNumber, 
-    allowOnlyEmailAddresses } from '../utils/helper'
+import { allowOnlyMobileNumber, allowOnlyEmailAddresses } from '../utils/helper'
+import { sendMeetingLinkAPI } from '../services/meeting_api'
+import AddMobileSendLink from './InputFields/HandleMobileSendLink'
+import HandleEmailSendLink from './InputFields/HandleEmailSendLink'
+
 const SendMeetingLink = ({ ticketInfo }) => {
     const [requestBody, setRequestBody] = useState([]);
-    const [otherMobile, setOtherMobile] = useState('');
-    const [otherEmail, setOtherEmail] = useState('');
-    const handleSendMeetingLink = (e) => {
+    const [otherMobile, setOtherMobile] = useState([]);
+    const [otherEmail, setOtherEmail] = useState([]);
+    const handleSendMeetingLink = async (e) => {
         e.preventDefault();
-        console.log('requestBody', requestBody);
+        const sendids = [...requestBody, ...otherMobile, ...otherEmail];
+        const storedLink = localStorage.getItem('meetingLink');
+        const iData = { sendTo: sendids, meetingLink: storedLink }
+        await sendMeetingLinkAPI(iData).then((response) => {
+            if (response && response.isSuccess && response.statusCode === 200 && response.data) {
+                setRequestBody([])
+                setOtherMobile([])
+                setOtherEmail([])
+            }
+        }).catch((error) => {
+            console.log('error', error);
+        })
     };
     const handleCheckboxChange = (event) => {
         const { checked, value } = event.target;
@@ -24,21 +38,6 @@ const SendMeetingLink = ({ ticketInfo }) => {
         }
         setRequestBody(updatedRequestBody);
     };
-
-    const handleInputChange = async (event) => {
-        const { name, value} = event.target;
-        var transformValue = ''
-        switch (name) {
-          case 'mobileno':
-            transformValue = allowOnlyMobileNumber(value)
-            break;
-          case 'emailidaddress':
-            transformValue = allowOnlyEmailAddresses(value)
-            break;
-          default:
-            break;
-        }
-      }
 
     return (
         <form method="Post" onSubmit={handleSendMeetingLink}>
@@ -55,6 +54,7 @@ const SendMeetingLink = ({ ticketInfo }) => {
                                         className="shrink-0 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
                                         onChange={handleCheckboxChange}
                                         checked={requestBody.includes(ticketInfo.emailidaddress)}
+                                        value={ticketInfo.emailidaddress}
                                     />
                                 </span>
                             </div>
@@ -196,7 +196,7 @@ const SendMeetingLink = ({ ticketInfo }) => {
                     </div>
                 }
             </div>
-            <h4 className="text-xs text-gray-700 px-2">Dealer Name :<span className="text-gray-600 px-2">{ticketInfo.customername}</span></h4>
+            <h4 className="text-xs text-gray-700 px-2">Dealer Name :<span className="text-gray-600 px-2">{ticketInfo.dealerName}</span></h4>
             <div className="flex flex-row py-1">
                 {ticketInfo.dealerEmailID &&
                     <div className="basis-7/12 px-2">
@@ -276,29 +276,13 @@ const SendMeetingLink = ({ ticketInfo }) => {
             <h4 className="text-xs text-gray-700 px-2">Send To Others</h4>
             <div className="flex flex-row py-0">
                 <div className="basis-5/12 px-2">
-                    <label className="block text-sm font-medium leading-6 text-gray-600">Mobile:</label>
-                    <div className="flex rounded-lg shadow-sm">
-                        <input type="text" name="otherMobile" value={otherMobile} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 "/>
-                        <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
-                            <button type="button" class="flex-shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-blue-600 ">
-                            <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
-                            </button>
-                        </div>
-                    </div>
+                    <AddMobileSendLink key={`MobileLink`} mobiles={otherMobile} setMobiles={setOtherMobile} />
                 </div>
                 <div className="basis-7/12 px-2">
-                    <label className="block text-sm font-medium leading-6 text-gray-600">Email:</label>
-                    <div className="flex rounded-lg shadow-sm">
-                        <input type="text" name="otherEmail" value={otherEmail} className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 "/>
-                        <div className="px-2 inline-flex items-center min-w-fit rounded-e-md border border-s-0 border-gray-200 dark:border-gray-600">
-                            <button type="button" class="flex-shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-blue-600 ">
-                            <FontAwesomeIcon icon={faPlus} style={{ color: 'black' }} />
-                            </button>
-                        </div>
-                    </div>
+                    <HandleEmailSendLink key={`EmailLink`} emails={otherEmail} setEmail={setOtherEmail} />
                 </div>
             </div>
-            <div>
+            <div className="py-2">
                 <button type="submit" className="py-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right">
                     Send Link
                 </button>
