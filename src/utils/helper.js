@@ -49,3 +49,9 @@ export const allowOnlyEmailAddresses = (originalValue) => {
   transformValue = transformValue.replace(/\s/g, "");
   return transformValue
 }
+export const allowOnlyTextInput = async (originalValue) => {
+  let transformValue = originalValue.replace(/[^A-Za-z0-9\-_ .@$&\/#]/g, '')
+  transformValue = transformValue.replace(/\s+/g, ' ');
+  return transformValue;
+}
+

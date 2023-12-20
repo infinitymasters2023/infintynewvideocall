@@ -1,30 +1,59 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useRef, useEffect } from "react";
+import { Fragment, useState, useRef, useEffect, useCallback } from "react";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { FiZoomIn, FiZoomOut, FiRotateCw, FiRotateCcw, FiRefreshCw } from 'react-icons/fi';
 import "cropperjs/dist/cropper.css";
 import { usePubSub, useMeeting } from "@videosdk.live/react-sdk";
-import { uploadFileAPI } from "../services/meeting_api";
-
-
-
-
+import { uploadFileAPI, getDocumentStatus, getDocumentMaster } from "../services/meeting_api";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faXmark, faMagnifyingGlassMinus,
+  faMagnifyingGlassPlus, faArrowRotateRight,
+  faArrowRotateLeft, faCrop, faCheck , faPenToSquare
+} from '@fortawesome/free-solid-svg-icons';
+import { useFormik, getIn } from 'formik';
+import { UploadDocumentSchema } from '../validation/upload_document';
+import InputTextField from './InputFields/InputTextField'
+import InputTextAreaField from './InputFields/InputTextAreaField'
+import { allowOnlyTextInput } from '../utils/helper'
 const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const { meetingId, participantName } = useMeeting();
   const [imageSrc, setImageSrc] = useState(null);
   const [drawingData, setDrawingData] = useState(null);
-
-
+  const refArray = Array(4).fill(null).map(() => (null));
+  const [TicketNoRef, RemarkRef, StatuRef, DocumentTitleRef] = refArray;
   const canvasRef = useRef(null);
   const [drawingContext, setDrawingContext] = useState(null);
-
+  const [docstatus, setDocstatus] = useState([]);
+  const [documentmaster, setDocumentmaster] = useState([]);
   useEffect(() => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       setDrawingContext(ctx);
     }
+    fetchDocstatus()
+    fetchDocumentmaster()
   }, []);
+
+  const fetchDocstatus = useCallback(async () => {
+      await getDocumentStatus().then(async (response) => {
+        if (response && response.isSuccess && response.statusCode == 200) {
+          setDocstatus(response.data)
+        }
+      })
+        .catch((error) => {
+        })
+  }, []);
+  const fetchDocumentmaster = useCallback(async () => {
+    await getDocumentMaster().then(async (response) => {
+      if (response && response.isSuccess && response.statusCode == 200) {
+        setDocumentmaster(response.data)
+      }
+    })
+      .catch((error) => {
+      })
+  })
 
   const imagesMessages = {};
   const generateImage = (messages) => {
@@ -176,9 +205,68 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
     };
   }, [isDrawing]);
 
+  const handleSubmit = async () => {
+    await uploadFileAPI(formik.values).then(async (response) => {
+      if (response && response.isSuccess && response.statusCode == 200) {
+        setDocumentmaster(response.data)
+      }
+    })
+      .catch((error) => {
+      })
+  };
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: { mobile: '' },
+    validationSchema: UploadDocumentSchema,
+    onSubmit: handleSubmit,
+  });
+
+  const handleInputChange = async (event) => {
+    const { name, value } = event.target;
+    var transformValue = ''
+    switch (name) {
+      case 'ticketNo':
+        transformValue = await allowOnlyTextInput(value)
+        await formik.setFieldValue(name, transformValue)
+        await formik.setFieldTouched(name, true)
+        break;
+      case 'Remarks':
+        transformValue = await allowOnlyTextInput(value)
+        await formik.setFieldValue(name, transformValue)
+        await formik.setFieldTouched(name, true)
+        break;
+      case 'Status':
+        transformValue = await allowOnlyTextInput(value)
+        await formik.setFieldValue(name, transformValue)
+        await formik.setFieldTouched(name, true)
+        break;
+      case 'DocStatus':
+      case 'Status':
+        transformValue = await allowOnlyTextInput(value)
+        await formik.setFieldValue(name, transformValue)
+        await formik.setFieldTouched(name, true)
+        break;
+      default:
+        break;
+    }
+  }
+
+  const handleOnBlur = async (event) => {
+    const { name } = event.currentTarget;
+    switch (name) {
+      case 'mobile':
+        if (!getIn(formik.errors, 'mobile') && formik.values.mobile) {
+
+        }
+        break;
+      default:
+        break;
+    }
+  }
   return (
     <>
-      <Transition appear show={open} as={Fragment}>
+      {/* <Transition appear show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => { }}>
           <Transition.Child
             as={Fragment}
@@ -324,16 +412,13 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                       </>
                     )}
                   </div>
-
-                  {/* Your "Crop Image" button */}
                   <div className="flex items-start justify-end w-full mt-6 fixed top-0">
-
                   </div>
                   {cropData && cropButtonClicked && (
                     <div className="container">
                       <div className="row">
                         <div className="col-4"></div>
-                        <div className="mt-2 float-end col-4"> {/* Adjust the margin-top as needed */}
+                        <div className="mt-2 float-end col-4"> 
                           <button
                             className="bg-white text-black px-2 py-1  rounded ml-2 text-sm"
                             onClick={handleZoomIn}
@@ -370,6 +455,190 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
 
                   )}
 
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition> */}
+      <Transition appear show={open} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => {
+          setOpen(false);
+        }}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel
+                  style={{
+                    maxHeight: `calc(100vh - 150px)`,
+                  }}
+                  className="w-9/12 transform relative overflow-y-auto rounded bg-[#f2f3f9] p-3 text-left align-middle flex flex-col shadow-xl transition-all"
+                >
+                  <div className="w-full p-1 justify-end gap-2">
+                    <a className="flex-shrink-0 inline-flex float-right "
+                      onClick={() => {
+                        setOpen(false);
+                      }}><FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
+                    </a>
+                  </div>
+                  <div className="flex flex-row bg-[#f2f3f9]">
+                    <div className="basis-1/2 box-border p-2">
+                      <div className="flex flex-row">
+                        <div className="basis-10/12 box-border p-2 border-1">
+                          { 
+                            (cropButtonClicked && cropData) ? <img src={cropData} className="w-96 h-96 rounded-lg shadow-xl" />
+                            : imageSrc ? <Cropper
+                            className="w-96 h-96 rounded-lg shadow-xl"
+                            zoomTo={0.5}
+                            initialAspectRatio={1}
+                            preview=".img-preview"
+                            src={imageSrc}
+                            viewMode={1}
+                            minCropBoxHeight={10}
+                            minCropBoxWidth={10}
+                            background={false}
+                            responsive={false}
+                            autoCropArea={1}
+                            checkOrientation={false}
+                            onInitialized={(instance) => {
+                              setCropper(instance);
+                            }}
+                            guides={true}
+                            crossOrigin="anonymous"
+                          /> : <div className="w-96 h-96 rounded-lg shadow-xl">
+                          <p className="dark:text-gray-600 text-center">
+                            Loading Image...
+                          </p>
+                        </div>}
+                        </div>
+                        <div className="basis-2/12 box-border p-2 border-1 text-center bg-[#f2f3f9]">
+                          <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2  shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={handleZoomIn}><FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+                          </a>
+                          <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={handleZoomOut}><FontAwesomeIcon icon={faMagnifyingGlassPlus} />
+                          </a>
+                          <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={handleRotateRight}><FontAwesomeIcon icon={faArrowRotateRight} />
+                          </a>
+                          <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={handleRotateLeft}><FontAwesomeIcon icon={faArrowRotateLeft} />
+                          </a>
+                          <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={handleCropButtonClick}><FontAwesomeIcon icon={faCrop} />
+                          </a>
+                          {/* <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={() => { }}><FontAwesomeIcon icon={faCheck} />
+                          </a> */}
+                          <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={() => {
+                              setCropButtonClicked(false)
+                             }}><FontAwesomeIcon icon={faPenToSquare} />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="basis-1/2 box-border p-2 border-4">
+                      <form method="Post" onSubmit={formik.handleSubmit}>
+                        <div className="flex flex-row">
+                          <div className="basis-3/4 px-2">
+                            <InputTextField key="ticketNoInput"
+                              fieldName="ticketNo"
+                              labelName="Ticket No"
+                              value={formik.values.ticketNo}
+                              placeholder="Enter Ticket No"
+                              inputFieldRef={TicketNoRef}
+                              handleOnChange={handleInputChange}
+                              handleOnBlur={handleOnBlur}
+                              maxLength={100}
+                              minLength={8}
+                              isDisabled={false}
+                              isReadOnly={false}
+                              isRequired={false} />
+                            {getIn(formik.touched, `ticketNo`) && getIn(formik.errors, `ticketNo`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `ticketNo`)}</h4>}
+                          </div>
+                        </div>
+                        <div className="flex flex-row mt-2">
+                          <div className="basis-1/2 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600 mb-1">Document Title</label>
+                            <select
+                              onChange={handleInputChange}
+                              name="DocStatus"
+                              className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
+                              ref={DocumentTitleRef}
+                            >
+                              <option value="">Select Document</option>
+                              {
+                                Array.isArray(documentmaster) && documentmaster.map((document, index) => {
+                                  return(<option key={document.DocumentName} value={document.DocumentName}>{document.DocumentName}</option>)
+                                })
+                              }
+                            </select>
+                            {getIn(formik.touched, `mobile`) && getIn(formik.errors, `mobile`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `mobile`)}</h4>}
+                          </div>
+                          <div className="basis-1/2 px-2">
+                            <label className="block text-sm font-medium leading-6 text-gray-600 mb-1">Status</label>
+                            <select
+                              onChange={handleInputChange}
+                              name="Status"
+                              className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
+                              ref={StatuRef}
+                            >
+                              {
+                                Array.isArray(docstatus) && docstatus.map((status, index) => {
+                                  return(<option key={status.docstatus} value={status.docstatus}>{status.docstatus}</option>)
+                                })
+                              }
+                            </select>
+                            {getIn(formik.touched, `Status`) && getIn(formik.errors, `Status`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `Status`)}</h4>}
+                          </div>
+                        </div>
+                        <div className="flex flex-row mt-2">
+                          <div className="basis-full px-2">
+                            <InputTextAreaField key="InputRemark"
+                              fieldName="Remarks"
+                              labelName="Remarks"
+                              value={formik.values.Remarks}
+                              placeholder="Enter Remarks"
+                              inputFieldRef={RemarkRef}
+                              handleOnChange={handleInputChange}
+                              handleOnBlur={handleOnBlur}
+                              maxLength={100}
+                              minLength={8}
+                              isDisabled={false}
+                              isReadOnly={false}
+                              isRequired={false} />
+                            {getIn(formik.touched, `Remarks`) && getIn(formik.errors, `Remarks`) && <h4 className="text-xs text-red px-2">{getIn(formik.errors, `Remarks`)}</h4>}
+                          </div>
+                        </div>
+                        <div className="place-self-start md:place-self-end">
+                          <button type="submit" className="py-2 px-2 inline-flex items-center gap-x-2 mt-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right">
+                            Upload
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>

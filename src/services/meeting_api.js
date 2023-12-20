@@ -76,3 +76,11 @@ export const serviceCallInfoAPI = async (iData) => {
 export const sendMeetingLinkAPI = async (iData) => {
     return await post('meeting/send_meeting_link', iData)
 };
+
+export const getDocumentStatus = async () => {
+    return await get('master/status')
+};
+
+export const getDocumentMaster = async () => {
+    return await get('master/document')
+};

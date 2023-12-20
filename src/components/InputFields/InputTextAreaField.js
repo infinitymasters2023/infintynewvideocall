@@ -1,5 +1,5 @@
 import React from 'react';
-const InputTextField = ({
+const InputTextAreaField = ({
     fieldName,
     value,
     placeholder,
@@ -17,12 +17,11 @@ const InputTextField = ({
 }) => {
     return (
         <>
-            { labelName && <label className="block text-sm font-medium leading-6 text-gray-600 mb-1">{labelName} {isRequired && <span className="text-red-500">*</span>}</label> }
+            {labelName && <label className="block text-sm font-medium leading-6 text-gray-600 mb-1">{labelName} {isRequired && <span className="text-red-500">*</span>}</label>}
             <div className="flex rounded-lg shadow-sm">
-            <input
-                type="text"
+            <textarea
                 autoComplete="off"
-                className={`py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 `}
+                className={`py-2 px-2 block min-w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 `}
                 name={fieldName}
                 placeholder={placeholder}
                 ref={inputFieldRef}
@@ -42,4 +41,4 @@ const InputTextField = ({
     );
 }
 
-export default InputTextField
+export default InputTextAreaField
