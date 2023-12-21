@@ -107,7 +107,14 @@ export function MeetingDetailsScreen({
       setIsCopied(false);
     }, 3000);
   };
-
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    const sanitizedInput = inputValue.replace(/\s\s+/g, ' ').replace(/[^a-zA-Z\s]/g, '');
+    const isValidInput = /^[a-zA-Z\s]*$/.test(sanitizedInput);
+    if (isValidInput) {
+      setParticipantName(sanitizedInput);
+    }
+  };
   return (
     <div className={`flex flex-1 flex-col w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked ? (
@@ -123,7 +130,7 @@ export function MeetingDetailsScreen({
         <>
           <input
             value={participantName}
-            onChange={(e) => setParticipantName(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Enter your name"
             className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
           />
