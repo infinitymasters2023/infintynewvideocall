@@ -28,7 +28,6 @@ const useMediaStream = () => {
         encoderConfig: encoderConfig
           ? encoderConfig
           : webcamResolutionRef.current,
-        facingMode: facingMode,
         optimizationMode: "motion",
         multiStream: false,
       });
