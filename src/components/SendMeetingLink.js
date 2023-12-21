@@ -6,6 +6,8 @@ import { sendMeetingLinkAPI } from '../services/meeting_api'
 import AddMobileSendLink from './InputFields/HandleMobileSendLink'
 import HandleEmailSendLink from './InputFields/HandleEmailSendLink'
 import { useMeeting } from "@videosdk.live/react-sdk";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const SendMeetingLink = ({ ticketInfo }) => {
     const [requestBody, setRequestBody] = useState([]);
     const [otherMobile, setOtherMobile] = useState([]);
@@ -38,7 +40,15 @@ const SendMeetingLink = ({ ticketInfo }) => {
         }
         setRequestBody(updatedRequestBody);
     };
-
+    const handleSendLink = () => {
+        // Your logic to send the link goes here
+    
+        // Trigger toast message on successful link send
+        toast.success('Link sent successfully!', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000, // Time in milliseconds, adjust as needed
+        });
+      }
     return (
         <form method="Post" onSubmit={handleSendMeetingLink}>
             <h4 className="text-xs text-gray-700 px-2">Customer Name :<span className="text-gray-600 px-2">{ticketInfo?.customername}</span></h4>

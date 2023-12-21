@@ -643,6 +643,7 @@ export function BottomBar({ bottomBarHeight }) {
 
   const RecordingBTN = ({ isMobile, isTab }) => {
     const { startRecording, stopRecording, recordingState, meetingId } = useMeeting();
+    const [recordingDisabled,setRecordingDisabled]=useState(false)
     const defaultOptions = {
       loop: true,
       autoplay: true,
@@ -662,15 +663,19 @@ export function BottomBar({ bottomBarHeight }) {
     }, [isRecording]);
 
     const _handleClick = async () => {
+ 
       const isRecording = isRecordingRef.current;
 
       if (isRecording) {
+        setRecordingDisabled(false)
         await stopRecording();
         setTimeout(function () {
           stopRecordingAPI({ roomId: meetingId })
         }, 3000)
       } else {
+        setRecordingDisabled(true)
         startRecording();
+        
       }
     };
 
@@ -708,6 +713,7 @@ export function BottomBar({ bottomBarHeight }) {
         Icon={RecordingIcon}
         onClick={_handleClick}
         isFocused={isRecording}
+        disabled={recordingDisabled}
         tooltip={
           recordingState === Constants.recordingEvents.RECORDING_STARTED
             ? "Stop Recording"
