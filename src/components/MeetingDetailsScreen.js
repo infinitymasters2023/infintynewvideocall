@@ -131,6 +131,7 @@ export function MeetingDetailsScreen({
           <input
             value={participantName}
             onChange={handleInputChange}
+            maxlength={'20'}
             placeholder="Enter your name"
             className="px-4 py-3 mt-3 bg-gray-650 rounded-xl text-white w-full text-center"
           />
