@@ -9,42 +9,41 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const localSender = localParticipantId === senderId;
   const isLink = /^(https?:\/\/|www\.)\S+/i.test(text);
 
-  const handleCopy = () => {
+  const handleOpenLink = () => {
     if (isLink) {
       try {
-        // Attempt to parse the link using the URL constructor
-        const parsedURL = new URL(text);
-
-        // Extract the pathname, which contains only the path without the protocol and base URL
-        const pathWithoutBaseURL = parsedURL.pathname;
-
-        // Create a temporary textarea element to facilitate copying
-        const textarea = document.createElement('textarea');
-        textarea.value = pathWithoutBaseURL;
-        document.body.appendChild(textarea);
-
-        // Select the text in the textarea
-        textarea.select();
-        document.execCommand('copy');
-
-        // Remove the temporary textarea
-        document.body.removeChild(textarea);
-
-        // You can provide user feedback, such as a tooltip or a message
-        alert('Link copied to clipboard!');
+        const urlWithProtocol = /^(https?:\/\/)/i.test(text) ? text : `http://${text}`;
+        const parsedURL = new URL(urlWithProtocol);
+        window.open(parsedURL.href, '_blank');
       } catch (error) {
-        // Handle the case where the URL is invalid
         console.error('Invalid URL:', error.message);
       }
     }
   };
 
+  const handleCopy = () => {
+    if (isLink) {
+      try {
+        const parsedURL = new URL(text);
+        const pathWithoutBaseURL = parsedURL.pathname;
+        const textarea = document.createElement('textarea');
+        textarea.value = pathWithoutBaseURL;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Link copied to clipboard!');
+      } catch (error) {
+        console.error('Invalid URL:', error.message);
+      }
+    }
+  };
   const renderContent = () => {
     if (isLink) {
       return (
         <span
-          onClick={handleCopy}
-          style={{ cursor: 'pointer', color: 'inherit', textDecoration: 'underline' }}
+          onClick={handleOpenLink}
+          style={{ cursor: 'pointer', color: 'white', textDecoration: 'underline blue' }}
         >
           {text}
         </span>
@@ -56,34 +55,30 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
 
   return (
     <div
-      className={`flex ${localSender ? "justify-end" : "justify-start"} mt-4`}
-      style={{
-        maxWidth: "100%",
-      }}
-    >
-      <div
-        className={`flex ${
-          localSender ? "items-end" : "items-start"
-        } flex-col py-1 px-2 rounded-md bg-gray-700`}
-      >
+    className={`flex ${localSender ? 'justify-end' : 'justify-start'} mt-4`}
+    style={{ maxWidth: '100%' }}
+  >
+  <div
+  className={`flex ${localSender ? 'items-end' : 'items-start'} flex-col py-1 px-2 rounded-md bg-gray-700`}
+>
         <p style={{ color: "#ffffff80" }}>
           {localSender ? "You" : nameTructed(senderName, 15)}
         </p>
         <div>
-  <p
-    className="inline-block whitespace-pre-wrap break-words text-right text-white"
-    style={{ cursor: 'pointer' }}
-    onClick={handleCopy}
-  >
-  {renderContent()}
-  </p>
-</div>
+          <p
+            className="inline-block whitespace-pre-wrap break-words text-right text-white"
+            style={{ cursor: 'pointer' }}
+            onClick={handleOpenLink}
+          >
+            {renderContent()}
+          </p>
+        </div>
         <div className="mt-1">
           <p className="text-xs italic" style={{ color: "#ffffff80" }}>
             {formatAMPM(new Date(timestamp))}
           </p>
         </div>
-        
+
       </div>
     </div>
   );
@@ -120,37 +115,36 @@ const ChatInput = ({ inputHeight }) => {
             }}
           >
             <PaperAirplaneIcon
-              className={`w-6 h-6 -rotate-90 ${
-                message.length < 2 ? "text-gray-500 " : "text-white"
-              }`}
+              className={`w-6 h-6 -rotate-90 ${message.length < 2 ? "text-gray-500 " : "text-white"
+                }`}
             />
           </button>
         </span>
         <input
-        type="text"
-        className={` px-2 py-4 text-base text-white bg-gray-750 border-[1px] border-gray-500 focus:outline-none focus:border-purple-350 rounded pr-10  w-full`}
-        placeholder="Write your message"
-        autocomplete="off"
-        ref={input}
-        value={message}
-        onChange={(e) => {
-          setMessage(e.target.value);
-        }}
-        onKeyPress={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            const messageText = message.trim();
-      
-            if (messageText.length > 0) {
-              publish(messageText, { persist: true });
-              setTimeout(() => {
-                setMessage("");
-              }, 100);
-              input.current?.focus();
+          type="text"
+          className={` px-2 py-4 text-base text-white bg-gray-750 border-[1px] border-gray-500 focus:outline-none focus:border-purple-350 rounded pr-10  w-full`}
+          placeholder="Write your message"
+          autocomplete="off"
+          ref={input}
+          value={message}
+          onChange={(e) => {
+            setMessage(e.target.value);
+          }}
+          onKeyPress={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              const messageText = message.trim();
+
+              if (messageText.length > 0) {
+                publish(messageText, { persist: true });
+                setTimeout(() => {
+                  setMessage("");
+                }, 100);
+                input.current?.focus();
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
 
       </div>
     </div>
