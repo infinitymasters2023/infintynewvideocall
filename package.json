@@ -10,7 +10,7 @@
     "@headlessui/react": "^1.7.7",
     "@heroicons/react": "^2.0.13",
     "@popperjs/core": "^2.11.7",
-    "@videosdk.live/react-sdk": "^0.1.73",
+    "@videosdk.live/react-sdk": "0.1.73",
     "@videosdk.live/videosdk-media-processor-web": "^0.0.12",
     "axios": "^1.6.2",
     "bootstrap": "^5.3.2",
