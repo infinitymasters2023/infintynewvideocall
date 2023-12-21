@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { LeaveScreen } from "./components/screens/LeaveScreen";
 import { JoiningScreen } from "./components/screens/JoiningScreen";
 import { MeetingContainer } from "./meeting/MeetingContainer";
 import { MeetingAppProvider } from "./context/MeetingAppContext";
-
 const App = () => {
   const [token, setToken] = useState("");
   const [meetingId, setMeetingId] = useState("");
@@ -17,10 +16,11 @@ const App = () => {
   const [speakerOn, setSpekerOn] = useState(true);
   const [isMeetingStarted, setMeetingStarted] = useState(false);
   const [isMeetingLeft, setIsMeetingLeft] = useState(false);
-
   let url = new URL(window.location.href);
   let searchParams = new URLSearchParams(url.search);
   const participantMode = searchParams.get("mode");
+
+
   const isMobile = window.matchMedia(
     "only screen and (max-width: 768px)"
   ).matches;
@@ -32,6 +32,7 @@ const App = () => {
       };
     }
   }, [isMobile]);
+
   return (
     <>
       {isMeetingStarted ? (
@@ -90,7 +91,7 @@ const App = () => {
             setMeetingStarted(true);
           }}
           startMeeting={isMeetingStarted}
-          setIsMeetingLeft={setIsMeetingLeft}
+          setIsMeetingLeft={setIsMeetingLeft} 
         />
       )}
     </>

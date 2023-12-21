@@ -85,7 +85,6 @@ export const MeetingAppProvider = ({
         selectedOutputDevice,
         webCamResolution,
         cameraFacingMode,
-
         // setters
         setSideBarMode,
         setSelectedMicDevice,
@@ -98,7 +97,6 @@ export const MeetingAppProvider = ({
         setSelectedOutputDevice,
         setWebCamResolution,
         setCameraFacingMode,
-
         videoProcessor,
       }}
     >

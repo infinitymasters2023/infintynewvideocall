@@ -32,7 +32,7 @@ export function MeetingDetailsScreen({
   const userid = searchParams.get("userid");
   const [ticketInfo, setTicketInfo] = useState({});
   // const [participantInfo, setParticipantInfo] = useState({});
-console.log('ticketInfo', ticketInfo);
+
   useEffect(() => {
     if(urlMeetingId){
       setMeetingId(urlMeetingId)
@@ -220,17 +220,6 @@ console.log('ticketInfo', ticketInfo);
                       }}>
                   Send Link
                 </button>
-                {/* <Modal show={isModalOpen} onHide={closeModal} centered size="md">
-                  <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter" style={{ fontSize: '15px', fontWeight: '500' }} >
-                      Send Link
-                    </Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
-                  </Modal.Body>
-                </Modal> */}
-
               </div>
 
             </>
@@ -269,7 +258,7 @@ console.log('ticketInfo', ticketInfo);
                                 <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                             </a>
             </div>
-                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} />
+                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

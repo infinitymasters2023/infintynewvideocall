@@ -2,10 +2,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState, useRef, useEffect, useCallback } from "react";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { FiZoomIn, FiZoomOut, FiRotateCw, FiRotateCcw, FiRefreshCw } from 'react-icons/fi';
-import "cropperjs/dist/cropper.css";
 import { usePubSub, useMeeting } from "@videosdk.live/react-sdk";
-import { uploadFileAPI, getDocumentStatus, getDocumentMaster } from "../services/meeting_api";
+import { uploadFileAPI, getDocumentStatus, getDocumentMaster, serviceCallInfoAPI } from "../services/meeting_api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faXmark, faMagnifyingGlassMinus, faMagnifyingGlassPlus,
@@ -18,7 +16,6 @@ import { UploadDocumentSchema } from '../validation/upload_document';
 import InputTextField from './InputFields/InputTextField'
 import InputTextAreaField from './InputFields/InputTextAreaField'
 import { allowOnlyTextInput } from '../utils/helper'
-
 const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const { meetingId } = useMeeting();
   const refArray = Array(4).fill(null).map(() => (null));
@@ -27,6 +24,8 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const [toUploadImage, setToUploadImage] = useState(null);
   const [docstatus, setDocstatus] = useState([]);
   const [documentmaster, setDocumentmaster] = useState([]);
+  const [ticketNo, setTicketNo] = useState('');
+  
   const [displayIcon, setDisplayIcon] = useState({
     isCapture: false,
     isDefault: false,
@@ -65,6 +64,31 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   useEffect(() => {
     fetchDocstatus();
     fetchDocumentmaster();
+  }, []);
+  let url = new URL(window.location.href);
+  let searchParams = new URLSearchParams(url.search);
+  const participantMode = searchParams.get("mode");
+  const customRoomId = searchParams.get("qu");
+  const userid = searchParams.get("userid");
+
+  useEffect(() => {
+    if (customRoomId && userid) {
+      fetchTicketInfo()
+    }
+  }, [customRoomId, userid]);
+
+  const fetchTicketInfo = useCallback(async () => {
+    if (customRoomId && userid) {
+      const iData = { quNumber : customRoomId, userid : userid }
+      await serviceCallInfoAPI(iData).then(async (response) => {
+        if (response && response.isSuccess && response.statusCode == 200) {
+          const { TicketNO } = response.data
+          setTicketNo(TicketNO)
+        }
+      })
+        .catch((error) => {
+        })
+    }
   }, []);
 
   const fetchDocstatus = useCallback(async () => {
@@ -117,21 +141,15 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const handleSubmit = async () => {
     await uploadFileAPI(formik.values).then(async (response) => {
       if (response && response.isSuccess && response.statusCode == 200) {
-        formik.resetForm({
-          values: {
-            ...formik.values,
-            Remarks: '',
-            Status: '',
-            DocStatus: '',
-          },
-        });
+        formik.setFieldValue('Remarks', '')
+        formik.setFieldValue('Status', '')
+        formik.setFieldValue('DocStatus', '')
       }
     })
       .catch((error) => {
       })
   };
 
-  const ticketNo = localStorage.getItem('ticketNo')
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -139,7 +157,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
       ticketNo: ticketNo,
       Remarks: '',
       Status: '',
-      DocStatus: '',
+      DocumentName: '',
       file: toUploadImage
     },
     validationSchema: UploadDocumentSchema,
@@ -165,7 +183,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
         await formik.setFieldValue(name, transformValue)
         await formik.setFieldTouched(name, true)
         break;
-      case 'DocStatus':
+      case 'DocumentName':
         transformValue = await allowOnlyTextInput(value)
         await formik.setFieldValue(name, transformValue)
         await formik.setFieldTouched(name, true)
@@ -338,27 +356,32 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                             <label className="block text-sm font-medium leading-6 text-gray-600 mb-1">Document Title</label>
                             <select
                               onChange={handleInputChange}
-                              name="DocStatus"
+                              name="DocumentName"
+                              value={formik.values.DocumentName}
                               className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
                               ref={DocumentTitleRef}
+                              required={true}
                             >
                               <option value="">Select Document</option>
                               {
                                 Array.isArray(documentmaster) && documentmaster.map((document, index) => {
-                                  return (<option key={document.DocumentName} value={document.DocumentName}>{document.DocumentName}</option>)
+                                  return (<option key={document.DocumentName} value={document.mid}>{document.DocumentName}</option>)
                                 })
                               }
                             </select>
-                            {getIn(formik.touched, `mobile`) && getIn(formik.errors, `mobile`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `mobile`)}</h4>}
+                            {getIn(formik.touched, `DocumentName`) && getIn(formik.errors, `DocumentName`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `DocumentName`)}</h4>}
                           </div>
                           <div className="basis-1/2 px-2">
                             <label className="block text-sm font-medium leading-6 text-gray-600 mb-1">Status</label>
                             <select
                               onChange={handleInputChange}
                               name="Status"
+                              value={formik.values.Status}
                               className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
                               ref={StatuRef}
+                              required={true}
                             >
+                              <option value="">Select Status</option>
                               {
                                 Array.isArray(docstatus) && docstatus.map((status, index) => {
                                   return (<option key={status.docstatus} value={status.docstatus}>{status.docstatus}</option>)

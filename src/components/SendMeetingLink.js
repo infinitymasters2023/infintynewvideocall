@@ -6,15 +6,14 @@ import { sendMeetingLinkAPI } from '../services/meeting_api'
 import AddMobileSendLink from './InputFields/HandleMobileSendLink'
 import HandleEmailSendLink from './InputFields/HandleEmailSendLink'
 import { useMeeting } from "@videosdk.live/react-sdk";
-const SendMeetingLink = ({ ticketInfo }) => {
+const SendMeetingLink = ({ ticketInfo , meetingId }) => {
     const [requestBody, setRequestBody] = useState([]);
     const [otherMobile, setOtherMobile] = useState([]);
     const [otherEmail, setOtherEmail] = useState([]);
     const handleSendMeetingLink = async (e) => {
         e.preventDefault();
         const sendids = [...requestBody, ...otherMobile, ...otherEmail];
-        const storedLink = localStorage.getItem('meetingLink');
-        const iData = { sendTo: sendids, meetingLink: storedLink }
+        const iData = { sendTo: sendids, meetingLink: `https://meetings.infyshield.com/${meetingId}` }
         await sendMeetingLinkAPI(iData).then((response) => {
             if (response && response.isSuccess && response.statusCode === 200 && response.data) {
                 setRequestBody([])
