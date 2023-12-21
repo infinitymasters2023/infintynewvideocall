@@ -21,7 +21,7 @@ const InputTextAreaField = ({
             <div className="flex rounded-lg shadow-sm">
             <textarea
                 autoComplete="off"
-                className={`py-2 px-2 block min-w-full border-gray-200 shadow-sm rounded-lg rounded-e-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 `}
+                className={`py-2 px-2 block min-w-full border-gray-200 shadow-sm rounded-lg rounded text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600 `}
                 name={fieldName}
                 placeholder={placeholder}
                 ref={inputFieldRef}
