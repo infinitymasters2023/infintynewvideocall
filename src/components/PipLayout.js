@@ -85,4 +85,4 @@ function PipLayout({ participantIds }) {
   );
 }
 
-export default PipLayout;
+export { PipLayout };

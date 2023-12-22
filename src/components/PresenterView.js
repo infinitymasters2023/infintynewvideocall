@@ -93,8 +93,8 @@ export function PresenterView({ height }) {
       <audio
         id="audio"
         autoPlay
-        playsInline
-        controls={false}
+        playsInline={true}
+        controls={true}
         ref={audioPlayer}
         muted={isLocal || !muteSpeaker}
       />
@@ -102,11 +102,11 @@ export function PresenterView({ height }) {
       <div className={"video-contain absolute h-full w-full"}>
         <ReactPlayer
           ref={videoPlayer}
-          playsinline 
+          playsinline ={true}
           playIcon={<></>}
-          pip={false}
-          light={false}
-          controls={false}
+          pip={true}
+          light={true}
+          controls={true}
           muted={true}
           playing={true}
           url={mediaStream}
