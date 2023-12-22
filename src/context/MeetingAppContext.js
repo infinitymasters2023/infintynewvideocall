@@ -67,8 +67,7 @@ export const MeetingAppProvider = ({
         initialMicOn,
         initialWebcamOn,
         participantMode,
-
-        allowedVirtualBackground:isAgent, //isAgent && !isMobile,
+        allowedVirtualBackground:isAgent && !isMobile,
         maintainVideoAspectRatio: isAgent,
         maintainLandscapeVideoAspectRatio: true,
         canRemoveOtherParticipant: isAgent,

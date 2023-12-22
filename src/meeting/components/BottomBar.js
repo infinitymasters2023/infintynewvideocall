@@ -722,33 +722,7 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
-  const PrintScreenListener = () => {
-    const handleKeyDown = (event) => {
-      // Check if the Print Screen key is pressed
-      if (event.key === 'PrintScreen') {
-        // Provide a message or guide the user on how to capture a screenshot manually
-        alert('To capture a screenshot, press the Print Screen key and paste it into an image editor.');
-      }
-    };
-
-    useEffect(() => {
-      // Add event listener when the component mounts
-      window.addEventListener('keydown', handleKeyDown);
-
-      // Remove event listener when the component unmounts
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-      };
-    }, []); // Empty dependency array ensures that the effect runs only once on mount
-
-    return (
-      <div>
-        <p>Press the Print Screen key to capture a screenshot.</p>
-      </div>
-    );
-  };
-
-
+  
 
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
@@ -843,17 +817,6 @@ export function BottomBar({ bottomBarHeight }) {
   };
 
 
-  const CustomModal = ({ side, title, show, handleClose, children }) => {
-    return (
-      <Modal show={show} onHide={handleClose} className={`modal-${side} fade`}>
-        <Modal.Header closeButton>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className={`modal-body-${side}`}>{children}</Modal.Body>
-      </Modal>
-    );
-  };
-
 
 
 
@@ -900,85 +863,7 @@ export function BottomBar({ bottomBarHeight }) {
 
 
 
-  const SidebarModalDemo = ({ participantName }) => {
-    const [rightModalShow, setRightModalShow] = useState(false);
-    const [meetingLink, setMeetingLink] = useState('');
-    const { meetingId } = useMeeting();
 
-    useEffect(() => {
-      // Retrieve the link from local storage
-      const storedLink = localStorage.getItem('meetingLink');
-      if (storedLink) {
-        setMeetingLink(storedLink);
-      }
-    }, []);
-
-    const handleRightModalClose = () => setRightModalShow(false);
-    const handleRightModalShow = () => setRightModalShow(true);
-    return (
-      <div className="sidebar-modal-demo">
-        <div className="text-center">
-          <button
-            type="button"
-            className="btn btn-demo text-base font-medium text-white"
-            onClick={handleRightModalShow}
-          >
-            <FaInfoCircle />
-          </button>
-        </div>
-
-        <CustomModal
-          side="right"
-          title="Info"
-          show={rightModalShow}
-          handleClose={handleRightModalClose}
-        >
-          <div className="card-panel">
-            <div className="card">
-              <div className="body">
-                <div className="title m-0">Infinity Assurance Meeting</div>
-              </div>
-              <ul className="list pl-0">
-                <li className="list-item py-1 border-0">
-                  <div className="d-flex">
-                    <div className="name col-5 px-0">Host</div>
-                    <div className="value col-7 px-0">{participantName}</div>
-                  </div>
-                  <hr className="break-line break-line-list" />
-                </li>
-                <li className="list-item py-1 border-0"></li>
-                <li className="list-item py-1 border-0">
-                  <div className="d-flex">
-                    <div className="name px-0 col-5">Meeting ID:</div>
-                    <div className="value px-0 col-7">{meetingId}</div>
-                  </div>
-                </li>
-                <li className="list-item py-1 border-0"></li>
-                <li className="list-item py-1 border-0 grid-column-assign">
-                  <div className="d-flex">
-                    <div className="name col-3 px-0">Invitation Link:</div>
-                    <div className="value col-6 px-3 link url-value">
-                      {meetingLink}
-                    </div>
-                  </div>
-                </li>
-              </ul>
-              <div className="card-body text-right copy-btns center-content">
-                <button className="btn card-link">
-                  <img alt="" src="assets/images/copy-url.svg" />
-                  <span className="pl-2">Copy Link</span>
-                </button>
-                <button className="btn card-link">
-                  <img alt="" src="assets/images/copy-invi.svg" />
-                  <span className="pl-2">Copy Invitation</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          /</CustomModal>
-      </div>
-    );
-  };
 
   const SendInfyMeetBTN = () => {
     const { meetingId } = useMeeting();
@@ -1328,9 +1213,11 @@ export function BottomBar({ bottomBarHeight }) {
     </div>
   ) : (
     <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
-
-      <DisplayTimer />
+    {participantMode === participantModes.AGENT ? (
       <SendInfyMeetBTN />
+    ) : null}
+      <DisplayTimer />
+  
       {isRecording && <RecordingDisplayTimer />}
       <div className="flex flex-1 items-center justify-center" ref={tollTipEl}>
         {participantMode === participantModes.AGENT && (
@@ -1357,7 +1244,7 @@ export function BottomBar({ bottomBarHeight }) {
       </div>
 
       <div className="flex items-center justify-center">
-        <SendInfyMeetBTN />
+  
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>
