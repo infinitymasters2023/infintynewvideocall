@@ -236,10 +236,10 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = imageSrc; 
-    link.download =  `${ticketNo}.png`; // You can customize the filename here
+    link.download =  `${ticketNo}.png`; 
     document.body.appendChild(link);
 
-    // Trigger a click on the link to start the download
+  
     link.click();
 
     // Remove the link from the DOM
