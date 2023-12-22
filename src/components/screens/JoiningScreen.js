@@ -377,10 +377,10 @@ export function JoiningScreen({
                     <div className="w-full relative" style={{ height: "45vh" }}>
                       <video
                         autoPlay
-                        playsInline
+                        playsInline={true}
                         muted
                         ref={videoPlayerRef}
-                        controls={false}
+                        controls={true}
                         style={{
                           backgroundColor: "#1c1c1c",
                         }}

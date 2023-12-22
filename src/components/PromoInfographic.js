@@ -6,11 +6,11 @@ export function PromoInfographic() {
       className={`h-full w-full  bg-gray-750 relative overflow-hidden rounded-lg video-cover`}
     >
       <ReactPlayer
-        playsinline 
+        playsinline={true}
         playIcon={<></>}
         pip={false}
         light={false}
-        controls={false}
+        controls={true}
         muted={true}
         playing={true}
         url={

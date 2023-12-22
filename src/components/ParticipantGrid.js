@@ -4,6 +4,7 @@ import { useMeetingAppContext } from "../context/MeetingAppContext";
 import { participantModes } from "../utils/common";
 import { MemoizedParticipant } from "./ParticipantView";
 import { PromoInfographic } from "./PromoInfographic";
+
 function ParticipantGrid({ participantIds, isPresenting, sideBarMode }) {
   const isMobile = window.matchMedia(
     "only screen and (max-width: 768px)"
@@ -78,6 +79,7 @@ function ParticipantGrid({ participantIds, isPresenting, sideBarMode }) {
                     : "items-center justify-center"
                 }`}
               >
+              
                 {participantIds
                   .slice(i * perRow, (i + 1) * perRow)
                   .map((participantId) => {
@@ -101,7 +103,7 @@ function ParticipantGrid({ participantIds, isPresenting, sideBarMode }) {
                                     : "md:w-44 xl:w-48"
                                 } `
                               : "md:w-44 xl:w-48"
-                            : "w-full "
+                            : "w-full"
                         } items-center justify-center h-full ${
                           participantIds.length === 1
                             ? "md:max-w-7xl 2xl:max-w-[1480px] "
@@ -132,6 +134,7 @@ function ParticipantGrid({ participantIds, isPresenting, sideBarMode }) {
     </div>
   );
 }
+
 
 export const MemoizedParticipantGrid = React.memo(
   ParticipantGrid,

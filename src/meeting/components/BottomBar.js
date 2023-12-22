@@ -24,6 +24,7 @@ import useIsTab from "../../hooks/useIsTab";
 import useIsMobile from "../../hooks/useIsMobile";
 import { MobileIconButton } from "../../components/buttons/MobileIconButton";
 import { FaInfoCircle } from "react-icons/fa";
+
 import {
   meetingModes,
   participantModes,
@@ -46,7 +47,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { stopRecordingAPI, endMeetingAPI, leaveMeetingAPI } from "../../services/meeting_api";
 import DisplayTimer from "../../components/DisplayTimer";
 import RecordingDisplayTimer from "../../components/RecordingDisplayTimer";
-
+import html2canvas from "html2canvas";
 const MicBTN = () => {
   const { selectedMicDevice, setSelectedMicDevice } = useMeetingAppContext();
   const { getCustomAudioTrack } = useCustomTrack();
@@ -730,6 +731,34 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
  
+  const PrintScreenListener = () => {
+    const handleKeyDown = (event) => {
+      // Check if the Print Screen key is pressed
+      if (event.key === 'PrintScreen') {
+        // Provide a message or guide the user on how to capture a screenshot manually
+        alert('To capture a screenshot, press the Print Screen key and paste it into an image editor.');
+      }
+    };
+  
+    useEffect(() => {
+      // Add event listener when the component mounts
+      window.addEventListener('keydown', handleKeyDown);
+  
+      // Remove event listener when the component unmounts
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }, []); // Empty dependency array ensures that the effect runs only once on mount
+  
+    return (
+      <div>
+        <p>Press the Print Screen key to capture a screenshot.</p>
+      </div>
+    );
+  };
+  
+  
+
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
 
@@ -1241,6 +1270,7 @@ export function BottomBar({ bottomBarHeight }) {
           <><RecordingBTN isTab={isTab} isMobile={isMobile} />
           </>
         )}
+
         <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
         <MicBTN />
 

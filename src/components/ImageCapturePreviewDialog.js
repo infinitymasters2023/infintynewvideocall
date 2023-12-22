@@ -16,6 +16,8 @@ import { UploadDocumentSchema } from '../validation/upload_document';
 import InputTextField from './InputFields/InputTextField'
 import InputTextAreaField from './InputFields/InputTextAreaField'
 import { allowOnlyTextInput } from '../utils/helper'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const { meetingId } = useMeeting();
   const refArray = Array(4).fill(null).map(() => (null));
@@ -220,7 +222,29 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
         break;
     }
   }
+  const handleUpload = async () => {
+   
+    toast.success('Image uploaded successfully!', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = imageSrc; 
+    link.download =  `${ticketNo}.png`; // You can customize the filename here
+    document.body.appendChild(link);
 
+    // Trigger a click on the link to start the download
+    link.click();
+
+    // Remove the link from the DOM
+    document.body.removeChild(link);
+  };
   return (
     <>
       <Transition appear show={open} as={Fragment}>
@@ -299,25 +323,39 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                           }
                           {
                             (displayIcon.isCroped) && <>
-                              <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2  shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
-                                onClick={handleZoomIn}><FontAwesomeIcon icon={faMagnifyingGlassPlus} />
+                            <a
+                            className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                            onClick={handleZoomIn}
+                            title="Zoom In"
+                          >
+                            <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+                          </a>
+                              <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                                onClick={handleZoomOut}><FontAwesomeIcon icon={faMagnifyingGlassMinus}
+                                title="Zoom Out"
+                                />
                               </a>
                               <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
-                                onClick={handleZoomOut}><FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+                                onClick={handleRotateRight}><FontAwesomeIcon icon={faArrowRotateRight}
+                                title="Rotate Right"
+                                />
                               </a>
                               <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
-                                onClick={handleRotateRight}><FontAwesomeIcon icon={faArrowRotateRight} />
-                              </a>
-                              <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
-                                onClick={handleRotateLeft}><FontAwesomeIcon icon={faArrowRotateLeft} />
+                                onClick={handleRotateLeft}><FontAwesomeIcon icon={faArrowRotateLeft}
+                                title="Rotate Left"
+                                />
                               </a>
                               <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
                                 onClick={handleResetImage}>
-                                <FontAwesomeIcon icon={faArrowsRotate} />
+                                <FontAwesomeIcon icon={faArrowsRotate} 
+                                title="Revert to original"
+                                />
                               </a>
                               <a className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
                                 onClick={handleCaptureImage}>
-                                <FontAwesomeIcon icon={faCheck} />
+                                <FontAwesomeIcon icon={faCheck}
+                                title="Submit"
+                                />
                               </a>
                             </>
                           }
@@ -410,11 +448,23 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                           </div>
                         </div>
                         <div className="place-self-start md:place-self-end">
+                        
+                       
                           <button type="submit"
                             className="py-2 px-2 inline-flex items-center gap-x-2 mt-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right"
-                            disabled={!formik.isValid || formik.isSubmitting}>
+                            disabled={!formik.isValid || formik.isSubmitting}
+                            onClick={handleUpload}
+                            >
                             Upload
                           </button>
+                          <button
+                          type="button"
+                          className="py-2 px-2 inline-flex items-center gap-x-2 mt-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right"
+                          disabled={!formik.isValid || formik.isSubmitting}
+                          onClick={handleDownload}
+                        >
+                          Download
+                        </button>
                         </div>
                       </form>
                     </div>
