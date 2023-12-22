@@ -9,7 +9,7 @@ import {
   faXmark, faMagnifyingGlassMinus, faMagnifyingGlassPlus,
   faArrowRotateRight, faArrowRotateLeft, faCrop,
   faCheck, faPenToSquare, faArrowsRotate, faCropSimple,
-  faSquareCheck
+  faSquareCheck,faDownload
 } from '@fortawesome/free-solid-svg-icons';
 import { useFormik, getIn } from 'formik';
 import { UploadDocumentSchema } from '../validation/upload_document';
@@ -262,9 +262,10 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
           >
             <div className="fixed inset-0 bg-black bg-opacity-25" />
           </Transition.Child>
-
+       
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center">
+          
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -274,13 +275,17 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
+              
                 <Dialog.Panel
                   style={{
                     maxHeight: `calc(100vh - 150px)`,
                   }}
                   className="w-9/12 transform relative overflow-y-auto rounded bg-[#f2f3f9] p-3 text-left align-middle flex flex-col shadow-xl transition-all"
-                >
+                > 
+              
+              
                   <div className="w-full p-1 justify-end gap-2">
+                
                     <a className="flex-shrink-0 inline-flex float-right "
                       onClick={() => {
                         setOpen(false);
@@ -357,6 +362,14 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                                 title="Submit"
                                 />
                               </a>
+                              <a
+                              type="button"
+                              className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                              disabled={!formik.isValid || formik.isSubmitting}
+                              onClick={handleDownload}
+                            >
+                              <FontAwesomeIcon icon={faDownload} className="text-lg" />
+                            </a>
                             </>
                           }
                           {
@@ -457,14 +470,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                             >
                             Upload
                           </button>
-                          <button
-                          type="button"
-                          className="py-2 px-2 inline-flex items-center gap-x-2 mt-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right"
-                          disabled={!formik.isValid || formik.isSubmitting}
-                          onClick={handleDownload}
-                        >
-                          Download
-                        </button>
+                         
                         </div>
                       </form>
                     </div>
