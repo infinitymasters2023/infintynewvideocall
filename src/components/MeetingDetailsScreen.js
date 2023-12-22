@@ -257,7 +257,7 @@ export function MeetingDetailsScreen({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-3 text-left align-middle shadow-xl transition-all">
                 <div className="py-2">
                 <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
                         setModelOpen(false);
