@@ -1,5 +1,5 @@
-import {Constants,createScreenShareVideoTrack,useMeeting,usePubSub} from "@videosdk.live/react-sdk";
-import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Constants, createScreenShareVideoTrack, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import React, { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import {
   ClipboardIcon,
   CheckIcon,
@@ -24,7 +24,7 @@ import useIsTab from "../../hooks/useIsTab";
 import useIsMobile from "../../hooks/useIsMobile";
 import { MobileIconButton } from "../../components/buttons/MobileIconButton";
 import { FaInfoCircle } from "react-icons/fa";
-
+import SendMeetingLink from "../../components/SendMeetingLink"
 import {
   meetingModes,
   participantModes,
@@ -47,7 +47,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { stopRecordingAPI, endMeetingAPI, leaveMeetingAPI } from "../../services/meeting_api";
 import DisplayTimer from "../../components/DisplayTimer";
 import RecordingDisplayTimer from "../../components/RecordingDisplayTimer";
-import html2canvas from "html2canvas";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { serviceCallInfoAPI } from '../../services/meeting_api'
 const MicBTN = () => {
   const { selectedMicDevice, setSelectedMicDevice } = useMeetingAppContext();
   const { getCustomAudioTrack } = useCustomTrack();
@@ -89,17 +91,15 @@ const MicBTN = () => {
         {({ close }) => (
           <>
             <Popover.Button
-              className={`flex items-center justify-center  rounded-lg ${
-                bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
-              } ${
-                mouseOver
+              className={`flex items-center justify-center  rounded-lg ${bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
+                } ${mouseOver
                   ? "border-2 border-transparent border-solid"
                   : borderColor
-                  ? `border-2 border-[${borderColor}] border-solid`
-                  : bgColor
-                  ? "border-2 border-transparent border-solid"
-                  : "border-2 border-solid border-[#ffffff33]"
-              } md:m-2 m-1`}
+                    ? `border-2 border-[${borderColor}] border-solid`
+                    : bgColor
+                      ? "border-2 border-transparent border-solid"
+                      : "border-2 border-solid border-[#ffffff33]"
+                } md:m-2 m-1`}
             >
               <button
                 className={`cursor-pointer flex items-center justify-center`}
@@ -160,16 +160,14 @@ const MicBTN = () => {
                             ({ deviceId, label }, index) => {
                               return (
                                 <div
-                                  className={`px-3 py-1 my-1 pl-6 text-white text-left ${
-                                    deviceId === selectedMicDevice.deviceId &&
+                                  className={`px-3 py-1 my-1 pl-6 text-white text-left ${deviceId === selectedMicDevice.deviceId &&
                                     "bg-gray-150"
-                                  }`}
+                                    }`}
                                 >
                                   <button
-                                    className={`flex flex-1 w-full ${
-                                      deviceId === selectedMicDevice.deviceId &&
+                                    className={`flex flex-1 w-full ${deviceId === selectedMicDevice.deviceId &&
                                       "bg-gray-150"
-                                    }`}
+                                      }`}
                                     key={`mics_${deviceId}`}
                                     onClick={async () => {
                                       setSelectedMicDevice({
@@ -254,15 +252,13 @@ const OutputMicBTN = () => {
       {({ close }) => (
         <>
           <Popover.Button
-            className={`flex items-center justify-center  rounded-lg ${
-              bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
-            } ${
-              borderColor
+            className={`flex items-center justify-center  rounded-lg ${bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
+              } ${borderColor
                 ? `border-2 border-[${borderColor}] border-solid`
                 : bgColor
-                ? "border-2 border-transparent border-solid"
-                : "border-2 border-solid border-[#ffffff33]"
-            } md:m-2 m-1`}
+                  ? "border-2 border-transparent border-solid"
+                  : "border-2 border-solid border-[#ffffff33]"
+              } md:m-2 m-1`}
           >
             <button
               className={`cursor-pointer flex items-center justify-center`}
@@ -323,16 +319,14 @@ const OutputMicBTN = () => {
                           ({ deviceId, label }, index) => {
                             return (
                               <div
-                                className={`px-3 py-1 my-1 pl-6 text-white text-left ${
-                                  deviceId === selectedOutputDevice.id &&
+                                className={`px-3 py-1 my-1 pl-6 text-white text-left ${deviceId === selectedOutputDevice.id &&
                                   "bg-gray-150"
-                                }`}
+                                  }`}
                               >
                                 <button
-                                  className={`flex flex-1 w-full ${
-                                    deviceId === selectedOutputDevice.id &&
+                                  className={`flex flex-1 w-full ${deviceId === selectedOutputDevice.id &&
                                     "bg-gray-150"
-                                  }`}
+                                    }`}
                                   key={`mics_${deviceId}`}
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -419,15 +413,13 @@ const WebCamBTN = ({ isMobile }) => {
       {({ close }) => (
         <>
           <Popover.Button
-            className={`flex items-center justify-center  rounded-lg ${
-              bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
-            } ${
-              borderColor
+            className={`flex items-center justify-center  rounded-lg ${bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
+              } ${borderColor
                 ? `border-2 border-[${borderColor}] border-solid`
                 : bgColor
-                ? "border-2 border-transparent border-solid"
-                : "border-2 border-solid border-[#ffffff33]"
-            } md:m-2 m-1`}
+                  ? "border-2 border-transparent border-solid"
+                  : "border-2 border-solid border-[#ffffff33]"
+              } md:m-2 m-1`}
           >
             <button
               className={`cursor-pointer flex items-center justify-center`}
@@ -497,16 +489,14 @@ const WebCamBTN = ({ isMobile }) => {
                       <div className="flex flex-col">
                         {webcams.map(({ deviceId, label }, index) => (
                           <div
-                            className={`px-3 py-1 my-1 pl-6 text-white text-left ${
-                              deviceId === selectedWebcamDevice.id &&
+                            className={`px-3 py-1 my-1 pl-6 text-white text-left ${deviceId === selectedWebcamDevice.id &&
                               "bg-gray-150"
-                            }`}
+                              }`}
                           >
                             <button
-                              className={`flex flex-1 w-full ${
-                                deviceId === selectedWebcamDevice.id &&
+                              className={`flex flex-1 w-full ${deviceId === selectedWebcamDevice.id &&
                                 "bg-gray-150"
-                              }`}
+                                }`}
                               key={`output_webcams_${deviceId}`}
                               onClick={async () => {
                                 setSelectedWebcamDevice({
@@ -597,12 +587,13 @@ const WebCamBTN = ({ isMobile }) => {
 };
 
 export function BottomBar({ bottomBarHeight }) {
-  const { sideBarMode, setSideBarMode, participantMode } =
-    useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, participantMode } = useMeetingAppContext();
+
   const location = useLocation();
   const [userId, setUserId] = useState("");
   const [adminId, setAdminId] = useState("");
   const isRecording = useIsRecording();
+  const [modelOpen, setModelOpen] = useState(false);
   useEffect(() => {
     setUserId(uuidv4());
     ;
@@ -644,7 +635,7 @@ export function BottomBar({ bottomBarHeight }) {
 
   const RecordingBTN = ({ isMobile, isTab }) => {
     const { startRecording, stopRecording, recordingState, meetingId } = useMeeting();
-    const [recordingDisabled,setRecordingDisabled]=useState(false)
+    const [recordingDisabled, setRecordingDisabled] = useState(false)
     const defaultOptions = {
       loop: true,
       autoplay: true,
@@ -664,7 +655,7 @@ export function BottomBar({ bottomBarHeight }) {
     }, [isRecording]);
 
     const _handleClick = async () => {
- 
+
       const isRecording = isRecordingRef.current;
 
       if (isRecording) {
@@ -676,7 +667,7 @@ export function BottomBar({ bottomBarHeight }) {
       } else {
         setRecordingDisabled(true)
         startRecording();
-        
+
       }
     };
 
@@ -689,23 +680,23 @@ export function BottomBar({ bottomBarHeight }) {
           recordingState === Constants.recordingEvents.RECORDING_STARTED
             ? "Stop Recording"
             : recordingState === Constants.recordingEvents.RECORDING_STARTING
-            ? "Starting Recording"
-            : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-            ? "Start Recording"
-            : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-            ? "Stopping Recording"
-            : "Start Recording"
+              ? "Starting Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+                ? "Start Recording"
+                : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  ? "Stopping Recording"
+                  : "Start Recording"
         }
         tooltip={
           recordingState === Constants.recordingEvents.RECORDING_STARTED
             ? "Stop Recording"
             : recordingState === Constants.recordingEvents.RECORDING_STARTING
-            ? "Starting Recording"
-            : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-            ? "Start Recording"
-            : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-            ? "Stopping Recording"
-            : "Start Recording"
+              ? "Starting Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+                ? "Start Recording"
+                : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  ? "Stopping Recording"
+                  : "Start Recording"
         }
         lottieOption={isRecording ? defaultOptions : null}
       />
@@ -719,18 +710,18 @@ export function BottomBar({ bottomBarHeight }) {
           recordingState === Constants.recordingEvents.RECORDING_STARTED
             ? "Stop Recording"
             : recordingState === Constants.recordingEvents.RECORDING_STARTING
-            ? "Starting Recording"
-            : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-            ? "Start Recording"
-            : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-            ? "Stopping Recording"
-            : "Start Recording"
+              ? "Starting Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+                ? "Start Recording"
+                : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  ? "Stopping Recording"
+                  : "Start Recording"
         }
         lottieOption={isRecording ? defaultOptions : null}
       />
     );
   };
- 
+
   const PrintScreenListener = () => {
     const handleKeyDown = (event) => {
       // Check if the Print Screen key is pressed
@@ -739,25 +730,25 @@ export function BottomBar({ bottomBarHeight }) {
         alert('To capture a screenshot, press the Print Screen key and paste it into an image editor.');
       }
     };
-  
+
     useEffect(() => {
       // Add event listener when the component mounts
       window.addEventListener('keydown', handleKeyDown);
-  
+
       // Remove event listener when the component unmounts
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     }, []); // Empty dependency array ensures that the effect runs only once on mount
-  
+
     return (
       <div>
         <p>Press the Print Screen key to capture a screenshot.</p>
       </div>
     );
   };
-  
-  
+
+
 
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
@@ -906,8 +897,8 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
- 
-  
+
+
 
   const SidebarModalDemo = ({ participantName }) => {
     const [rightModalShow, setRightModalShow] = useState(false);
@@ -984,11 +975,89 @@ export function BottomBar({ bottomBarHeight }) {
               </div>
             </div>
           </div>
-       /</CustomModal>
+          /</CustomModal>
       </div>
     );
   };
 
+  const SendInfyMeetBTN = () => {
+    const { meetingId } = useMeeting();
+    const [ticketInfo, setTicketInfo] = useState({});
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.search);
+    const urlSegments = url.pathname.split('/');
+    const urlMeetingId = urlSegments[urlSegments.length - 1]
+    const mode = searchParams.get("mode");
+    const participantMode = mode ? mode.toLowerCase() : '';
+    const customRoomId = searchParams.get("qu");
+    const userid = searchParams.get("userid");
+    useEffect(() => {
+      if (customRoomId && userid) {
+        fetchTicketInfo()
+      }
+    }, [customRoomId, userid]);
+
+    const fetchTicketInfo = useCallback(async () => {
+      if (customRoomId && userid) {
+        const iData = { quNumber: customRoomId, userid: userid }
+        await serviceCallInfoAPI(iData).then(async (response) => {
+          if (response && response.isSuccess && response.statusCode == 200) {
+            setTicketInfo(response.data)
+          }
+        })
+          .catch((error) => {
+          })
+      }
+    }, []);
+
+    return (
+      <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
+        setModelOpen(true);
+      }}>
+       <FontAwesomeIcon icon={faPaperPlane} style={{ color: 'white' }} />
+      </button>
+        <Transition appear show={modelOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={() => {
+            setModelOpen(false);
+          }}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/25" />
+            </Transition.Child>
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-3 text-left align-middle shadow-xl transition-all">
+                    <div className="py-2">
+                      <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
+                        setModelOpen(false);
+                      }}>
+                        <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
+                      </a>
+                    </div>
+                    <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} />
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition></>)
+  }
 
   const ChatBTN = ({ isMobile, isTab }) => {
     return isMobile || isTab ? (
@@ -1214,13 +1283,12 @@ export function BottomBar({ bottomBarHeight }) {
                       {otherFeatures.map(({ icon }) => {
                         return (
                           <div
-                            className={`grid items-center justify-center  ${
-                              icon === BottomBarButtonTypes.MEETING_ID_COPY ||
+                            className={`grid items-center justify-center  ${icon === BottomBarButtonTypes.MEETING_ID_COPY ||
                               icon ===
-                                BottomBarButtonTypes.SCREEN_SHARE_MODE_BUTTON
-                                ? "col-span-7 sm:col-span-5 md:col-span-3 lg:col-sapn-2"
-                                : "col-span-4 sm:col-span-3 md:col-span-2"
-                            }`}
+                              BottomBarButtonTypes.SCREEN_SHARE_MODE_BUTTON
+                              ? "col-span-7 sm:col-span-5 md:col-span-3 lg:col-sapn-2"
+                              : "col-span-4 sm:col-span-3 md:col-span-2"
+                              }`}
                           >
                             {icon === BottomBarButtonTypes.RAISE_HAND ? (
                               <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
@@ -1244,7 +1312,7 @@ export function BottomBar({ bottomBarHeight }) {
                                 isMobile={isMobile}
                                 isTab={isTab}
                               />
-                            )  : icon === BottomBarButtonTypes.END_MEETING &&
+                            ) : icon === BottomBarButtonTypes.END_MEETING &&
                               participantMode === participantModes.AGENT ? (
                               <EndBTN />
                             ) : null}
@@ -1261,10 +1329,11 @@ export function BottomBar({ bottomBarHeight }) {
       </Transition>
     </div>
   ) : (
-  <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
-     
+    <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
+
       <DisplayTimer />
-      { isRecording && <RecordingDisplayTimer /> }
+      <SendInfyMeetBTN />
+      {isRecording && <RecordingDisplayTimer />}
       <div className="flex flex-1 items-center justify-center" ref={tollTipEl}>
         {participantMode === participantModes.AGENT && (
           <><RecordingBTN isTab={isTab} isMobile={isMobile} />
@@ -1281,7 +1350,7 @@ export function BottomBar({ bottomBarHeight }) {
         <ScreenShareBTN isMobile={isMobile} isTab={isTab} />
         {participantMode === participantModes.AGENT && (
           <>
-           
+
             <EndBTN />
           </>
         )}
@@ -1290,6 +1359,7 @@ export function BottomBar({ bottomBarHeight }) {
       </div>
 
       <div className="flex items-center justify-center">
+        <SendInfyMeetBTN />
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>

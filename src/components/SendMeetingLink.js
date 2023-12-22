@@ -12,7 +12,7 @@ import { SendMeetLinkSchema } from '../validation/send_link_validation'
 import { useFormik, getIn } from 'formik';
 
 const SendMeetingLink = ({ ticketInfo, meetingId }) => {
-    
+
     const handleInputChange = async (event) => {
         const { name, checked, value, type } = event.target;
         var transformValue = ''
@@ -74,7 +74,16 @@ const SendMeetingLink = ({ ticketInfo, meetingId }) => {
         await sendMeetingLinkAPI(formik.values).then((response) => {
             if (response && response.isSuccess && response.statusCode === 200 && response.data) {
                 formik.resetForm()
-                
+                toast(`${response.message}`, {
+                    position: "bottom-left",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeButton: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                  });
             }
         }).catch((error) => {
             console.log('error', error);
