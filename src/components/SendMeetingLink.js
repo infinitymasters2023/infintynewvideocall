@@ -11,8 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SendMeetLinkSchema } from '../validation/send_link_validation'
 import { useFormik, getIn } from 'formik';
 
-const SendMeetingLink = ({ ticketInfo, meetingId }) => {
-
+const SendMeetingLink = ({ ticketInfo, meetingId , setModelOpen }) => {
     const handleInputChange = async (event) => {
         const { name, checked, value, type } = event.target;
         var transformValue = ''
@@ -84,6 +83,7 @@ const SendMeetingLink = ({ ticketInfo, meetingId }) => {
                     progress: undefined,
                     theme: "light",
                   });
+                  setModelOpen(false)
             }
         }).catch((error) => {
             console.log('error', error);

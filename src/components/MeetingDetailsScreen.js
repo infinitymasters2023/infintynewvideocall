@@ -26,6 +26,7 @@ export function MeetingDetailsScreen({
   const searchParams = new URLSearchParams(url.search);
   const urlSegments = url.pathname.split('/');
   const urlMeetingId = urlSegments[urlSegments.length - 1]
+  console.log('urlMeetingId', urlMeetingId);
   const mode = searchParams.get("mode");
   const participantMode = mode ? mode.toLowerCase() : '';
   const customRoomId = searchParams.get("qu");
@@ -258,7 +259,7 @@ export function MeetingDetailsScreen({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-3 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
                 <div className="py-2">
                 <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
                         setModelOpen(false);
@@ -266,7 +267,7 @@ export function MeetingDetailsScreen({
                                 <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                             </a>
             </div>
-                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} />
+                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} setModelOpen={setModelOpen} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

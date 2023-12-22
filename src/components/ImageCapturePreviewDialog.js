@@ -143,9 +143,13 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   const handleSubmit = async () => {
     await uploadFileAPI(formik.values).then(async (response) => {
       if (response && response.isSuccess && response.statusCode == 200) {
+        handleUpload()
         formik.setFieldValue('Remarks', '')
+        formik.setFieldTouched('Remarks', false)
         formik.setFieldValue('Status', '')
-        formik.setFieldValue('DocStatus', '')
+        formik.setFieldTouched('Status', false)
+        formik.setFieldValue('DocumentName', '')
+        formik.setFieldTouched('DocumentName', false)
       }
     })
       .catch((error) => {
@@ -223,7 +227,6 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
     }
   }
   const handleUpload = async () => {
-   
     toast.success('Image uploaded successfully!', {
       position: 'top-right',
       autoClose: 3000,
@@ -453,7 +456,6 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                           <button type="submit"
                             className="py-2 px-2 inline-flex items-center gap-x-2 mt-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right"
                             disabled={!formik.isValid || formik.isSubmitting}
-                            onClick={handleUpload}
                             >
                             Upload
                           </button>

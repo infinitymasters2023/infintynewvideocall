@@ -62,11 +62,7 @@ export const endMeetingAPI = async (iData) => {
 };
 
 export const uploadFileAPI = async (iData) => {
-    return await post('/meeting/upload-doc', iData).then((response) => {
-        return response.data
-    }).catch((error) => {
-        return error
-    })
+    return await post('/meeting/upload-doc', iData)
 }
 
 export const serviceCallInfoAPI = async (iData) => {

@@ -1017,9 +1017,7 @@ export function BottomBar({ bottomBarHeight }) {
        <FontAwesomeIcon icon={faPaperPlane} style={{ color: 'white' }} />
       </button>
         <Transition appear show={modelOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={() => {
-            setModelOpen(false);
-          }}>
+          <Dialog as="div" className="relative z-10" onClose={() => {}}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -1042,7 +1040,7 @@ export function BottomBar({ bottomBarHeight }) {
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-3 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
                     <div className="py-2">
                       <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
                         setModelOpen(false);
@@ -1050,7 +1048,7 @@ export function BottomBar({ bottomBarHeight }) {
                         <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                       </a>
                     </div>
-                    <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} />
+                    <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} setModelOpen={setModelOpen} />
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
