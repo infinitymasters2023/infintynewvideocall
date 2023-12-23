@@ -722,7 +722,7 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
-  
+
 
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
@@ -899,10 +899,10 @@ export function BottomBar({ bottomBarHeight }) {
       <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
         setModelOpen(true);
       }}>
-       <FontAwesomeIcon icon={faPaperPlane} style={{ color: 'white' }} />
+        <FontAwesomeIcon icon={faPaperPlane} style={{ color: 'white' }} />
       </button>
         <Transition appear show={modelOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={() => {}}>
+          <Dialog as="div" className="relative z-10" onClose={() => { }}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -941,6 +941,63 @@ export function BottomBar({ bottomBarHeight }) {
           </Dialog>
         </Transition></>)
   }
+  const ScreenCapture = () => {
+    const videoRef = useRef(null);
+    const [isRecording, setIsRecording] = useState(false);
+    const [mediaStream, setMediaStream] = useState(null);
+  
+    useEffect(() => {
+      if (isRecording) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+  
+      return () => {
+        stopRecording(); // Clean up the media stream when the component unmounts
+      };
+    }, [isRecording]);
+  
+    const startRecording = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { mediaSource: 'screen' },
+        });
+        setMediaStream(stream);
+  
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error starting screen recording:', error);
+      }
+    };
+  
+    const stopRecording = () => {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+        setMediaStream(null);
+  
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
+        }
+      }
+    };
+  
+    const toggleRecording = () => {
+      setIsRecording((prevIsRecording) => !prevIsRecording);
+    };
+  
+    return (
+      <div>
+        <button onClick={toggleRecording} classname='text-base-white'>
+          {isRecording ? 'Stop Recording' : 'Start Recording'}
+        </button>
+        <br />
+        <video ref={videoRef} autoPlay controls />
+      </div>
+    );
+  };
 
   const ChatBTN = ({ isMobile, isTab }) => {
     return isMobile || isTab ? (
@@ -1173,9 +1230,7 @@ export function BottomBar({ bottomBarHeight }) {
                               : "col-span-4 sm:col-span-3 md:col-span-2"
                               }`}
                           >
-                            {icon === BottomBarButtonTypes.RAISE_HAND ? (
-                              <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
-                            ) : icon === BottomBarButtonTypes.SCREEN_SHARE ? (
+                            {icon === BottomBarButtonTypes.SCREEN_SHARE ? (
                               <ScreenShareBTN
                                 isMobile={isMobile}
                                 isTab={isTab}
@@ -1189,12 +1244,6 @@ export function BottomBar({ bottomBarHeight }) {
                               />
                             ) : icon === BottomBarButtonTypes.RECORDING ? (
                               <RecordingBTN isMobile={isMobile} isTab={isTab} />
-                            ) : icon ===
-                              BottomBarButtonTypes.MEETING_ID_COPY ? (
-                              <MeetingIdCopyBTN
-                                isMobile={isMobile}
-                                isTab={isTab}
-                              />
                             ) : icon === BottomBarButtonTypes.END_MEETING &&
                               participantMode === participantModes.AGENT ? (
                               <EndBTN />
@@ -1213,11 +1262,11 @@ export function BottomBar({ bottomBarHeight }) {
     </div>
   ) : (
     <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
-    {participantMode === participantModes.AGENT ? (
-      <SendInfyMeetBTN />
-    ) : null}
+      {participantMode === participantModes.AGENT ? (
+        <SendInfyMeetBTN />
+      ) : null}
       <DisplayTimer />
-  
+      
       {isRecording && <RecordingDisplayTimer />}
       <div className="flex flex-1 items-center justify-center" ref={tollTipEl}>
         {participantMode === participantModes.AGENT && (
@@ -1225,7 +1274,7 @@ export function BottomBar({ bottomBarHeight }) {
           </>
         )}
 
-        <RaiseHandBTN isMobile={isMobile} isTab={isTab} />
+
         <MicBTN />
 
         <WebCamBTN />
@@ -1244,7 +1293,7 @@ export function BottomBar({ bottomBarHeight }) {
       </div>
 
       <div className="flex items-center justify-center">
-  
+
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>

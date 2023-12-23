@@ -124,6 +124,41 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
         const updatedMobiles = formik.values.otherMobile.filter((number) => number !== item);
         formik.setFieldValue('otherMobile', updatedMobiles)
     };
+    const [ipAddress, setIpAddress] = useState(null);
+
+    const fetchData = async () => {
+      try {
+        // Make a request to a server endpoint that returns the client's IP address
+        const response = await fetch('/api/getIpAddress');
+        const data = await response.json();
+        setIpAddress(data.ipAddress);
+      } catch (error) {
+        console.error('Error fetching IP address:', error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchData();
+    }, []); // Empty dependency array ensures the effect runs only once, similar to componentDidMount
+  
+    const handleClick = () => {
+      // Get device information
+      const deviceInfo = {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+      };
+  
+      // Get network information
+      const networkInfo = {
+        online: navigator.onLine,
+      };
+  
+      // Display information including IP address
+      alert(
+        `Device Info:\n${JSON.stringify(deviceInfo, null, 2)}\n\nNetwork Info:\n${JSON.stringify(networkInfo, null, 2)}\n\nIP Address:\n${ipAddress}`
+      );
+    };
     return (
         <form method="Post" onSubmit={formik.handleSubmit}>
             <h4 className="text-xs text-gray-700 px-2">Agent Name :<span className="text-gray-600 px-2">{ticketInfo?.UserName}</span></h4>
