@@ -228,7 +228,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   }
   const handleUpload = async () => {
     toast.success('Image uploaded successfully!', {
-      position: 'top-right',
+      position:  'bottom-left',
       autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,

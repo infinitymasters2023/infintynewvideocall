@@ -20,8 +20,6 @@ import {
 import { Popover, Transition } from "@headlessui/react";
 import NetworkIcon from "../icons/NetworkIcon";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import ZoomIn from "./Zoom";
-import ZoomControls from "./Zoom";
 import logo from '../../src/components/assests/infintylogo.png'
 
 export const CornerDisplayName = ({
