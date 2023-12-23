@@ -1,4 +1,4 @@
-import { get, post, put, del } from "./instance";
+import { get, post } from "./instance";
 
 export const tokenGenerationAPI = async (iData) => {
     return await post('meeting/tokenGeneration', iData).then((response) => {

@@ -365,14 +365,6 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                                 title="Submit"
                                 />
                               </a>
-                              <a
-                              type="button"
-                              className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
-                              disabled={!formik.isValid || formik.isSubmitting}
-                              onClick={handleDownload}
-                            >
-                              <FontAwesomeIcon icon={faDownload} className="text-lg" />
-                            </a>
                             </>
                           }
                           {
@@ -382,6 +374,14 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                             <FontAwesomeIcon icon={faXmark} />
                           </a>
                           }
+                          <a
+                              type="button"
+                              className="flex-shrink-0 inline-flex dark:text-gray-600 px-3 py-2 mb-2 dark:border-gray-700 dark:text-gray-700 dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+                              disabled={!formik.isValid || formik.isSubmitting}
+                              onClick={handleDownload}
+                            >
+                              <FontAwesomeIcon icon={faDownload} className="text-lg" />
+                            </a>
                         </div>
                       </div>
                     </div>

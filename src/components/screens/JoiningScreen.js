@@ -519,6 +519,8 @@ export function JoiningScreen({
                   //   setMeetingId(_meetingId);
                   //   return _meetingId;
                   // }}
+                  setToken={setToken}
+                  setMeetingId={setMeetingId}
                   />
                 </div>
               </div>

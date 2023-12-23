@@ -11,6 +11,8 @@ export const ValidateMobileSchema = Yup.object().shape({
 })
 
 export const SendMeetLinkSchema = Yup.object().shape({
+    userEmail: emailOptionalValidation('Email'),
+    userMobile: mobileOptionalValidation('Mobile No.'),
     emailidaddress: emailOptionalValidation('Email'),
     mobileno: mobileOptionalValidation('Mobile No.'),
     alternateEmailID: emailOptionalValidation('Alternate Email'),
