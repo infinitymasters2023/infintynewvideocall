@@ -55,6 +55,7 @@ const App = () => {
               
             }}
             token={token}
+            
             reinitialiseMeetingOnConfigChange={true}
             joinWithoutUserInteraction={true}
           >

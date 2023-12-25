@@ -121,13 +121,21 @@ export function MeetingContainer({ onMeetingLeave }) {
   };
 
   function onParticipantJoined(participant) {
-    // Change quality to low, med or high based on resolution
-    participant && participant.setQuality("high");
-  }
+    console.log('Participant object:', participant);
+
+    if (participant) {
+        // Change quality to low, med, or high based on resolution
+        participant.setQuality("high");
+        participant.pin();
+    } else {
+        console.error('Participant is undefined.');
+    }
+}
 
   const { getVideoTrack } = useMediaStream();
 
   async function onMeetingJoined() {
+    
     const { muteMic, changeMic, changeWebcam, disableWebcam } =
       mMeetingRef.current;
 
@@ -172,6 +180,7 @@ export function MeetingContainer({ onMeetingLeave }) {
       });
     }
     setLocalParticipantAllowedJoin(true);
+  
   }
   function onMeetingLeft() {
     onMeetingLeave();
