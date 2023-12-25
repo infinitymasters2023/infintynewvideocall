@@ -51,7 +51,8 @@ const App = () => {
               webcamEnabled: webcamOn,
               name: participantName ? participantName : "TestUser",
               multiStream: false,
-              priority : "PIN"
+              priority : "PIN",
+              
             }}
             token={token}
             reinitialiseMeetingOnConfigChange={true}
