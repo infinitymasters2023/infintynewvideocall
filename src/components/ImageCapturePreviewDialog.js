@@ -157,7 +157,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   };
 
   const formik = useFormik({
-    enableReinitialize: true,
+    enableReinitialize:false,
     initialValues: {
       roomId : meetingId,
       ticketNo: ticketNo,
@@ -398,9 +398,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               handleOnBlur={handleOnBlur}
                               maxLength={100}
                               minLength={8}
-                              isDisabled={false}
-                              isReadOnly={false}
-                              isRequired={false} />
+                              />
                             {getIn(formik.touched, `ticketNo`) && getIn(formik.errors, `ticketNo`) && <h4 style={{ fontSize: '12px' }} className="text-red-600 px-2">{getIn(formik.errors, `ticketNo`)}</h4>}
                           </div>
                         </div>
@@ -413,7 +411,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               value={formik.values.DocumentName}
                               className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
                               ref={DocumentTitleRef}
-                              required={true}
+                           
                             >
                               <option value="">Select Document</option>
                               {
@@ -432,7 +430,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               value={formik.values.Status}
                               className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
                               ref={StatuRef}
-                              required={true}
+                              
                             >
                               <option value="">Select Status</option>
                               {
@@ -456,10 +454,8 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               handleOnBlur={handleOnBlur}
                               maxLength={100}
                               minLength={8}
-                              isDisabled={false}
-                              isReadOnly={false}
-                              isRequired={false} />
-                            {getIn(formik.touched, `Remarks`) && getIn(formik.errors, `Remarks`) && <h4 style={{ fontSize: '12px' }} className="text-xs text-red px-2">{getIn(formik.errors, `Remarks`)}</h4>}
+                             />
+                            
                           </div>
                         </div>
                         <div className="place-self-start md:place-self-end">
@@ -467,7 +463,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                        
                           <button type="submit"
                             className="py-2 px-2 inline-flex items-center gap-x-2 mt-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right"
-                            disabled={!formik.isValid || formik.isSubmitting}
+                       
                             >
                             Upload
                           </button>

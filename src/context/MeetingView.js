@@ -7,8 +7,31 @@ import {
 const MeetingView = () => {
   // Instantiate VirtualBackgroundProcessor Class
   const videoProcessor = new VirtualBackgroundProcessor();
+  function onEntryRequested(data) {
+    const { participantId, name, allow, deny } = data;
 
-  const { changeWebcam, allowedVirtualBackground } = useMeeting({});
+    console.log(`${name} requested to join the meeting.`);
+
+    // If you want to allow the entry request
+    allow();
+
+    // If you want to deny the entry request
+    deny();
+  }
+  function onEntryResponded(participantId, decision) {
+    // participantId will be the ID of the participant who requested to join the meeting
+
+    if (decision === "allowed") {
+      // Entry allowed
+    } else {
+      // Entry denied
+    }
+  }
+
+  const { changeWebcam, allowedVirtualBackground, join, participants } = useMeeting({
+    onEntryRequested,
+    onEntryResponded,
+  });
 
   const handleStartVirtualBackground = async () => {
     // Initialize processor if not ready

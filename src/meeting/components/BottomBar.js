@@ -18,6 +18,7 @@ import ScreenShareIcon from "../../icons/Bottombar/ScreenShareIcon";
 import ChatIcon from "../../icons/Bottombar/ChatIcon";
 import ParticipantsIcon from "../../icons/Bottombar/ParticipantsIcon";
 import EndIcon from "../../icons/Bottombar/EndIcon";
+import ExitIcon from "../../icons/Bottombar/ExitIcon";
 import RaiseHandIcon from "../../icons/Bottombar/RaiseHandIcon";
 import { OutlinedButton } from "../../components/buttons/OutlinedButton";
 import useIsTab from "../../hooks/useIsTab";
@@ -25,6 +26,8 @@ import useIsMobile from "../../hooks/useIsMobile";
 import { MobileIconButton } from "../../components/buttons/MobileIconButton";
 import { FaInfoCircle } from "react-icons/fa";
 import SendMeetingLink from "../../components/SendMeetingLink"
+import { MdOutgoingMail } from "react-icons/md";
+import { ImExit } from "react-icons/im";
 import {
   meetingModes,
   participantModes,
@@ -48,8 +51,13 @@ import { stopRecordingAPI, endMeetingAPI, leaveMeetingAPI } from "../../services
 import DisplayTimer from "../../components/DisplayTimer";
 import RecordingDisplayTimer from "../../components/RecordingDisplayTimer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faPaperPlane ,faEnvelope} from '@fortawesome/free-solid-svg-icons';
 import { serviceCallInfoAPI } from '../../services/meeting_api'
+import { createPopper } from "@popperjs/core";
+import {} from "react-icons/md";
+import {
+  faCircleXmark
+} from '@fortawesome/free-solid-svg-icons';
 const MicBTN = () => {
   const { selectedMicDevice, setSelectedMicDevice } = useMeetingAppContext();
   const { getCustomAudioTrack } = useCustomTrack();
@@ -728,12 +736,14 @@ export function BottomBar({ bottomBarHeight }) {
     const { end, localParticipant, meetingId } = useMeeting();
 
     return (
-      <OutlineIconTextButton
+      <OutlinedButton
+        Icon={EndIcon}
+        bgColor="bg-red-150"
         onClick={() => {
           toast(
             `${trimSnackBarText(
               nameTructed(localParticipant.displayName, 15)
-            )} end the meeting.`,
+            )} left the meeting.`,
             {
               position: "bottom-left",
               autoClose: 4000,
@@ -748,8 +758,8 @@ export function BottomBar({ bottomBarHeight }) {
           end();
           endMeetingAPI({ roomId: meetingId })
         }}
-        buttonText={"End Meeting"}
-        tooltip={"End Meeting"}
+      
+        tooltip={"End Meeting For All "}
       />
     );
   };
@@ -817,15 +827,13 @@ export function BottomBar({ bottomBarHeight }) {
   };
 
 
-
-
-
   const LeaveBTN = () => {
     const { leave, localParticipant, meetingId, stopRecording, end } = useMeeting();
     const isRecording = useIsRecording();
+   
     return (
       <OutlinedButton
-        Icon={EndIcon}
+        Icon={ExitIcon}
         bgColor="bg-red-150"
         onClick={async () => {
           toast(
@@ -856,7 +864,7 @@ export function BottomBar({ bottomBarHeight }) {
             leaveMeetingAPI({ roomId: meetingId })
           }
         }}
-        tooltip="Leave Meeting"
+        tooltip="Exit Meeting"
       />
     );
   };
@@ -899,7 +907,7 @@ export function BottomBar({ bottomBarHeight }) {
       <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
         setModelOpen(true);
       }}>
-        <FontAwesomeIcon icon={faPaperPlane} style={{ color: 'white' }} />
+      <MdOutgoingMail style={{ fontSize: '1.8em', color: 'white' }} />
       </button>
         <Transition appear show={modelOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={() => { }}>
@@ -1285,12 +1293,13 @@ export function BottomBar({ bottomBarHeight }) {
         {participantMode === participantModes.AGENT && (
           <>
 
-            <EndBTN />
+          <LeaveBTN />
           </>
         )}
+    
+  <EndBTN />
 
-        <LeaveBTN />
-      </div>
+          </div>
 
       <div className="flex items-center justify-center">
 

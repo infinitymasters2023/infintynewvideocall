@@ -47,7 +47,7 @@ const App = () => {
           <MeetingProvider
             config={{
               meetingId: meetingId,
-              micEnabled: micOn,
+              micEnabled: micOn,  
               webcamEnabled: webcamOn,
               name: participantName ? participantName : "TestUser",
               multiStream: false,
@@ -55,7 +55,7 @@ const App = () => {
               
             }}
             token={token}
-            
+              
             reinitialiseMeetingOnConfigChange={true}
             joinWithoutUserInteraction={true}
           >

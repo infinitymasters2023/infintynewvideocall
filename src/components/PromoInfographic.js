@@ -10,7 +10,7 @@ export function PromoInfographic() {
         playIcon={<></>}
         pip={false}
         light={false}
-        controls={true}
+        controls={false}
         muted={true}
         playing={true}
         url={
