@@ -21,19 +21,6 @@ import ModeListner from "../components/ModeListner";
 import useCustomTrack from "../utils/useCustomTrack";
 import SwitchCameraListner from "../components/SwitchCameraListner";
 import ImageUploadListner from "../components/ImageUploadListner";
-import {
-  Box,
-  Grid,
-  Typography,
- 
-  useTheme,
-} from "@material-ui/core";
-import {
-  createCameraVideoTrack,
-  useParticipant,
-} from "@videosdk.live/react-sdk";
-import { useMemo } from "react";
-import ReactPlayer from "react-player";
 
 export function MeetingContainer({ onMeetingLeave }) {
   const bottomBarHeight = 60;
@@ -132,7 +119,6 @@ export function MeetingContainer({ onMeetingLeave }) {
       );
     }
   };
-  
 
   function onParticipantJoined(participant) {
     console.log('Participant object:', participant);

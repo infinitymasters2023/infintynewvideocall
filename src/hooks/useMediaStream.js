@@ -1,7 +1,7 @@
 import { createCameraVideoTrack } from "@videosdk.live/react-sdk";
 import { useMeetingAppContext } from "../context/MeetingAppContext";
 import { useEffect, useRef } from "react";
-
+import logo from '../assets/Infinity Logo-PhotoRoom.png-PhotoRoom.png'
 const useMediaStream = () => {
   const {
     selectedWebcamDevice,
@@ -39,8 +39,7 @@ const useMediaStream = () => {
           try {
             const processedStream = await videoProcessor.start(track, {
               type: "image",
-              imageUrl:
-                "https://cdn.videosdk.live/virtual-background/wall-with-pot.jpeg",
+              imageUrl:'https://i.ibb.co/QvFMy54/Untitled-design-16.png'
             });
             return processedStream;
           } catch (error) {
