@@ -2,7 +2,6 @@ import { createContext, useContext, useState } from "react";
 import { VirtualBackgroundProcessor } from "@videosdk.live/videosdk-media-processor-web";
 import { participantModes } from "../utils/common";
 import useIsMobile from "../hooks/useIsMobile";
-import { useMeeting, createCameraVideoTrack } from "@videosdk.live/react-sdk";
 export const MeetingAppContext = createContext();
 
 export const useMeetingAppContext = () => useContext(MeetingAppContext);
@@ -40,26 +39,7 @@ export const MeetingAppProvider = ({
 
   const isAgent =
     !!participantMode && participantMode !== participantModes.CLIENT;
-    const handleStartVirtualBackground = async () => {
-      // Initialize processor if not ready
-      if (!videoProcessor.ready) {
-        await videoProcessor.init();
-      }
-  
-      // Configuration for starting processor
-      const config = {
-        type: "image", // "blur"
-        imageUrl: "https://cdn.videosdk.live/virtual-background/cloud.jpeg",
-        // Here is a list of background images you can use for your project.
-        // imageUrl: "https://cdn.videosdk.live/virtual-background/beach.jpeg",
-        // imageUrl: "https://cdn.videosdk.live/virtual-background/san-fran.jpeg",
-        // imageUrl: "https://cdn.videosdk.live/virtual-background/paper-wall.jpeg",
-      };
-  
-      // Getting stream from webcam
-      const stream = await createCameraVideoTrack({});
-      const processedStream = await videoProcessor.start(stream, config);
-    };
+   
   return (
     <MeetingAppContext.Provider
       value={{

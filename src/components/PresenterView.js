@@ -94,7 +94,7 @@ export function PresenterView({ height }) {
         id="audio"
         autoPlay
         playsInline={true}
-        controls={true}
+        controls={false}
         ref={audioPlayer}
         muted={isLocal || !muteSpeaker}
       />
@@ -104,9 +104,9 @@ export function PresenterView({ height }) {
           ref={videoPlayer}
           playsinline ={true}
           playIcon={<></>}
-          pip={true}
-          light={true}
-          controls={true}
+          pip={false}
+          light={false}
+          controls={false}
           muted={true}
           playing={true}
           url={mediaStream}

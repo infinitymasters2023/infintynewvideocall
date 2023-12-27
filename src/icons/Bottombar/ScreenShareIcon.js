@@ -12,8 +12,8 @@ const ScreenShareIcon = (props) => {
       {...props}
     >
       <image
-        width="18"
-        height="18"
+        width="30"
+        height="20"
         href={imageSrc}
         fill={props.fillcolor}
         onMouseOver={() => setImageSrc("https://jiomeetpro.jio.com/assets/images/share-hover-2.png")}

@@ -157,7 +157,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   };
 
   const formik = useFormik({
-    enableReinitialize: true,
+    enableReinitialize:false,
     initialValues: {
       roomId : meetingId,
       ticketNo: ticketNo,
@@ -228,7 +228,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   }
   const handleUpload = async () => {
     toast.success('Image uploaded successfully!', {
-      position: 'top-right',
+      position:  'bottom-left',
       autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -245,7 +245,6 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   
     link.click();
 
-    // Remove the link from the DOM
     document.body.removeChild(link);
   };
   return (
@@ -399,10 +398,8 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               handleOnBlur={handleOnBlur}
                               maxLength={100}
                               minLength={8}
-                              isDisabled={false}
-                              isReadOnly={false}
-                              isRequired={false} />
-                            {getIn(formik.touched, `ticketNo`) && getIn(formik.errors, `ticketNo`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `ticketNo`)}</h4>}
+                              />
+                            {getIn(formik.touched, `ticketNo`) && getIn(formik.errors, `ticketNo`) && <h4 style={{ fontSize: '12px' }} className="text-red-600 px-2">{getIn(formik.errors, `ticketNo`)}</h4>}
                           </div>
                         </div>
                         <div className="flex flex-row mt-2">
@@ -423,7 +420,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                                 })
                               }
                             </select>
-                            {getIn(formik.touched, `DocumentName`) && getIn(formik.errors, `DocumentName`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `DocumentName`)}</h4>}
+                            {getIn(formik.touched, `DocumentName`) && getIn(formik.errors, `DocumentName`) && <h4 style={{ fontSize: '12px' }} className="text-red-600 px-2">{getIn(formik.errors, `DocumentName`)}</h4>}
                           </div>
                           <div className="basis-1/2 px-2">
                             <label className="block text-sm font-medium leading-6 text-gray-600 mb-1">Status</label>
@@ -442,7 +439,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                                 })
                               }
                             </select>
-                            {getIn(formik.touched, `Status`) && getIn(formik.errors, `Status`) && <h4 className="text-red-600 px-2">{getIn(formik.errors, `Status`)}</h4>}
+                            {getIn(formik.touched, `Status`) && getIn(formik.errors, `Status`) && <h4 style={{ fontSize: '12px' }} className="text-red-600 px-2">{getIn(formik.errors, `Status`)}</h4>}
                           </div>
                         </div>
                         <div className="flex flex-row mt-2">
@@ -457,10 +454,8 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               handleOnBlur={handleOnBlur}
                               maxLength={100}
                               minLength={8}
-                              isDisabled={false}
-                              isReadOnly={false}
-                              isRequired={false} />
-                            {getIn(formik.touched, `Remarks`) && getIn(formik.errors, `Remarks`) && <h4 className="text-xs text-red px-2">{getIn(formik.errors, `Remarks`)}</h4>}
+                             />
+                            
                           </div>
                         </div>
                         <div className="place-self-start md:place-self-end">
@@ -468,7 +463,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                        
                           <button type="submit"
                             className="py-2 px-2 inline-flex items-center gap-x-2 mt-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-700 text-white hover:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 float-right"
-                            disabled={!formik.isValid || formik.isSubmitting}
+                       
                             >
                             Upload
                           </button>

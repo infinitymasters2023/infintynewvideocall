@@ -11,7 +11,7 @@ import useWindowSize from "../hooks/useWindowSize";
 import MicOffSmallIcon from "../icons/MicOffSmallIcon";
 import SpeakerIcon from "../icons/SpeakerIcon";
 import { useLocation } from 'react-router-dom';
-
+import { IconButton } from "@material-ui/core";
 import {
   getQualityScore,
   nameTructed,
@@ -20,10 +20,8 @@ import {
 import { Popover, Transition } from "@headlessui/react";
 import NetworkIcon from "../icons/NetworkIcon";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import ZoomIn from "./Zoom";
-import ZoomControls from "./Zoom";
 import logo from '../../src/components/assests/infintylogo.png'
-
+import Pin from '../icons/Pin';
 export const CornerDisplayName = ({
   participantId,
   isPresenting,
@@ -33,6 +31,13 @@ export const CornerDisplayName = ({
   screenShareStream,
   isPip,
   isActiveSpeaker,
+  pinState,
+  pin,
+  unpin,
+  
+  mouseOver,
+  isRecorder,
+  isPortrait,
 }) => {
   const isMobile = useIsMobile();
   const isTab = useIsTab();
@@ -54,7 +59,13 @@ export const CornerDisplayName = ({
   const location = useLocation();
   const [userId, setUserId] = useState("");
   const [adminId, setAdminId] = useState("");
+  const {
 
+    canPin,
+    animationsEnabled,
+    alwaysShowOverlay,
+
+  } = useMeetingAppContext();
 
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(location.search);
@@ -68,6 +79,12 @@ export const CornerDisplayName = ({
   const statsBoxWidth = useMemo(
     () => statsBoxWidthRef?.offsetWidth,
     [statsBoxWidthRef]
+  );
+  const isPinned = useMemo(() => pinState?.share || pinState?.cam, [pinState]);
+
+  const showPin = useMemo(
+    () => (alwaysShowOverlay ? isPinned : isPinned || mouseOver),
+    [alwaysShowOverlay, isPinned, mouseOver]
   );
 
   const analyzerSize = isXLDesktop
@@ -291,6 +308,45 @@ export const CornerDisplayName = ({
         </p>
       </div>
 
+      {canPin && !isRecorder && (
+        <div
+          className="pinClass"
+          style={{
+            position: "absolute",
+            right: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
+            bottom: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
+            transform: `scale(${showPin ? 1 : 0})`,
+            transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
+            transitionTimingFunction: "linear",
+          }}
+        >
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              isPinned ? unpin() : pin();
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: isMobile ? 3 : isTab ? 4 : 5,
+              backgroundColor: isPinned ? "white" : "#0000004d",
+            }}
+          >
+            <Pin
+              fill={isPinned ? "#000" : "#ffffffb3"}
+              style={{
+                height: analyzerSize * 0.6,
+                width: analyzerSize * 0.6,
+              }}
+            />
+          </IconButton>
+        </div>
+      )}
+
+
+
       {(webcamStream || micStream || screenShareStream) && (
         <div>
           <div
@@ -465,6 +521,9 @@ export const CornerDisplayName = ({
   );
 };
 
+
+
+
 function ParticipantView({
   participantId,
   showImageCapture,
@@ -480,6 +539,8 @@ function ParticipantView({
     isLocal,
     mode,
     isActiveSpeaker,
+    pin,
+    unpin,
   } = useParticipant(participantId);
 
   const isMobile = useIsMobile();
@@ -750,6 +811,8 @@ function ParticipantView({
           participantId,
           mouseOver,
           isPip,
+          pin,
+            unpin,
           isActiveSpeaker,
         }}
       />

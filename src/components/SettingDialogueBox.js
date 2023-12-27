@@ -454,7 +454,7 @@ export default function SettingDialogueBox({
                                         playsInline={true}
                                         muted
                                         ref={popupVideoPlayerRef}
-                                        controls={true}
+                                        controls={false}
                                         style={{
                                           backgroundColor: "#1c1c1c",
                                         }}

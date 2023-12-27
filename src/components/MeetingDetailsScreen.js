@@ -7,6 +7,7 @@ import SendMeetingLink from "./SendMeetingLink"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { getToken } from '../api'
+import { MdOutgoingMail } from "react-icons/md";
 export function MeetingDetailsScreen({
   onClickJoin,
   _handleOnCreateMeeting,
@@ -229,31 +230,13 @@ export function MeetingDetailsScreen({
                   setVideoTrack(null);
                 }
                 onClickStartMeeting();
-                toast(`Join screen button clicked`, {
-                  position: "bottom-left",
-                  autoClose: 4000,
-                  hideProgressBar: true,
-                  closeButton: false,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                  theme: "light",
-                });
+                
                 handleStartMeeting()
               } else {
                 handleJoinMeeting()
                 if (meetingId.match("\\w{4}\\-\\w{4}\\-\\w{4}")) {
                   onClickJoin(meetingId);
-                  toast(`Join screen button clicked`, {
-                    position: "bottom-left",
-                    autoClose: 4000,
-                    hideProgressBar: true,
-                    closeButton: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                  });
+                 
                 } else setMeetingIdError(true);
               }
             }}
@@ -291,26 +274,30 @@ export function MeetingDetailsScreen({
           }
         </div>
       )}
-      {participantMode === 'agent' && participantName.length >= 3 && (
-        <>
-          <div className="flex items-center mt-3">
-            <button className="flex items-center text-white" onClick={handleCopyLink}>
-              <p className="flex items-center">
-                Copy a link
-                {isCopied ? (
-                  <CheckIcon className="text-green-400 ml-4" />
-                ) : (
-                  <ClipboardIcon className="h-5 w-5 text-white ml-1" />
-                )}
-              </p>
-            </button>
-            <div className="flex-grow"></div>
-            <button className="text-white text-sm cursor-pointer" onClick={() => {
-              setModelOpen(true);
-            }}>
-              Send Link
-            </button>
-          </div>
+          {participantMode === 'agent' && participantName.length >= 3 && (
+            <>
+              <div className="flex items-center mt-3">
+                <button className="flex items-center text-white" onClick={handleCopyLink}>
+                  <p className="flex items-center">
+                    Copy a link
+                    {isCopied ? (
+                      <CheckIcon className="text-green-400 ml-4" />
+                    ) : (
+                      <ClipboardIcon className="h-5 w-5 text-white ml-1" />
+                    )}
+                  </p>
+                </button>
+                <div className="flex-grow"></div>
+                <button
+      className="text-white text-sm cursor-pointer flex items-center"
+      onClick={() => {
+        setModelOpen(true);
+      }}
+    >
+      <MdOutgoingMail size={20} className="mr-2" />
+      Send Link
+    </button>
+              </div>
 
         </>
       )}
