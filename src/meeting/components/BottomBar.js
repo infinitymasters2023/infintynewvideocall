@@ -576,12 +576,13 @@ const WebCamBTN = ({ isMobile }) => {
                           ) : (
                             <div className="w-5 h-5 rounded-full border-[1px] border-gray-500 " />
                           )}
-
+                      
                           <p className="ml-3 text-sm text-gray-900">
                             {"Virtual Background"}
                           </p>
                         </button>
                       )}
+                      
                     </div>
                   </div>
                 </div>

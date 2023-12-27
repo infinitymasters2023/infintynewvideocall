@@ -1,9 +1,97 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useMeeting } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { LeaveScreen } from "./components/screens/LeaveScreen";
 import { JoiningScreen } from "./components/screens/JoiningScreen";
 import { MeetingContainer } from "./meeting/MeetingContainer";
 import { MeetingAppProvider } from "./context/MeetingAppContext";
+
+
+
+
+
+function MeetingView(props) {
+  const { setIsHost } = props;
+  const [joined, setJoined] = useState(null);
+  const [requestedEntries, setRequestedEntries] = useState([]);
+
+  const { join, participants } = useMeeting({
+    onMeetingJoined: () => {
+      setJoined("JOINED");
+    },
+    onMeetingLeft: () => {
+      props.onMeetingLeave();
+    },
+    onEntryRequested: (data) => {
+      console.log("entry requested");
+      const { participantId, name, allow, deny } = data;
+
+      setRequestedEntries((s) => [...s, { participantId, name, allow, deny }]);
+    },
+    onEntryResponded(participantId, decision) {
+      console.log("entry responded");
+
+      setRequestedEntries((s) =>
+        s.filter((p) => p.participantId !== participantId)
+      );
+
+      if (decision === "allowed") {
+        // entry allowed
+      } else {
+        // entry denied
+      }
+    },
+  });
+  const joinMeeting = () => {
+    setJoined("JOINING");
+    join();
+  };
+
+  const joinHostMeeting = () => {
+    setIsHost(true);
+    setJoined("JOINING");
+    join();
+  };
+
+  return (
+    <div className="container">
+      <h3>Meeting Id: {props.meetingId}</h3>
+      {joined && joined == "JOINED" ? (
+        <div>
+          
+          {requestedEntries.map(({ participantId, name, allow, deny }) => {
+            return (
+              <>
+                <p>{name} wants to join Meeting</p>
+                <button onClick={allow}>Allow</button>
+                <button onClick={deny} style={{ marginLeft: 8 }}>
+                  Deny
+                </button>
+              </>
+            );
+          })}
+         
+        </div>
+      ) : joined && joined == "JOINING" ? (
+        <p>Joining the meeting...</p>
+      ) : (
+        <>
+          <button onClick={joinHostMeeting}>Join As a Host</button>
+          <button onClick={joinMeeting} style={{ marginLeft: 8 }}>
+            Join As a Guest
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
 const App = () => {
   const [token, setToken] = useState("");
   const [meetingId, setMeetingId] = useState("");
@@ -35,6 +123,7 @@ const App = () => {
 
   return (
     <>
+    
       {isMeetingStarted ? (
         <MeetingAppProvider
           selectedMic={selectedMic}
@@ -99,5 +188,6 @@ const App = () => {
     </>
   );
 };
+
 
 export default App;

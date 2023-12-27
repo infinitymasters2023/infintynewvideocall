@@ -4,9 +4,10 @@ import {
     MeetingProvider,
     createCameraVideoTrack,
   } from "@videosdk.live/react-sdk";
-const MeetingView = () => {
+const MeetingView = (props) => {
   // Instantiate VirtualBackgroundProcessor Class
   const videoProcessor = new VirtualBackgroundProcessor();
+  const { setIsHost } = props;
   function onEntryRequested(data) {
     const { participantId, name, allow, deny } = data;
 

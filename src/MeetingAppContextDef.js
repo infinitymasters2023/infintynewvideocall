@@ -9,7 +9,7 @@ import {
   useMemo,
 } from "react";
 import { RECORDER_MAX_GRID_SIZE } from "./CONSTS";
-import { validURL } from "./utils/common";
+import { validURL } from '../src/utils/common';
 import useIsMobile from "./utils/useIsMobile";
 import useIsTab from "./utils/useIsTab";
 import { VirtualBackgroundProcessor } from "@videosdk.live/videosdk-media-processor-web";
