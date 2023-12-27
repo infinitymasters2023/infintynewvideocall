@@ -414,7 +414,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               value={formik.values.DocumentName}
                               className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
                               ref={DocumentTitleRef}
-                              required={true}
+                              required={false}
                             >
                               <option value="">Select Document</option>
                               {
@@ -433,7 +433,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
                               value={formik.values.Status}
                               className="py-2 px-2 block w-full border-gray-200 shadow-sm rounded-lg rounded text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-700 dark:text-gray-600 dark:focus:ring-gray-600"
                               ref={StatuRef}
-                              required={true}
+                              required={false}
                             >
                               <option value="">Select Status</option>
                               {

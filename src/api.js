@@ -24,13 +24,15 @@ export const createMeeting = async ({ token }) => {
   const url = `${API_BASE_URL}/v2/rooms`;
   const options = {
     method: "POST",
-    headers: { Authorization: token, "Content-Type": "application/json" },
+    headers: { 
+      Authorization: token, 
+      "Content-Type": "application/json" 
+    },
   };
 
   const { roomId } = await fetch(url, options)
     .then((response) => response.json())
     .catch((error) => console.error("error", error));
-
   return roomId;
 };
 
