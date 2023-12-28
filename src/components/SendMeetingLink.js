@@ -12,7 +12,7 @@ import { SendMeetLinkSchema } from '../validation/send_link_validation'
 import { useFormik, getIn } from 'formik';
 import { serviceCallInfoAPI} from '../services/meeting_api'
 
-const SendMeetingLink = ({ meetingId, setModelOpen }) => {
+const SendMeetingLink = ({ meetingId, setModelOpen , participantName }) => {
     const [ticketInfo, setTicketInfo] = useState({});
     const url = new URL(window.location.href);
     const searchParams = new URLSearchParams(url.search);
@@ -138,7 +138,8 @@ const SendMeetingLink = ({ meetingId, setModelOpen }) => {
             dealerMobileNo2: '',
             otherEmail: [],
             otherMobile: [],
-            meetingLink: `https://meetings.infyshield.com/${meetingId}`
+            meetingLink: `https://meetings.infyshield.com/${meetingId}`,
+            participantName : participantName
         },
         validationSchema: SendMeetLinkSchema,
         onSubmit: handleSubmit,
