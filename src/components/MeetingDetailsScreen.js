@@ -336,7 +336,7 @@ export function MeetingDetailsScreen({
                       <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                     </a>
                   </div>
-                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} />
+                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} participantName={participantName} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -595,7 +595,7 @@ const WebCamBTN = ({ isMobile }) => {
   );
 };
 
-const SendInfyMeetBTN = () => {
+const SendInfyMeetBTN = ({participantName}) => {
   const { meetingId } = useMeeting();
   const [modelOpen, setModelOpen] = useState(false);
   return (
@@ -636,7 +636,7 @@ const SendInfyMeetBTN = () => {
                       <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                     </a>
                   </div>
-                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} />
+                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} participantName={participantName} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -667,7 +667,8 @@ const Timer = () => {
   return { minutes, seconds };
 };
 export function BottomBar({ bottomBarHeight }) {
-  const { sideBarMode, setSideBarMode, participantMode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, participantMode,  } = useMeetingAppContext();
+  const { localParticipant } = useMeeting();
   const { minutes, seconds } = Timer();
   const location = useLocation();
   const [userId, setUserId] = useState("");
@@ -1235,7 +1236,6 @@ export function BottomBar({ bottomBarHeight }) {
     // remove recording button
     otherFeatures.splice(3, 1);
   }
-
   return isMobile || isTab ? (
     <div
       className="flex items-center justify-center"
@@ -1324,7 +1324,7 @@ export function BottomBar({ bottomBarHeight }) {
   ) : (
     <div className="md:flex lg:px-2 xl:px-6 pb-2 px-2 hidden">
       {participantMode === participantModes.AGENT ? (
-        <SendInfyMeetBTN />
+        <SendInfyMeetBTN participantName={localParticipant ? localParticipant.displayName : ''} />
       ) : null}
       <p className='text-sm text-white px-2'>
         {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
