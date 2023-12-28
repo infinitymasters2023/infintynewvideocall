@@ -135,10 +135,10 @@ const App = () => {
                 setToken("");
                 setMeetingId("");
                 setParticipantName("");
-                setWebcamOn(true);
-                setMicOn(true);
+                setWebcamOn(false);
+                setMicOn(false);
                 setSpekerOn(false);
-                setMeetingStarted(true);
+                setMeetingStarted(false);
                 setIsMeetingLeft(true);
               }}
             />
