@@ -471,6 +471,7 @@ export const CornerDisplayName = ({
                                             ? ""
                                             : `1px solid #ffffff33`,
                                       }}
+                                      key={`key_${index}`}
                                     >
                                       <div className="flex flex-1 items-center w-[120px]">
                                         {index !== 0 && (
@@ -767,6 +768,7 @@ function ParticipantView({
                     );
                     e.stopPropagation();
                   }}
+                  key={`key_${value}`}
                 >
                   {label}
                 </button>

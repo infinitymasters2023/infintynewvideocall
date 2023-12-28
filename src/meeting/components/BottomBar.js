@@ -614,8 +614,7 @@ export function BottomBar({ bottomBarHeight }) {
       setAdminId(userJoinId);
     }
   }, [location.search]);
-  console.log('user', userId)
-  console.log('admin', adminId)
+
   const isAdminUser = adminId == '' && userId !== '' && adminId !== userId;
 
 
@@ -664,14 +663,12 @@ export function BottomBar({ bottomBarHeight }) {
     }, [isRecording]);
 
     const _handleClick = async () => {
-
       const isRecording = isRecordingRef.current;
-
       if (isRecording) {
         setRecordingDisabled(false)
         await stopRecording();
         setTimeout(function () {
-          stopRecordingAPI({ roomId: meetingId })
+          stopRecordingAPI({ roomId: meetingId , startTime : '00:00:00' , endTime : '00:00:00' , duration : '00:00:00' })
         }, 3000)
       } else {
         setRecordingDisabled(true)

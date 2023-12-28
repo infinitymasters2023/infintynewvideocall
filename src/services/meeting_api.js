@@ -13,6 +13,10 @@ export const tokenGenerationAPI = async (iData) => {
         console.log('error', error);
     })
 };
+
+export const validateMeetingRoomAPI = async (roomId) => {
+    return await get(`room/validate/${roomId}`)
+};
 export const createRoomMeetingAPI = async (iData) => {
     return await post('room/create', iData).then((response) => {
         console.log('res', response);

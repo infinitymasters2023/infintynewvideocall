@@ -89,8 +89,6 @@ function ParticipantListItem({ participantId, raisedHand }) {
         setAdminId(userJoinId);
       }
     }, [location.search]);
-    console.log('user', userId)
-    console.log('admin', adminId)
     const isAdminUser = adminId == '' && userId !== '' && adminId !== userId;
 
   return (

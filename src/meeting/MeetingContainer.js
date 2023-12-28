@@ -378,6 +378,7 @@ export function MeetingContainer({ onMeetingLeave }) {
                       {isPresenting ? (
                         <PresenterView
                           height={containerHeight - bottomBarHeight}
+                          key={`isPresenting`}
                         />
                       ) : null}
                     </div>
@@ -386,6 +387,7 @@ export function MeetingContainer({ onMeetingLeave }) {
                       <div className={`flex flex-1`}>
                         <ScreenShareView
                           height={containerHeight - bottomBarHeight}
+                          key={`ScreenShare`}
                         />
                       </div>
                     ) : meetingMode === meetingModes.SCREEN_SHARE ? null : (
@@ -393,6 +395,7 @@ export function MeetingContainer({ onMeetingLeave }) {
                         <MemorizedParticipantView
                           isPresenting={isPresenting}
                           sideBarMode={sideBarMode}
+                          key={`ParticipantView2`}
                         />
                       </div>
                     )}
@@ -402,6 +405,7 @@ export function MeetingContainer({ onMeetingLeave }) {
                     {isPresenting ? (
                       <PresenterView
                         height={containerHeight - bottomBarHeight}
+                        key={`isPresenting2`}
                       />
                     ) : null}
                     {meetingMode === meetingModes.SCREEN_SHARE &&
@@ -413,6 +417,7 @@ export function MeetingContainer({ onMeetingLeave }) {
                       <MemorizedParticipantView
                         isPresenting={isPresenting}
                         sideBarMode={sideBarMode}
+                        key={`ParticipantView3`}
                       />
                     )}
                   </>
@@ -422,6 +427,7 @@ export function MeetingContainer({ onMeetingLeave }) {
                   <SidebarConatiner
                     height={containerHeight - bottomBarHeight}
                     sideBarContainerWidth={sideBarContainerWidth}
+                    key={`SidebarConatiner`}
                   />
                 </div>
               </div>
