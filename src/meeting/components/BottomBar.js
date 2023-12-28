@@ -48,12 +48,13 @@ import { Modal, Button } from 'react-bootstrap';
 import './Bottombar.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { stopRecordingAPI, endMeetingAPI, leaveMeetingAPI } from "../../services/meeting_api";
+import DisplayTimer from "../../components/DisplayTimer";
 import RecordingDisplayTimer from "../../components/RecordingDisplayTimer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faPaperPlane ,faEnvelope} from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faPaperPlane, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { serviceCallInfoAPI } from '../../services/meeting_api'
 import { createPopper } from "@popperjs/core";
-import {} from "react-icons/md";
+import { } from "react-icons/md";
 import {
   faCircleXmark
 } from '@fortawesome/free-solid-svg-icons';
@@ -575,13 +576,13 @@ const WebCamBTN = ({ isMobile }) => {
                           ) : (
                             <div className="w-5 h-5 rounded-full border-[1px] border-gray-500 " />
                           )}
-                      
+
                           <p className="ml-3 text-sm text-gray-900">
                             {"Virtual Background"}
                           </p>
                         </button>
                       )}
-                      
+
                     </div>
                   </div>
                 </div>
@@ -593,6 +594,57 @@ const WebCamBTN = ({ isMobile }) => {
     </Popover>
   );
 };
+
+const SendInfyMeetBTN = () => {
+  const { meetingId } = useMeeting();
+  const [modelOpen, setModelOpen] = useState(false);
+  return (
+    <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
+      setModelOpen(true);
+    }}>
+      <MdOutgoingMail style={{ fontSize: '1.8em', color: 'white' }} />
+    </button>
+      <Transition appear show={modelOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => { }}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/25" />
+          </Transition.Child>
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
+                  <div className="py-2">
+                    <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
+                      setModelOpen(false);
+                    }}>
+                      <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
+                    </a>
+                  </div>
+                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition></>)
+}
+
 const Timer = () => {
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -614,7 +666,6 @@ const Timer = () => {
 
   return { minutes, seconds };
 };
-
 export function BottomBar({ bottomBarHeight }) {
   const { sideBarMode, setSideBarMode, participantMode } = useMeetingAppContext();
   const { minutes, seconds } = Timer();
@@ -624,34 +675,6 @@ export function BottomBar({ bottomBarHeight }) {
   const isRecording = useIsRecording();
   const [modelOpen, setModelOpen] = useState(false);
   const [recStartTime, setRecStartTime] = useState('00:00')
-  const url = new URL(window.location.href);
-  const searchParams = new URLSearchParams(url.search);
-  const urlSegments = url.pathname.split('/');
-  const urlMeetingId = urlSegments[urlSegments.length - 1]
-  const mode = searchParams.get("mode");
-  const customRoomId = searchParams.get("qu");
-  const userid = searchParams.get("userid");
-  const [ticketInfo, setTicketInfo] = useState({});
-  const [openSendLink, setOpenSendLink] = useState(false);
-  console.log('openSendLink', openSendLink);
-  useEffect(() => {
-    if (customRoomId && userid) {
-      fetchTicketInfo()
-    }
-  }, [customRoomId, userid, urlMeetingId]);
-
-  const fetchTicketInfo =  useCallback(async () => {
-    if (customRoomId && userid) {
-      const iData = { quNumber: customRoomId, userid: userid }
-      await serviceCallInfoAPI(iData).then(async (response) => {
-        if (response && response.isSuccess && response.statusCode == 200) {
-          setTicketInfo(response.data)
-        }
-      })
-        .catch((error) => {
-        })
-    }
-  },[customRoomId, userid]);
   useEffect(() => {
     setUserId(uuidv4());
     ;
@@ -689,8 +712,6 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
-
-
 
   const RecordingBTN = ({ isMobile, isTab }) => {
     const { startRecording, stopRecording, recordingState, meetingId } = useMeeting();
@@ -743,6 +764,7 @@ export function BottomBar({ bottomBarHeight }) {
         setRecStartTime(logTime)
       }
     };
+
     return isMobile || isTab ? (
       <MobileIconButton
         Icon={RecordingIcon}
@@ -798,6 +820,7 @@ export function BottomBar({ bottomBarHeight }) {
 
   const EndBTN = () => {
     const { end, localParticipant, meetingId } = useMeeting();
+
     return (
       <OutlinedButton
         Icon={EndIcon}
@@ -821,7 +844,7 @@ export function BottomBar({ bottomBarHeight }) {
           end();
           endMeetingAPI({ roomId: meetingId })
         }}
-      
+
         tooltip={"End Meeting For All "}
       />
     );
@@ -893,6 +916,7 @@ export function BottomBar({ bottomBarHeight }) {
   const LeaveBTN = () => {
     const { leave, localParticipant, meetingId, stopRecording, end } = useMeeting();
     const isRecording = useIsRecording();
+
     return (
       <OutlinedButton
         Icon={ExitIcon}
@@ -931,78 +955,30 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
-  const SendInfyMeetBTN = () => {
-    const { meetingId } = useMeeting();
-    return (
-      <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
-        setOpenSendLink(true);
-      }}>
-      <MdOutgoingMail style={{ fontSize: '1.8em', color: 'white' }} />
-      </button>
-      <Transition appear show={openSendLink} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={() => { }}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black/25" />
-        </Transition.Child>
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
-                <div className="py-2">
-                  <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
-                    setOpenSendLink(false);
-                  }}>
-                    <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
-                  </a>
-                </div>
-                <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} setModelOpen={setOpenSendLink} />
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition> </>)
-  }
   const ScreenCapture = () => {
     const videoRef = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const [mediaStream, setMediaStream] = useState(null);
-  
+
     useEffect(() => {
       if (isRecording) {
         startRecording();
       } else {
         stopRecording();
       }
-  
+
       return () => {
         stopRecording(); // Clean up the media stream when the component unmounts
       };
     }, [isRecording]);
-  
+
     const startRecording = async () => {
       try {
         const stream = await navigator.mediaDevices.getDisplayMedia({
           video: { mediaSource: 'screen' },
         });
         setMediaStream(stream);
-  
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -1010,22 +986,22 @@ export function BottomBar({ bottomBarHeight }) {
         console.error('Error starting screen recording:', error);
       }
     };
-  
+
     const stopRecording = () => {
       if (mediaStream) {
         mediaStream.getTracks().forEach((track) => track.stop());
         setMediaStream(null);
-  
+
         if (videoRef.current) {
           videoRef.current.srcObject = null;
         }
       }
     };
-  
+
     const toggleRecording = () => {
       setIsRecording((prevIsRecording) => !prevIsRecording);
     };
-  
+
     return (
       <div>
         <button onClick={toggleRecording} classname='text-base-white'>
@@ -1063,8 +1039,6 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
-
-
 
   const ParticipantsBTN = ({ isMobile, isTab }) => {
     const { participants } = useMeeting();
@@ -1305,8 +1279,10 @@ export function BottomBar({ bottomBarHeight }) {
       {participantMode === participantModes.AGENT ? (
         <SendInfyMeetBTN />
       ) : null}
-      <p className='text-sm text-white px-2'>{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</p>
-      
+      <p className='text-sm text-white px-2'>
+        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+      </p>
+
       {isRecording && <RecordingDisplayTimer />}
       <div className="flex flex-1 items-center justify-center" ref={tollTipEl}>
         {participantMode === participantModes.AGENT && (
@@ -1325,13 +1301,13 @@ export function BottomBar({ bottomBarHeight }) {
         {participantMode === participantModes.AGENT && (
           <>
 
-          <LeaveBTN />
+            <LeaveBTN />
           </>
         )}
-    
-  <EndBTN />
 
-          </div>
+        <EndBTN />
+
+      </div>
 
       <div className="flex items-center justify-center">
 
