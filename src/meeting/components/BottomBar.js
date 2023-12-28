@@ -762,6 +762,38 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
+  const UserEndBTN = () => {
+    const { end, localParticipant, meetingId } = useMeeting();
+
+    return (
+      <OutlinedButton
+        Icon={EndIcon}
+        bgColor="bg-red-150"
+        onClick={() => {
+          toast(
+            `${trimSnackBarText(
+              nameTructed(localParticipant.displayName, 15)
+            )} left the meeting.`,
+            {
+              position: "bottom-left",
+              autoClose: 4000,
+              hideProgressBar: true,
+              closeButton: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            }
+          );
+          end();
+      
+        }}
+      
+        tooltip={"End Meeting For All "}
+      />
+    );
+  };
+
   const ScreenShareBTN = ({ isMobile, isTab }) => {
     const { localScreenShareOn, toggleScreenShare, presenterId } = useMeeting();
 
@@ -1359,7 +1391,7 @@ export function BottomBar({ bottomBarHeight }) {
           </>
         )}
     
-  <EndBTN />
+  <UserEndBTN />
 
           </div>
 
