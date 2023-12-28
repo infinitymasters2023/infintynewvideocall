@@ -81,6 +81,18 @@ export const meetingLayoutTopics = {
   LIVE_STREAM_LAYOUT: "LIVE_STREAM_LAYOUT",
   HLS_LAYOUT: "HLS_LAYOUT",
 };
+export function validURL(str) {
+  var pattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$",
+    "i"
+  ); // fragment locator
+  return pattern.test(str);
+}
 
 export function debounce(func, wait, immediate) {
   var timeout;

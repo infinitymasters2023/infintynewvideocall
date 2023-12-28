@@ -1,7 +1,7 @@
 import { createCameraVideoTrack } from "@videosdk.live/react-sdk";
 import { useMeetingAppContext } from "../context/MeetingAppContext";
 import { useEffect, useRef } from "react";
-import logo from '../assets/Infinity Logo-PhotoRoom.png-PhotoRoom.png'
+
 const useMediaStream = () => {
   const {
     selectedWebcamDevice,

@@ -1,10 +1,9 @@
 import React from "react";
 import { useMediaQuery } from "react-responsive";
 import { useMeetingAppContext } from "../context/MeetingAppContext";
-import { participantModes } from "../utils/common";
 import { MemoizedParticipant } from "./ParticipantView";
 import { PromoInfographic } from "./PromoInfographic";
-
+import { participantModes } from "../utils/common";
 function ParticipantGrid({ participantIds, isPresenting, sideBarMode }) {
   const isMobile = window.matchMedia(
     "only screen and (max-width: 768px)"

@@ -1,5 +1,5 @@
 import { makeStyles, useTheme } from "@material-ui/core";
-import { SnackbarProvider } from "notistack";
+
 import {
   useContext,
   createContext,
@@ -8,8 +8,8 @@ import {
   useRef,
   useMemo,
 } from "react";
-import { RECORDER_MAX_GRID_SIZE } from "./CONSTS";
-import { validURL } from '../src/utils/common';
+import { RECORDER_MAX_GRID_SIZE } from "../src/utils/CONSTS";
+import { validURL } from "./utils/common";
 import useIsMobile from "./utils/useIsMobile";
 import useIsTab from "./utils/useIsTab";
 import { VirtualBackgroundProcessor } from "@videosdk.live/videosdk-media-processor-web";
@@ -408,28 +408,7 @@ export const MeetingAppProvider = ({
         videoProcessor,
       }}
     >
-      <SnackbarProvider
-        className={classes.container}
-        autoHideDuration={5000}
-        style={{
-          backgroundColor:
-            appTheme === appThemes.DARK
-              ? theme.palette.darkTheme.seven
-              : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.main
-              : "",
-          color:
-            appTheme === appThemes.LIGHT &&
-            theme.palette.lightTheme.contrastText,
-        }}
-        maxSnack={3}
-        anchorOrigin={{
-          vertical: isTab || isMobile ? "top" : "bottom",
-          horizontal: "left",
-        }}
-      >
-        {children}
-      </SnackbarProvider>
+      
     </MeetingAppContext.Provider>
   );
 };
