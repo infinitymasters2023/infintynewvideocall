@@ -77,7 +77,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
     if (customRoomId && userid) {
       fetchTicketInfo()
     }
-  }, []);
+  }, [customRoomId, userid]);
 
   const fetchTicketInfo =  useCallback(async () => {
     if (customRoomId && userid) {
@@ -91,7 +91,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
         .catch((error) => {
         })
     }
-  },[])
+  },[customRoomId, userid])
 
   const fetchDocstatus = useCallback(async () => {
     await getDocumentStatus().then(async (response) => {
@@ -157,7 +157,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
   };
 
   const formik = useFormik({
-    enableReinitialize:false,
+    enableReinitialize:true,
     initialValues: {
       roomId : meetingId,
       ticketNo: ticketNo,
