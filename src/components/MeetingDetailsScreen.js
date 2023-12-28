@@ -176,7 +176,7 @@ export function MeetingDetailsScreen({
   };
 
   const handleCopyLink = () => {
-    const link = `https://meetings.infyshield.com/${meetingId ? meetingId :urlMeetingId}`;
+    const link = `https://meetings.infyshield.com/${meetingId}`;
     navigator.clipboard.writeText(link);
     setIsCopied(true);
     localStorage.setItem('meetingLink', link);
@@ -253,10 +253,10 @@ export function MeetingDetailsScreen({
             <button
               className="w-full bg-purple-350 text-white px-2 py-3 rounded-xl"
               onClick={async (e) => {
-                const meetingIdCreated = await _handleOnCreateMeeting();
-                setNewMeetingId(meetingIdCreated);
+                const meetingId = await _handleOnCreateMeeting();
+                setNewMeetingId(meetingId);
                 setIscreateMeetingClicked(true);
-                handleMeetingCreate(meetingIdCreated)
+                handleMeetingCreate(meetingId)
               }}
             >
               Create a meeting
@@ -336,7 +336,7 @@ export function MeetingDetailsScreen({
                       <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                     </a>
                   </div>
-                  <SendMeetingLink key={'SendLink'} meetingId={meetingId ? meetingId :urlMeetingId} setModelOpen={setModelOpen} />
+                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>
