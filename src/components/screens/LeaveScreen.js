@@ -4,7 +4,7 @@ export function LeaveScreen({ setIsMeetingLeft }) {
       <h1 className="text-white text-4xl">You left the  meeting!</h1>
       <div className="mt-12">
         <button
-          className="`w-full  bg-purple-350 text-white px-16 py-3 rounded-lg text-sm"
+          className="`w-full  bg-purple-350 text-white px-16 py-3 rounded-lg text-sm "
           onClick={() => {
             setIsMeetingLeft(false);
           }}
