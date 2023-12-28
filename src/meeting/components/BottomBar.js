@@ -632,7 +632,8 @@ export function BottomBar({ bottomBarHeight }) {
   const customRoomId = searchParams.get("qu");
   const userid = searchParams.get("userid");
   const [ticketInfo, setTicketInfo] = useState({});
-
+  const [openSendLink, setOpenSendLink] = useState(false);
+  console.log('openSendLink', openSendLink);
   useEffect(() => {
     if (customRoomId && userid) {
       fetchTicketInfo()
@@ -932,7 +933,6 @@ export function BottomBar({ bottomBarHeight }) {
 
   const SendInfyMeetBTN = () => {
     const { meetingId } = useMeeting();
-    const [openSendLink, setOpenSendLink] = useState(false);
     return (
       <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
         setOpenSendLink(true);

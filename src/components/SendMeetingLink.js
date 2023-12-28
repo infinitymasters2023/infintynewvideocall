@@ -474,8 +474,8 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
             <h4 className="text-xs text-gray-700 px-2 mt-3">Send To Others</h4>
             <div className="flex flex-row py-0">
                 <div className="basis-7/12 px-2 box-border p-1 border-2">
-                    <div class="grid grid-cols-1 gap-1">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-1 gap-1">
+                        <div className="col-start-1">
                             <label className="text-sm font-medium text-gray-600">Email Id:</label>
                         </div>
                     </div>
@@ -505,11 +505,11 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
                             </div>)
                         })
                     }
-                    <div class="grid grid-cols-2 mt-2">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-2 mt-2">
+                        <div className="col-start-1">
 
                         </div>
-                        <div class="col-end-5 col-span-1">
+                        <div className="col-end-5 col-span-1">
                             <a className="px-2 py-1 rounded border" onClick={() => {
                                 if (!getIn(formik.errors, 'otherEmail')) {
                                     const updatedEmail = [...new Set(formik.values.otherEmail), ''];
@@ -522,8 +522,8 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
                     </div>
                 </div>
                 <div className="basis-5/12 px-2 box-border p-1 border-2">
-                    <div class="grid grid-cols-1 gap-2">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-1 gap-2">
+                        <div className="col-start-1">
                             <label className="text-sm font-medium text-gray-600">Mobile No:</label>
                         </div>
                     </div>
@@ -553,11 +553,11 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
                             </div>)
                         })
                     }
-                    <div class="grid grid-cols-2 mt-2">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-2 mt-2">
+                        <div className="col-start-1">
 
                         </div>
-                        <div class="col-end-5 col-span-1">
+                        <div className="col-end-5 col-span-1">
                             <a className="px-2 py-1 rounded border" onClick={() => {
                                 if (!getIn(formik.errors, 'otherMobile')) {
                                     const updatedMobile = [...new Set(formik.values.otherMobile), ''];
