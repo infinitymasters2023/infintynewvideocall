@@ -51,10 +51,10 @@ import { stopRecordingAPI, endMeetingAPI, leaveMeetingAPI } from "../../services
 import DisplayTimer from "../../components/DisplayTimer";
 import RecordingDisplayTimer from "../../components/RecordingDisplayTimer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faPaperPlane ,faEnvelope} from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faPaperPlane, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { serviceCallInfoAPI } from '../../services/meeting_api'
 import { createPopper } from "@popperjs/core";
-import {} from "react-icons/md";
+import { } from "react-icons/md";
 import {
   faCircleXmark
 } from '@fortawesome/free-solid-svg-icons';
@@ -576,13 +576,13 @@ const WebCamBTN = ({ isMobile }) => {
                           ) : (
                             <div className="w-5 h-5 rounded-full border-[1px] border-gray-500 " />
                           )}
-                      
+
                           <p className="ml-3 text-sm text-gray-900">
                             {"Virtual Background"}
                           </p>
                         </button>
                       )}
-                      
+
                     </div>
                   </div>
                 </div>
@@ -595,14 +595,86 @@ const WebCamBTN = ({ isMobile }) => {
   );
 };
 
+const SendInfyMeetBTN = () => {
+  const { meetingId } = useMeeting();
+  const [modelOpen, setModelOpen] = useState(false);
+  return (
+    <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
+      setModelOpen(true);
+    }}>
+      <MdOutgoingMail style={{ fontSize: '1.8em', color: 'white' }} />
+    </button>
+      <Transition appear show={modelOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => { }}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/25" />
+          </Transition.Child>
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
+                  <div className="py-2">
+                    <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
+                      setModelOpen(false);
+                    }}>
+                      <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
+                    </a>
+                  </div>
+                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition></>)
+}
+
+const Timer = () => {
+  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setSeconds((prevSeconds) => {
+        if (prevSeconds === 59) {
+          setMinutes((prevMinutes) => prevMinutes + 1);
+          return 0;
+        } else {
+          return prevSeconds + 1;
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return { minutes, seconds };
+};
 export function BottomBar({ bottomBarHeight }) {
   const { sideBarMode, setSideBarMode, participantMode } = useMeetingAppContext();
-
+  const { minutes, seconds } = Timer();
   const location = useLocation();
   const [userId, setUserId] = useState("");
   const [adminId, setAdminId] = useState("");
   const isRecording = useIsRecording();
   const [modelOpen, setModelOpen] = useState(false);
+  const [recStartTime, setRecStartTime] = useState('00:00')
   useEffect(() => {
     setUserId(uuidv4());
     ;
@@ -662,18 +734,34 @@ export function BottomBar({ bottomBarHeight }) {
       isRecordingRef.current = isRecording;
     }, [isRecording]);
 
+    const calculateTimeDifference = (start, end) => {
+      const [startHours, startSeconds] = start.split(':').map(Number);
+      const [endHours, endSeconds] = end.split(':').map(Number);
+    
+      const startTimeInMilliseconds = startHours * 60 * 60 * 1000 + startSeconds * 1000;
+      const endTimeInMilliseconds = endHours * 60 * 60 * 1000 + endSeconds * 1000;
+    
+      const diff = Math.abs(endTimeInMilliseconds - startTimeInMilliseconds);
+      const diffminutes = Math.floor(diff / (60 * 1000));
+      const diffseconds = Math.floor((diff % (60 * 1000)) / 1000);
+    
+      return { diffminutes, diffseconds };
+    };
+
     const _handleClick = async () => {
       const isRecording = isRecordingRef.current;
+      const logTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
       if (isRecording) {
+        const { diffminutes , diffseconds} = calculateTimeDifference(recStartTime, logTime);
         setRecordingDisabled(false)
-        await stopRecording();
+        stopRecording();
         setTimeout(function () {
-          stopRecordingAPI({ roomId: meetingId , startTime : '00:00:00' , endTime : '00:00:00' , duration : '00:00:00' })
+          stopRecordingAPI({ roomId: meetingId , recStartTime : recStartTime.toString() , recEndTime : logTime.toString() , recDuration : `${diffminutes}:${diffseconds}` })
         }, 3000)
       } else {
         setRecordingDisabled(true)
         startRecording();
-
+        setRecStartTime(logTime)
       }
     };
 
@@ -756,7 +844,7 @@ export function BottomBar({ bottomBarHeight }) {
           end();
           endMeetingAPI({ roomId: meetingId })
         }}
-      
+
         tooltip={"End Meeting For All "}
       />
     );
@@ -860,7 +948,7 @@ export function BottomBar({ bottomBarHeight }) {
   const LeaveBTN = () => {
     const { leave, localParticipant, meetingId, stopRecording, end } = useMeeting();
     const isRecording = useIsRecording();
-   
+
     return (
       <OutlinedButton
         Icon={ExitIcon}
@@ -899,174 +987,30 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
-  // const SendInfyMeetBTN = () => {
-  //   const { meetingId } = useMeeting();
-  //   const [openSendLink, setOpenSendLink] = useState(false);
-  //   const { meetingId } = useMeeting();
-  //   const [ticketInfo, setTicketInfo] = useState({});
-  //   const url = new URL(window.location.href);
-  //   const searchParams = new URLSearchParams(url.search);
-  //   const urlSegments = url.pathname.split('/');
-  //   const urlMeetingId = urlSegments[urlSegments.length - 1]
-  //   const mode = searchParams.get("mode");
-  //   const participantMode = mode ? mode.toLowerCase() : '';
-  //   const customRoomId = searchParams.get("qu");
-  //   const userid = searchParams.get("userid");
-  //   useEffect(() => {
-  //     if (customRoomId && userid) {
-  //       fetchTicketInfo()
-  //     }
-  //   }, [customRoomId, userid]);
-  //   return (
-  //     <>
-  //     <button className="text-white text-sm cursor-pointer px-2" onClick={() => {
-  //       setOpenSendLink(true);
-  //     }}>
-  //     <MdOutgoingMail style={{ fontSize: '1.8em', color: 'white' }} />
-  //     </button>
-  //     <Transition appear show={openSendLink} as={Fragment}>
-  //     <Dialog as="div" className="relative z-10" onClose={() => { }}>
-  //       <Transition.Child
-  //         as={Fragment}
-  //         enter="ease-out duration-300"
-  //         enterFrom="opacity-0"
-  //         enterTo="opacity-100"
-  //         leave="ease-in duration-200"
-  //         leaveFrom="opacity-100"
-  //         leaveTo="opacity-0"
-  //       >
-  //         <div className="fixed inset-0 bg-black/25" />
-  //       </Transition.Child>
-  //       <div className="fixed inset-0 overflow-y-auto">
-  //         <div className="flex min-h-full items-center justify-center p-4 text-center">
-  //           <Transition.Child
-  //             as={Fragment}
-  //             enter="ease-out duration-300"
-  //             enterFrom="opacity-0 scale-95"
-  //             enterTo="opacity-100 scale-100"
-  //             leave="ease-in duration-200"
-  //             leaveFrom="opacity-100 scale-100"
-  //             leaveTo="opacity-0 scale-95"
-  //           >
-  //             <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
-  //               <div className="py-2">
-  //                 <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
-  //                   setOpenSendLink(false);
-  //                 }}>
-  //                   <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
-  //                 </a>
-  //               </div>
-  //               <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} setModelOpen={setOpenSendLink} />
-  //             </Dialog.Panel>
-  //           </Transition.Child>
-  //         </div>
-  //       </div>
-  //     </Dialog>
-  //   </Transition> </>)
-  // }
-
-
-
-  const SendInfyMeetBTN = () => {
-    const { meetingId } = useMeeting();
-    const [ticketInfo, setTicketInfo] = useState({});
-    const url = new URL(window.location.href);
-    const searchParams = new URLSearchParams(url.search);
-    const urlSegments = url.pathname.split('/');
-    const urlMeetingId = urlSegments[urlSegments.length - 1]
-    const mode = searchParams.get("mode");
-    const participantMode = mode ? mode.toLowerCase() : '';
-    const customRoomId = searchParams.get("qu");
-    const userid = searchParams.get("userid");
-    useEffect(() => {
-      if (customRoomId && userid) {
-        fetchTicketInfo()
-      }
-    }, [customRoomId, userid]);
-
-    const fetchTicketInfo = useCallback(async () => {
-      if (customRoomId && userid) {
-        const iData = { quNumber: customRoomId, userid: userid }
-        await serviceCallInfoAPI(iData).then(async (response) => {
-          if (response && response.isSuccess && response.statusCode == 200) {
-            setTicketInfo(response.data)
-          }
-        })
-          .catch((error) => {
-          })
-      }
-    }, []);
-
-    return (
-      <><button className="text-white text-sm cursor-pointer px-2" onClick={() => {
-        setModelOpen(true);
-      }}>
-      <MdOutgoingMail style={{ fontSize: '1.8em', color: 'white' }} />
-      </button>
-        <Transition appear show={modelOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={() => { }}>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-black/25" />
-            </Transition.Child>
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
-                    <div className="py-2">
-                      <a className="px-2 flex-shrink-0 inline-flex float-right " onClick={() => {
-                        setModelOpen(false);
-                      }}>
-                        <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
-                      </a>
-                    </div>
-                    <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} setModelOpen={setModelOpen} />
-                  </Dialog.Panel>
-                </Transition.Child>
-              </div>
-            </div>
-          </Dialog>
-        </Transition></>)
-  }
   const ScreenCapture = () => {
     const videoRef = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const [mediaStream, setMediaStream] = useState(null);
-  
+
     useEffect(() => {
       if (isRecording) {
         startRecording();
       } else {
         stopRecording();
       }
-  
+
       return () => {
         stopRecording(); // Clean up the media stream when the component unmounts
       };
     }, [isRecording]);
-  
+
     const startRecording = async () => {
       try {
         const stream = await navigator.mediaDevices.getDisplayMedia({
           video: { mediaSource: 'screen' },
         });
         setMediaStream(stream);
-  
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -1074,22 +1018,22 @@ export function BottomBar({ bottomBarHeight }) {
         console.error('Error starting screen recording:', error);
       }
     };
-  
+
     const stopRecording = () => {
       if (mediaStream) {
         mediaStream.getTracks().forEach((track) => track.stop());
         setMediaStream(null);
-  
+
         if (videoRef.current) {
           videoRef.current.srcObject = null;
         }
       }
     };
-  
+
     const toggleRecording = () => {
       setIsRecording((prevIsRecording) => !prevIsRecording);
     };
-  
+
     return (
       <div>
         <button onClick={toggleRecording} classname='text-base-white'>
@@ -1367,8 +1311,10 @@ export function BottomBar({ bottomBarHeight }) {
       {participantMode === participantModes.AGENT ? (
         <SendInfyMeetBTN />
       ) : null}
-      <DisplayTimer />
-      
+      <p className='text-sm text-white px-2'>
+        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+      </p>
+
       {isRecording && <RecordingDisplayTimer />}
       <div className="flex flex-1 items-center justify-center" ref={tollTipEl}>
         {participantMode === participantModes.AGENT && (
@@ -1387,13 +1333,13 @@ export function BottomBar({ bottomBarHeight }) {
         {participantMode === participantModes.AGENT && (
           <>
 
-          <LeaveBTN />
+            <LeaveBTN />
           </>
         )}
     
-  <UserEndBTN />
+        <UserEndBTN />
 
-          </div>
+      </div>
 
       <div className="flex items-center justify-center">
 

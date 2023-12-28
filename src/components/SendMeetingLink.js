@@ -10,8 +10,37 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SendMeetLinkSchema } from '../validation/send_link_validation'
 import { useFormik, getIn } from 'formik';
+import { serviceCallInfoAPI} from '../services/meeting_api'
 
-const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
+const SendMeetingLink = ({ meetingId, setModelOpen }) => {
+    const [ticketInfo, setTicketInfo] = useState({});
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.search);
+    const urlSegments = url.pathname.split('/');
+    const urlMeetingId = urlSegments[urlSegments.length - 1]
+    const mode = searchParams.get("mode");
+    const participantMode = mode ? mode.toLowerCase() : '';
+    const customRoomId = searchParams.get("qu");
+    const userid = searchParams.get("userid");
+    useEffect(() => {
+      if (customRoomId && userid) {
+        fetchTicketInfo()
+      }
+    }, [customRoomId, userid]);
+
+    const fetchTicketInfo = useCallback(async () => {
+      if (customRoomId && userid) {
+        const iData = { quNumber: customRoomId, userid: userid }
+        await serviceCallInfoAPI(iData).then(async (response) => {
+          if (response && response.isSuccess && response.statusCode == 200) {
+            setTicketInfo(response.data)
+          }
+        })
+          .catch((error) => {
+          })
+      }
+    }, []);
+
     const handleInputChange = async (event) => {
         const { name, checked, value, type } = event.target;
         var transformValue = ''
@@ -126,20 +155,18 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
     };
     const [ipAddress, setIpAddress] = useState(null);
 
-    const fetchData = async () => {
-      try {
-        // Make a request to a server endpoint that returns the client's IP address
-        const response = await fetch('/api/getIpAddress');
-        const data = await response.json();
-        setIpAddress(data.ipAddress);
-      } catch (error) {
-        console.error('Error fetching IP address:', error);
-      }
-    };
+    // const fetchData = async () => {
+    //   try {
+    //     // Make a request to a server endpoint that returns the client's IP address
+    //     const response = await fetch('/api/getIpAddress');
+    //     const data = await response.json();
+    //     setIpAddress(data.ipAddress);
+    //   } catch (error) {
+    //     console.error('Error fetching IP address:', error);
+    //   }
+    // };
   
-    useEffect(() => {
-      fetchData();
-    }, []); // Empty dependency array ensures the effect runs only once, similar to componentDidMount
+
   
     const handleClick = () => {
       // Get device information
@@ -474,8 +501,8 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
             <h4 className="text-xs text-gray-700 px-2 mt-3">Send To Others</h4>
             <div className="flex flex-row py-0">
                 <div className="basis-7/12 px-2 box-border p-1 border-2">
-                    <div class="grid grid-cols-1 gap-1">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-1 gap-1">
+                        <div className="col-start-1">
                             <label className="text-sm font-medium text-gray-600">Email Id:</label>
                         </div>
                     </div>
@@ -505,11 +532,11 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
                             </div>)
                         })
                     }
-                    <div class="grid grid-cols-2 mt-2">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-2 mt-2">
+                        <div className="col-start-1">
 
                         </div>
-                        <div class="col-end-5 col-span-1">
+                        <div className="col-end-5 col-span-1">
                             <a className="px-2 py-1 rounded border" onClick={() => {
                                 if (!getIn(formik.errors, 'otherEmail')) {
                                     const updatedEmail = [...new Set(formik.values.otherEmail), ''];
@@ -522,8 +549,8 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
                     </div>
                 </div>
                 <div className="basis-5/12 px-2 box-border p-1 border-2">
-                    <div class="grid grid-cols-1 gap-2">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-1 gap-2">
+                        <div className="col-start-1">
                             <label className="text-sm font-medium text-gray-600">Mobile No:</label>
                         </div>
                     </div>
@@ -553,11 +580,11 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
                             </div>)
                         })
                     }
-                    <div class="grid grid-cols-2 mt-2">
-                        <div class="col-start-1">
+                    <div className="grid grid-cols-2 mt-2">
+                        <div className="col-start-1">
 
                         </div>
-                        <div class="col-end-5 col-span-1">
+                        <div className="col-end-5 col-span-1">
                             <a className="px-2 py-1 rounded border" onClick={() => {
                                 if (!getIn(formik.errors, 'otherMobile')) {
                                     const updatedMobile = [...new Set(formik.values.otherMobile), ''];
