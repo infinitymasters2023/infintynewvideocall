@@ -1,10 +1,10 @@
-import React, { useEffect, useState,useMeeting } from "react";
+import React, { useEffect, useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { LeaveScreen } from "./components/screens/LeaveScreen";
 import { JoiningScreen } from "./components/screens/JoiningScreen";
 import { MeetingContainer } from "./meeting/MeetingContainer";
 import { MeetingAppProvider } from "./context/MeetingAppContext";
-
+import  {useMeeting}        from "@videosdk.live/react-sdk";
 
 
 
@@ -73,24 +73,10 @@ function MeetingView(props) {
         </div>
       ) : joined && joined == "JOINING" ? (
         <p>Joining the meeting...</p>
-      ) : (
-        <>
-          <button onClick={joinHostMeeting}>Join As a Host</button>
-          <button onClick={joinMeeting} style={{ marginLeft: 8 }}>
-            Join As a Guest
-          </button>
-        </>
-      )}
+      ) : null}
     </div>
   );
 }
-
-
-
-
-
-
-
 
 const App = () => {
   const [token, setToken] = useState("");
@@ -153,10 +139,10 @@ const App = () => {
                 setToken("");
                 setMeetingId("");
                 setParticipantName("");
-                setWebcamOn(false);
-                setMicOn(false);
+                setWebcamOn(true);
+                setMicOn(true);
                 setSpekerOn(false);
-                setMeetingStarted(false);
+                setMeetingStarted(true);
                 setIsMeetingLeft(true);
               }}
             />

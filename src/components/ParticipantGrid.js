@@ -1,7 +1,7 @@
 import React from "react";
 import { useMediaQuery } from "react-responsive";
 import { useMeetingAppContext } from "../context/MeetingAppContext";
-import { participantModes } from "../utils/common";
+import { participantModes } from "../";
 import { MemoizedParticipant } from "./ParticipantView";
 import { PromoInfographic } from "./PromoInfographic";
 

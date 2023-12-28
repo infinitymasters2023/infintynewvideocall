@@ -20,6 +20,7 @@ import { ScreenShareView } from "../components/ScreenShareView";
 import ModeListner from "../components/ModeListner";
 import useCustomTrack from "../utils/useCustomTrack";
 import SwitchCameraListner from "../components/SwitchCameraListner";
+import RequestedEntries from "../../src/context/RequestedEntries";
 import ImageUploadListner from "../components/ImageUploadListner";
 
 export function MeetingContainer({ onMeetingLeave }) {
@@ -28,6 +29,7 @@ export function MeetingContainer({ onMeetingLeave }) {
   const [containerHeight, setContainerHeight] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
   const {
+    redirectOnLeave,
     sideBarMode,
     initialMicOn,
     initialWebcamOn,
@@ -35,6 +37,7 @@ export function MeetingContainer({ onMeetingLeave }) {
     selectedMicDevice,
     useVirtualBackground,
     allowedVirtualBackground,
+    setMeetingLeft,
     participantLeftReason,
     setParticipantLeftReason,
     meetingMode,
@@ -119,6 +122,29 @@ export function MeetingContainer({ onMeetingLeave }) {
       );
     }
   };
+
+  const _handleMeetingLeft = () => {
+    if (redirectOnLeave && redirectOnLeave !== "undefined") {
+      window.parent.location = redirectOnLeave;
+    } else {
+      setMeetingLeft(true);
+    }
+  };
+
+  const _handleOnEntryResponded = (participantId, decision) => {
+    if (mMeetingRef.current?.localParticipant?.id === participantId) {
+      if (decision === "allowed") {
+        setLocalParticipantAllowedJoin(true);
+      } else {
+        setLocalParticipantAllowedJoin(false);
+        setTimeout(() => {
+          _handleMeetingLeft();
+        }, 3000);
+      }
+    }
+  };
+
+  const _handleOnEntryRequested = () => {};
 
   function onParticipantJoined(participant) {
     console.log('Participant object:', participant);
@@ -243,6 +269,8 @@ export function MeetingContainer({ onMeetingLeave }) {
     onMeetingStateChanged: _handleOnMeetingStateChanged,
     onError: _handleOnError,
     onRecordingStateChanged: _handleOnRecordingStateChanged,
+    onEntryRequested: _handleOnEntryRequested,
+    onEntryResponded: _handleOnEntryResponded,
   });
 
   const isPresenting = mMeeting.presenterId ? true : false;
@@ -334,6 +362,7 @@ export function MeetingContainer({ onMeetingLeave }) {
               <ResolutionListner />
               <ModeListner />
               <SwitchCameraListner />
+              <RequestedEntries/>
               <div
                 className={` flex flex-1 ${
                   isPresenting && isMobile ? "flex-col md:flex-row" : "flex-row"

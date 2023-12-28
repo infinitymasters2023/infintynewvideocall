@@ -54,4 +54,3 @@ export const allowOnlyTextInput = async (originalValue) => {
   transformValue = transformValue.replace(/\s+/g, ' ');
   return transformValue;
 }
-
