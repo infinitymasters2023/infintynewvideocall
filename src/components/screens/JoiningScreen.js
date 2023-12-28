@@ -59,7 +59,7 @@ export function JoiningScreen({
   const customRoomId = searchParams.get("qu");
   const userid = searchParams.get("userid");
 
-  const fetchTicketInfo = useCallback(async () => {
+  const fetchTicketInfo = async () => {
     if (customRoomId && userid) {
       const iData = { quNumber: customRoomId, userid: userid }
       await serviceCallInfoAPI(iData).then(async (response) => {
@@ -71,7 +71,7 @@ export function JoiningScreen({
         })
     }
 
-  }, []);
+  }
 
   useEffect(() => {
     fetchTicketInfo()

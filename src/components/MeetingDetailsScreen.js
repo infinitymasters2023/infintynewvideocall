@@ -36,7 +36,7 @@ export function MeetingDetailsScreen({
   const [ticketInfo, setTicketInfo] = useState({});
   const [fullName, setFullName] = useState("");
   // const [participantInfo, setParticipantInfo] = useState({});
-  const fetchTicketInfo = useCallback(async () => {
+  const fetchTicketInfo = async () => {
     if (customRoomId && userid) {
       const iData = { quNumber: customRoomId, userid: userid }
       await serviceCallInfoAPI(iData).then(async (response) => {
@@ -47,7 +47,7 @@ export function MeetingDetailsScreen({
         .catch((error) => {
         })
     }
-  }, []);
+  }
 
   const getTokenAndSetState = useCallback(async () => {
     const token = await getToken('crawler');
@@ -67,7 +67,7 @@ export function MeetingDetailsScreen({
     if (customRoomId && userid) {
       fetchTicketInfo();
     }
-  }, [urlMeetingId, customRoomId, userid, getTokenAndSetState, fetchTicketInfo]);
+  }, []);
   // useEffect(() => {
   //   const fetchData = async () => {
   //     if (urlMeetingId) {
