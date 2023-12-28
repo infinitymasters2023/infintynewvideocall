@@ -77,9 +77,9 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
     if (customRoomId && userid) {
       fetchTicketInfo()
     }
-  }, [customRoomId, userid]);
+  }, []);
 
-  const fetchTicketInfo = useCallback(async () => {
+  const fetchTicketInfo =  useCallback(async () => {
     if (customRoomId && userid) {
       const iData = { quNumber : customRoomId, userid : userid }
       await serviceCallInfoAPI(iData).then(async (response) => {
@@ -91,7 +91,7 @@ const ImageCapturePreviewDialog = ({ open, setOpen }) => {
         .catch((error) => {
         })
     }
-  }, []);
+  },[])
 
   const fetchDocstatus = useCallback(async () => {
     await getDocumentStatus().then(async (response) => {

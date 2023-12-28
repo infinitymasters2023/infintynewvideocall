@@ -4,11 +4,7 @@ import { LeaveScreen } from "./components/screens/LeaveScreen";
 import { JoiningScreen } from "./components/screens/JoiningScreen";
 import { MeetingContainer } from "./meeting/MeetingContainer";
 import { MeetingAppProvider } from "./context/MeetingAppContext";
-import  {useMeeting}        from "@videosdk.live/react-sdk";
-
-
-
-
+import  {useMeeting} from "@videosdk.live/react-sdk";
 function MeetingView(props) {
   const { setIsHost } = props;
   const [joined, setJoined] = useState(null);
