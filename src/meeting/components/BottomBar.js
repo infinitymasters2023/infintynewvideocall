@@ -850,37 +850,7 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
-  const UserEndBTN = () => {
-    const { end, localParticipant, meetingId } = useMeeting();
-
-    return (
-      <OutlinedButton
-        Icon={EndIcon}
-        bgColor="bg-red-150"
-        onClick={() => {
-          toast(
-            `${trimSnackBarText(
-              nameTructed(localParticipant.displayName, 15)
-            )} left the meeting.`,
-            {
-              position: "bottom-left",
-              autoClose: 4000,
-              hideProgressBar: true,
-              closeButton: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            }
-          );
-          end();
-      
-        }}
-      
-        tooltip={"End Meeting For All "}
-      />
-    );
-  };
+ 
 
   const ScreenShareBTN = ({ isMobile, isTab }) => {
     const { localScreenShareOn, toggleScreenShare, presenterId } = useMeeting();
@@ -986,6 +956,51 @@ export function BottomBar({ bottomBarHeight }) {
       />
     );
   };
+  const UserEndBTN = () => {
+    const { leave, localParticipant, meetingId, stopRecording, end } = useMeeting();
+    const isRecording = useIsRecording();
+
+    return (
+      <OutlinedButton
+      Icon={EndIcon}
+      bgColor="bg-red-150"
+      onClick={() => {
+        toast(
+          `${trimSnackBarText(
+            nameTructed(localParticipant.displayName, 15)
+          )} left the meeting.`,
+          {
+            position: "bottom-left",
+            autoClose: 4000,
+            hideProgressBar: true,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+          if (isRecording) {
+            stopRecording();
+          }
+          leave();
+          if (isAdminUser) {
+            setTimeout(() => {
+              endMeetingAPI({ roomId: meetingId })
+            }, 2000);
+          }
+          else {
+            leaveMeetingAPI({ roomId: meetingId })
+          }
+        }}
+
+        tooltip={"End Meeting"}
+      />
+    );
+  };
+
+
+
 
   const ScreenCapture = () => {
     const videoRef = useRef(null);
@@ -1226,7 +1241,7 @@ export function BottomBar({ bottomBarHeight }) {
       className="flex items-center justify-center"
       style={{ height: bottomBarHeight }}
     >
-      <LeaveBTN />
+    <UserEndBTN/>
       <MicBTN />
       <WebCamBTN isMobile={isMobile} />
       {(browserName === "Google Chrome or Chromium" ||
@@ -1334,10 +1349,17 @@ export function BottomBar({ bottomBarHeight }) {
           <>
 
             <LeaveBTN />
+            <EndBTN/>
           </>
         )}
     
-        <UserEndBTN />
+        {participantMode !== participantModes.AGENT && (
+          <>
+          <UserEndBTN/>
+            
+          </>
+        )}
+       
 
       </div>
 
