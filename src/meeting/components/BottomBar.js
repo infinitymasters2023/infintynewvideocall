@@ -374,7 +374,7 @@ const WebCamBTN = ({ isMobile }) => {
   const mMeeting = useMeeting();
   const [webcams, setWebcams] = useState([]);
 
-  const localWebcamOn = mMeeting?.localWebcamOn;
+  const localWebcamOn =  mMeeting?.localWebcamOn ; 
   const changeWebcam = mMeeting?.changeWebcam;
   const disableWebcam = mMeeting?.disableWebcam;
 
