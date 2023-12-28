@@ -93,7 +93,7 @@ export function PresenterView({ height }) {
       <audio
         id="audio"
         autoPlay
-        playsInline={true}
+        playsInline
         controls={false}
         ref={audioPlayer}
         muted={isLocal || !muteSpeaker}

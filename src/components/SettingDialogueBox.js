@@ -451,7 +451,7 @@ export default function SettingDialogueBox({
                                     <div className="md:absolute top-0 bottom-0 left-0 right-0 flex items-start flex-col rounded-sm overflow-hidden">
                                       <video
                                         autoPlay
-                                        playsInline={true}
+                                        playsInline
                                         muted
                                         ref={popupVideoPlayerRef}
                                         controls={false}
