@@ -130,11 +130,11 @@ export function MeetingDetailsScreen({
     }
   })
       // Function to get user's IP address
-      const getIpAddress = async () => {
-        const response = await fetch('https://api64.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-      };
+      // const getIpAddress = async () => {
+      //   const response = await fetch('https://api64.ipify.org?format=json');
+      //   const data = await response.json();
+      //   return data.ip;
+      // };
   
       // Function to get user's device information
       const getDeviceInfo = () => {
@@ -154,7 +154,8 @@ export function MeetingDetailsScreen({
       };
   const handleJoinMeeting = async() => {
     try {
-      const ipAddress = await getIpAddress();
+      // const ipAddress = await getIpAddress();
+      const ipAddress = '';
       const deviceInfo = getDeviceInfo();
       const tabInfo = getTabInfo();
       const iData = {
@@ -335,7 +336,7 @@ export function MeetingDetailsScreen({
                       <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                     </a>
                   </div>
-                  <SendMeetingLink key={'SendLink'} ticketInfo={ticketInfo} meetingId={meetingId} setModelOpen={setModelOpen} />
+                  <SendMeetingLink key={'SendLink'} meetingId={meetingId} setModelOpen={setModelOpen} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

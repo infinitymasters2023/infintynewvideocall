@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-const Timer = () => {
+export const Timer = () => {
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
-
   useEffect(() => {
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => {
@@ -15,16 +14,15 @@ const Timer = () => {
         }
       });
     }, 1000);
-
     return () => clearInterval(intervalId);
   }, []);
-
   return { minutes, seconds };
 };
 
-const DisplayTimer = () => {
+const DisplayTimer = ({ setMinutes , setSeconds }) => {
   const { minutes, seconds } = Timer();
-
+  setMinutes(minutes)
+  setSeconds(seconds)
   return (
     <p className='text-sm text-white px-2'>
       {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}

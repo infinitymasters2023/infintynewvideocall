@@ -10,8 +10,37 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SendMeetLinkSchema } from '../validation/send_link_validation'
 import { useFormik, getIn } from 'formik';
+import { serviceCallInfoAPI} from '../services/meeting_api'
 
-const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
+const SendMeetingLink = ({ meetingId, setModelOpen }) => {
+    const [ticketInfo, setTicketInfo] = useState({});
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.search);
+    const urlSegments = url.pathname.split('/');
+    const urlMeetingId = urlSegments[urlSegments.length - 1]
+    const mode = searchParams.get("mode");
+    const participantMode = mode ? mode.toLowerCase() : '';
+    const customRoomId = searchParams.get("qu");
+    const userid = searchParams.get("userid");
+    useEffect(() => {
+      if (customRoomId && userid) {
+        fetchTicketInfo()
+      }
+    }, [customRoomId, userid]);
+
+    const fetchTicketInfo = useCallback(async () => {
+      if (customRoomId && userid) {
+        const iData = { quNumber: customRoomId, userid: userid }
+        await serviceCallInfoAPI(iData).then(async (response) => {
+          if (response && response.isSuccess && response.statusCode == 200) {
+            setTicketInfo(response.data)
+          }
+        })
+          .catch((error) => {
+          })
+      }
+    }, []);
+
     const handleInputChange = async (event) => {
         const { name, checked, value, type } = event.target;
         var transformValue = ''
@@ -126,20 +155,18 @@ const SendMeetingLink = ({ ticketInfo, meetingId, setModelOpen }) => {
     };
     const [ipAddress, setIpAddress] = useState(null);
 
-    const fetchData = async () => {
-      try {
-        // Make a request to a server endpoint that returns the client's IP address
-        const response = await fetch('/api/getIpAddress');
-        const data = await response.json();
-        setIpAddress(data.ipAddress);
-      } catch (error) {
-        console.error('Error fetching IP address:', error);
-      }
-    };
+    // const fetchData = async () => {
+    //   try {
+    //     // Make a request to a server endpoint that returns the client's IP address
+    //     const response = await fetch('/api/getIpAddress');
+    //     const data = await response.json();
+    //     setIpAddress(data.ipAddress);
+    //   } catch (error) {
+    //     console.error('Error fetching IP address:', error);
+    //   }
+    // };
   
-    useEffect(() => {
-      fetchData();
-    }, []); // Empty dependency array ensures the effect runs only once, similar to componentDidMount
+
   
     const handleClick = () => {
       // Get device information
