@@ -145,7 +145,7 @@ const App = () => {
           </MeetingProvider>
         </MeetingAppProvider>
       ) : isMeetingLeft ? (
-        <LeaveScreen setIsMeetingLeft={setIsMeetingLeft} />
+        <LeaveScreen setIsMeetingLeft={setIsMeetingLeft} setWebcamOn={setWebcamOn} setMicOn={setMicOn} />
       ) : (
         <JoiningScreen
           participantName={participantName}
