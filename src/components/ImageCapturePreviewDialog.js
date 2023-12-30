@@ -6,10 +6,10 @@ import { usePubSub, useMeeting } from "@videosdk.live/react-sdk";
 import { uploadFileAPI, getDocumentStatus, getDocumentMaster, serviceCallInfoAPI } from "../services/meeting_api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faXmark, faMagnifyingGlassMinus, faMagnifyingGlassPlus,
+  faXmark, faMagnifyingGlassMinus, 
   faArrowRotateRight, faArrowRotateLeft, faCrop,
-  faCheck, faPenToSquare, faArrowsRotate, faCropSimple,
-  faSquareCheck,faDownload
+  faCheck, faArrowsRotate, 
+  faDownload
 } from '@fortawesome/free-solid-svg-icons';
 import { useFormik, getIn } from 'formik';
 import { UploadDocumentSchema } from '../validation/upload_document';
