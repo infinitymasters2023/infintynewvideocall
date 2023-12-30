@@ -640,9 +640,7 @@ function ParticipantView({
   useEffect(() => {
     if (webcamRef.current && webcamMediaStream) {
       webcamRef.current.srcObject = webcamMediaStream;
-      webcamRef.current
-        .play()
-        .catch((error) =>
+      webcamRef.current.play().catch((error) =>
           console.error("videoElem.current.play() failed", error)
         );
     }
@@ -812,7 +810,7 @@ function ParticipantView({
           mouseOver,
           isPip,
           pin,
-            unpin,
+          unpin,
           isActiveSpeaker,
         }}
       />

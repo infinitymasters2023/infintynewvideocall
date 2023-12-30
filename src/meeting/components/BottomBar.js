@@ -374,7 +374,7 @@ const WebCamBTN = ({ isMobile }) => {
   const mMeeting = useMeeting();
   const [webcams, setWebcams] = useState([]);
 
-  const localWebcamOn =  mMeeting?.localWebcamOn ; 
+  const localWebcamOn = mMeeting?.localWebcamOn;
   const changeWebcam = mMeeting?.changeWebcam;
   const disableWebcam = mMeeting?.disableWebcam;
 
@@ -595,7 +595,7 @@ const WebCamBTN = ({ isMobile }) => {
   );
 };
 
-const SendInfyMeetBTN = ({participantName}) => {
+const SendInfyMeetBTN = ({ participantName }) => {
   const { meetingId } = useMeeting();
   const [modelOpen, setModelOpen] = useState(false);
   return (
@@ -666,9 +666,74 @@ const Timer = () => {
 
   return { minutes, seconds };
 };
+
+const ContinueMeetingDialog = ({ modelstatus }) => {
+  const [modelOpen, setModelOpen] = useState(modelstatus);
+  const { end, localParticipant, meetingId, stopVideo, pauseVideo } = useMeeting();
+  const handleContinueMeeting = () => {
+    setModelOpen(false);
+    // startVideo()
+  };
+
+  const handleCloseMeeting = () => {
+    end();
+    endMeetingAPI({ roomId: meetingId })
+    setModelOpen(false);
+    toast(
+      `Meeting closed. Have a great day!`,
+      {
+        position: "bottom-left",
+        autoClose: 4000,
+        hideProgressBar: true,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
+  };
+  return (
+    <Transition appear show={modelOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={() => { }}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black/25" />
+        </Transition.Child>
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-[#f2f3f9] p-3 text-left align-middle shadow-xl transition-all">
+                <p className="small">Do you want to continue the meeting? Press Continue to continue meeting, or Close to Close Meeting.</p>
+                <div className="mt-4 float-right">
+                  <button className="dark:text-gray-600 px-3 py-2 me-4 dark:border-gray-700 text-success dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]" onClick={handleContinueMeeting}>Continue</button>
+                  <button className="dark:text-gray-600 px-3 py-2 me-4 dark:border-gray-700 text-danger dark:focus:ring-gray-600 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] " onClick={handleCloseMeeting}>Close</button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>)
+}
 export function BottomBar({ bottomBarHeight }) {
-  const { sideBarMode, setSideBarMode, participantMode,  } = useMeetingAppContext();
-  const { localParticipant } = useMeeting();
+  const { sideBarMode, setSideBarMode, participantMode} = useMeetingAppContext();
+  const { localParticipant , participants, stopVideo, pauseVideo, end, meetingId } = useMeeting();
   const { minutes, seconds } = Timer();
   const location = useLocation();
   const [userId, setUserId] = useState("");
@@ -676,9 +741,9 @@ export function BottomBar({ bottomBarHeight }) {
   const isRecording = useIsRecording();
   const [modelOpen, setModelOpen] = useState(false);
   const [recStartTime, setRecStartTime] = useState('00:00')
+  const [modelContinueMeeting, setModelContinueMeeting] = useState(false);
   useEffect(() => {
     setUserId(uuidv4());
-    ;
   }, []);
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(location.search);
@@ -688,9 +753,31 @@ export function BottomBar({ bottomBarHeight }) {
     }
   }, [location.search]);
 
+  useEffect(() => {
+    if(participants.size === 1 && [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90].includes(minutes) && seconds === 59){
+      setModelContinueMeeting(true);
+    }
+    else if ([30, 60, 90].includes(minutes) && seconds === 59) {
+      setModelContinueMeeting(true);
+    }
+    else if(minutes > 99){
+      toast(`Meeting ended due to exceeding the maximum duration.`,
+        {
+          position: "bottom-left",
+          autoClose: 4000,
+          hideProgressBar: true,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+      end();
+      endMeetingAPI({ roomId: meetingId })
+    }
+  }, [seconds, minutes]);
   const isAdminUser = adminId == '' && userId !== '' && adminId !== userId;
-
-
   const RaiseHandBTN = ({ isMobile, isTab }) => {
     const { publish } = usePubSub("RAISE_HAND");
     const RaiseHand = () => {
@@ -738,14 +825,14 @@ export function BottomBar({ bottomBarHeight }) {
     const calculateTimeDifference = (start, end) => {
       const [startHours, startSeconds] = start.split(':').map(Number);
       const [endHours, endSeconds] = end.split(':').map(Number);
-    
+
       const startTimeInMilliseconds = startHours * 60 * 60 * 1000 + startSeconds * 1000;
       const endTimeInMilliseconds = endHours * 60 * 60 * 1000 + endSeconds * 1000;
-    
+
       const diff = Math.abs(endTimeInMilliseconds - startTimeInMilliseconds);
       const diffminutes = Math.floor(diff / (60 * 1000));
       const diffseconds = Math.floor((diff % (60 * 1000)) / 1000);
-    
+
       return { diffminutes, diffseconds };
     };
 
@@ -753,14 +840,23 @@ export function BottomBar({ bottomBarHeight }) {
       const isRecording = isRecordingRef.current;
       const logTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
       if (isRecording) {
-        const { diffminutes , diffseconds} = calculateTimeDifference(recStartTime, logTime);
+        const { diffminutes, diffseconds } = calculateTimeDifference(recStartTime, logTime);
         setRecordingDisabled(false)
         stopRecording();
         setTimeout(function () {
-          stopRecordingAPI({ roomId: meetingId , recStartTime : recStartTime.toString() , recEndTime : logTime.toString() , recDuration : `${diffminutes}:${diffseconds}` })
+          stopRecordingAPI({ roomId: meetingId, recStartTime: recStartTime.toString(), recEndTime: logTime.toString(), recDuration: `${diffminutes}:${diffseconds}` })
         }, 3000)
       } else {
         setRecordingDisabled(true)
+        // const config = {
+        //   layout: {
+        //     type: "SPOTLIGHT",
+        //     priority: "PIN",
+        //     gridSize: 4,
+        //   },
+        //   theme: "DEFAULT",
+        // };
+        // startRecording(config);
         startRecording();
         setRecStartTime(logTime)
       }
@@ -851,7 +947,7 @@ export function BottomBar({ bottomBarHeight }) {
     );
   };
 
- 
+
 
   const ScreenShareBTN = ({ isMobile, isTab }) => {
     const { localScreenShareOn, toggleScreenShare, presenterId } = useMeeting();
@@ -963,24 +1059,24 @@ export function BottomBar({ bottomBarHeight }) {
 
     return (
       <OutlinedButton
-      Icon={EndIcon}
-      bgColor="bg-red-150"
-      onClick={() => {
-        toast(
-          `${trimSnackBarText(
-            nameTructed(localParticipant.displayName, 15)
-          )} left the meeting.`,
-          {
-            position: "bottom-left",
-            autoClose: 4000,
-            hideProgressBar: true,
-            closeButton: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          }
-        );
+        Icon={EndIcon}
+        bgColor="bg-red-150"
+        onClick={() => {
+          toast(
+            `${trimSnackBarText(
+              nameTructed(localParticipant.displayName, 15)
+            )} left the meeting.`,
+            {
+              position: "bottom-left",
+              autoClose: 4000,
+              hideProgressBar: true,
+              closeButton: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            }
+          );
           if (isRecording) {
             stopRecording();
           }
@@ -1010,6 +1106,15 @@ export function BottomBar({ bottomBarHeight }) {
 
     useEffect(() => {
       if (isRecording) {
+        const config = {
+          layout: {
+            type: "SPOTLIGHT",
+            priority: "PIN",
+            gridSize: 4,
+          },
+          theme: "DEFAULT",
+        };
+        // startRecording(config);
         startRecording();
       } else {
         stopRecording();
@@ -1241,7 +1346,7 @@ export function BottomBar({ bottomBarHeight }) {
       className="flex items-center justify-center"
       style={{ height: bottomBarHeight }}
     >
-    <UserEndBTN/>
+      <UserEndBTN />
       <MicBTN />
       <WebCamBTN isMobile={isMobile} />
       {(browserName === "Google Chrome or Chromium" ||
@@ -1336,10 +1441,7 @@ export function BottomBar({ bottomBarHeight }) {
           <><RecordingBTN isTab={isTab} isMobile={isMobile} />
           </>
         )}
-
-
         <MicBTN />
-
         <WebCamBTN />
         {(browserName === "Google Chrome or Chromium" ||
           browserName === "Microsoft Edge (Legacy)" ||
@@ -1347,27 +1449,21 @@ export function BottomBar({ bottomBarHeight }) {
         <ScreenShareBTN isMobile={isMobile} isTab={isTab} />
         {participantMode === participantModes.AGENT && (
           <>
-
             <LeaveBTN />
-            <EndBTN/>
+            <EndBTN />
           </>
         )}
-    
         {participantMode !== participantModes.AGENT && (
           <>
-          <UserEndBTN/>
-            
+            <UserEndBTN />
           </>
         )}
-       
-
       </div>
-
       <div className="flex items-center justify-center">
-
         <ChatBTN isMobile={isMobile} isTab={isTab} />
         <ParticipantsBTN isMobile={isMobile} isTab={isTab} />
       </div>
+      {modelContinueMeeting && <ContinueMeetingDialog modelstatus={modelContinueMeeting} />}
     </div>
   );
 }

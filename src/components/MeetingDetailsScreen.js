@@ -2,12 +2,14 @@ import { CheckIcon, ClipboardIcon } from "@heroicons/react/24/outline";
 import React, { Fragment, useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Dialog, Transition } from "@headlessui/react";
-import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI, serviceCallInfoAPI , tokenGenerationAPI } from '../services/meeting_api'
+import { insertMeetingAPI, startMeetingAPI, joinMeetingAPI, serviceCallInfoAPI , tokenGenerationAPI, getMeetingInfoAPI } from '../services/meeting_api'
 import SendMeetingLink from "./SendMeetingLink"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { getToken } from '../api'
 import { MdOutgoingMail } from "react-icons/md";
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+
 export function MeetingDetailsScreen({
   onClickJoin,
   _handleOnCreateMeeting,
@@ -19,6 +21,8 @@ export function MeetingDetailsScreen({
   setToken,
   setMeetingId
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [meetingId, setNewMeetingId] = useState("");
   const [meetingIdError, setMeetingIdError] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -27,6 +31,7 @@ export function MeetingDetailsScreen({
   const [modelOpen, setModelOpen] = useState(false);
   const url = new URL(window.location.href);
   const searchParams = new URLSearchParams(url.search);
+
   const urlSegments = url.pathname.split('/');
   const urlMeetingId = urlSegments[urlSegments.length - 1]
   const mode = searchParams.get("mode");
@@ -196,6 +201,30 @@ export function MeetingDetailsScreen({
     }
   };
 
+  const handleSendMeetingLink = useCallback(async () => {
+    await getMeetingInfoAPI(meetingId).then(async (response) => {
+      console.log('response',response);
+      if (response && response.isSuccess && response.statusCode == 200 && response.data) {
+        setModelOpen(true);
+      }
+      else{
+       await handleMeetingCreate(meetingId)
+        setModelOpen(true);
+      }
+      
+    }).catch((error) => {
+      console.log('error', error);
+    })
+  })
+
+  const handleCreateMeetingUrl =async (roomId) => {
+    setIscreateMeetingClicked(true);
+    if(roomId){
+      navigate(`/${roomId}${location.search}`);
+      handleMeetingCreate(roomId)
+      setNewMeetingId(roomId);
+    }
+  }
   return (
     <div className={`flex flex-1 flex-col w-full md:p-[6px] sm:p-1 p-1.5`}>
       {iscreateMeetingClicked ? (
@@ -254,9 +283,10 @@ export function MeetingDetailsScreen({
               className="w-full bg-purple-350 text-white px-2 py-3 rounded-xl"
               onClick={async (e) => {
                 const meetingId = await _handleOnCreateMeeting();
-                setNewMeetingId(meetingId);
-                setIscreateMeetingClicked(true);
-                handleMeetingCreate(meetingId)
+                handleCreateMeetingUrl(meetingId)
+                // setNewMeetingId(meetingId);
+                // setIscreateMeetingClicked(true);
+                // handleMeetingCreate(meetingId)
               }}
             >
               Create a meeting
@@ -291,9 +321,7 @@ export function MeetingDetailsScreen({
                 <div className="flex-grow"></div>
                 <button
       className="text-white text-sm cursor-pointer flex items-center"
-      onClick={() => {
-        setModelOpen(true);
-      }}
+      onClick={handleSendMeetingLink}
     >
       <MdOutgoingMail size={20} className="mr-2" />
       Send Link
