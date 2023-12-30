@@ -669,13 +669,15 @@ const Timer = () => {
 
 const ContinueMeetingDialog = ({ modelstatus }) => {
   const [modelOpen, setModelOpen] = useState(modelstatus);
-  const { end, localParticipant, meetingId, stopVideo, pauseVideo } = useMeeting();
+  const { end, localParticipant, meetingId, stopVideo, pauseVideo ,leave } = useMeeting();
+
   const handleContinueMeeting = () => {
     setModelOpen(false);
     // startVideo()
   };
 
-  const handleCloseMeeting = () => {
+  const handleCloseMeeting = async() => {
+    leave()
     end();
     endMeetingAPI({ roomId: meetingId })
     setModelOpen(false);
@@ -693,6 +695,14 @@ const ContinueMeetingDialog = ({ modelstatus }) => {
       }
     );
   };
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (modelOpen) {
+        handleCloseMeeting();
+      }
+    }, 60000); 
+    return () => clearTimeout(timeoutId);
+  }, [modelOpen]);
   return (
     <Transition appear show={modelOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={() => { }}>
@@ -754,10 +764,10 @@ export function BottomBar({ bottomBarHeight }) {
   }, [location.search]);
 
   useEffect(() => {
-    if(participants.size === 1 && [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90].includes(minutes) && seconds === 59){
+    if(participants.size === 1 && [4, 9, 14, 19, 24, 29, 34, 39, 44, 49, 54, 59, 64, 69, 74, 79, 84, 89].includes(minutes) && seconds === 59){
       setModelContinueMeeting(true);
     }
-    else if ([30, 60, 90].includes(minutes) && seconds === 59) {
+    else if ([29, 59, 89].includes(minutes) && seconds === 59) {
       setModelContinueMeeting(true);
     }
     else if(minutes > 99){
