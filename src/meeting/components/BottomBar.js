@@ -1115,7 +1115,16 @@ export function BottomBar({ bottomBarHeight }) {
           theme: "DEFAULT",
         };
         // startRecording(config);
-        startRecording();
+    
+          startRecording( {
+            layout: {
+              type: "your layout type", 
+              priority: "PIN",
+              gridSize: 4,
+            },
+      
+          });
+      
       } else {
         stopRecording();
       }
