@@ -860,14 +860,14 @@ export function BottomBar({ bottomBarHeight }) {
         setRecordingDisabled(true)
         // const config = {
         //   layout: {
-        //     type: "SPOTLIGHT",
+        //     type:  "SIDEBAR",
         //     priority: "PIN",
-        //     gridSize: 4,
+        //     gridSize: 4 ,
         //   },
         //   theme: "DEFAULT",
         // };
         // startRecording(config);
-        startRecording();
+         startRecording();
         setRecStartTime(logTime)
       }
     };
@@ -1109,81 +1109,7 @@ export function BottomBar({ bottomBarHeight }) {
 
 
 
-  const ScreenCapture = () => {
-    const videoRef = useRef(null);
-    const [isRecording, setIsRecording] = useState(false);
-    const [mediaStream, setMediaStream] = useState(null);
-
-    useEffect(() => {
-      if (isRecording) {
-        const config = {
-          layout: {
-            type: "SPOTLIGHT",
-            priority: "PIN",
-            gridSize: 4,
-          },
-          theme: "DEFAULT",
-        };
-        // startRecording(config);
-    
-          startRecording( {
-            layout: {
-              type: "your layout type", 
-              priority: "PIN",
-              gridSize: 4,
-            },
-      
-          });
-      
-      } else {
-        stopRecording();
-      }
-
-      return () => {
-        stopRecording(); // Clean up the media stream when the component unmounts
-      };
-    }, [isRecording]);
-
-    const startRecording = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: { mediaSource: 'screen' },
-        });
-        setMediaStream(stream);
-
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error('Error starting screen recording:', error);
-      }
-    };
-
-    const stopRecording = () => {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach((track) => track.stop());
-        setMediaStream(null);
-
-        if (videoRef.current) {
-          videoRef.current.srcObject = null;
-        }
-      }
-    };
-
-    const toggleRecording = () => {
-      setIsRecording((prevIsRecording) => !prevIsRecording);
-    };
-
-    return (
-      <div>
-        <button onClick={toggleRecording} classname='text-base-white'>
-          {isRecording ? 'Stop Recording' : 'Start Recording'}
-        </button>
-        <br />
-        <video ref={videoRef} autoPlay controls />
-      </div>
-    );
-  };
+ 
 
   const ChatBTN = ({ isMobile, isTab }) => {
     return isMobile || isTab ? (

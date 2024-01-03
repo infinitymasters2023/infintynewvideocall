@@ -308,7 +308,7 @@ export const CornerDisplayName = ({
         </p>
       </div>
 
-      {canPin && !isRecorder && (
+  
         <div
           className="pinClass"
           style={{
@@ -343,7 +343,7 @@ export const CornerDisplayName = ({
             />
           </IconButton>
         </div>
-      )}
+    
 
 
 
