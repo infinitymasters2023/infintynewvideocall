@@ -902,7 +902,7 @@ export function BottomBar({ bottomBarHeight }) {
         lottieOption={isRecording ? defaultOptions : null}
       />
     ) : (
-      <OutlinedButton
+      <OutlinedButton 
         Icon={RecordingIcon}
         onClick={_handleClick}
         isFocused={isRecording}
