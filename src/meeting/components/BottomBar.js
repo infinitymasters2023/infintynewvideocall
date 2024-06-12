@@ -858,16 +858,17 @@ export function BottomBar({ bottomBarHeight }) {
         }, 3000)
       } else {
         setRecordingDisabled(true)
-        // const config = {
-        //   layout: {
-        //     type:  "SIDEBAR",
-        //     priority: "PIN",
-        //     gridSize: 4 ,
-        //   },
-        //   theme: "DEFAULT",
-        // };
+        const config = {
+          layout: {
+            type: "SIDEBAR",
+            priority: "PIN",
+            gridSize: 4 ,
+          },
+          theme: "LIGHT",
+        };
+        startRecording(null,null,config);
         // startRecording(config);
-         startRecording();
+        //  startRecording();
         setRecStartTime(logTime)
       }
     };

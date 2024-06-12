@@ -32,6 +32,9 @@ const MeetingView = (props) => {
   const { changeWebcam, allowedVirtualBackground, join, participants } = useMeeting({
     onEntryRequested,
     onEntryResponded,
+    onSpeakerChanged: (activeSpeakerId) => {
+      console.log("Active Speaker participantId", activeSpeakerId);
+    },
   });
 
   const handleStartVirtualBackground = async () => {

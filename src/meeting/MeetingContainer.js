@@ -152,6 +152,7 @@ export function MeetingContainer({ onMeetingLeave }) {
     if (participant) {
         // Change quality to low, med, or high based on resolution
         participant.setQuality("high");
+        console.log('participant',participant)
         participant.pin();
     } else {
         console.error('Participant is undefined.');
