@@ -864,7 +864,7 @@ export function BottomBar({ bottomBarHeight }) {
             priority: "PIN",
             gridSize: 4 ,
           },
-          theme: "LIGHT",
+          theme: "DEFAULT",
         };
         startRecording(null,null,config);
         // startRecording(config);
