@@ -1,6 +1,6 @@
 import axios from 'axios';
 const ApiAxios = axios.create({
-  baseURL: 'https://meetingsapi.infyshield.com/v1/',
+  baseURL: 'http://localhost:4002/v1',
   timeout: 8000,
 });
 
